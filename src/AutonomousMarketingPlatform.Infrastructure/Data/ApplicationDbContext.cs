@@ -32,6 +32,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<MarketingMemory> MarketingMemories { get; set; }
     public DbSet<AutomationState> AutomationStates { get; set; }
     public DbSet<AutomationExecution> AutomationExecutions { get; set; }
+    public DbSet<AuditLog> AuditLogs { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -152,6 +153,17 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.Status).IsRequired().HasMaxLength(50);
         });
 
+        // Configuración de AuditLog
+        modelBuilder.Entity<AuditLog>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => new { e.TenantId, e.CreatedAt });
+            entity.HasIndex(e => new { e.TenantId, e.Action, e.EntityType });
+            entity.Property(e => e.Action).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.EntityType).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.Result).IsRequired().HasMaxLength(50);
+        });
+
         // Aplicar índices para mejorar rendimiento en consultas multi-tenant
         ApplyTenantIndexes(modelBuilder);
     }
@@ -170,6 +182,7 @@ public class ApplicationDbContext : DbContext
         modelBuilder.Entity<MarketingMemory>().HasIndex(e => e.TenantId);
         modelBuilder.Entity<AutomationState>().HasIndex(e => e.TenantId);
         modelBuilder.Entity<AutomationExecution>().HasIndex(e => e.TenantId);
+        modelBuilder.Entity<AuditLog>().HasIndex(e => e.TenantId);
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

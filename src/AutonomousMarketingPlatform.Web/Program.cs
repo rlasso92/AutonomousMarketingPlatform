@@ -69,34 +69,80 @@ builder.Services.AddScoped<IFileStorageService>(serviceProvider =>
 // Registrar servicios de memoria de marketing
 builder.Services.AddScoped<IMarketingMemoryService, MarketingMemoryService>();
 
-// Configurar CORS si es necesario
+// Registrar servicios de seguridad y auditoría
+builder.Services.AddScoped<ISecurityService, SecurityService>();
+builder.Services.AddScoped<IAuditService, AuditService>();
+
+// Configurar logging estructurado
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.AddDebug();
+
+if (builder.Environment.IsProduction())
+{
+    // En producción, agregar Application Insights o similar
+    // builder.Logging.AddApplicationInsights();
+}
+
+// Configurar CORS de forma segura
 builder.Services.AddCors(options =>
 {
-    options.AddDefaultPolicy(policy =>
+    if (builder.Environment.IsDevelopment())
     {
-        policy.AllowAnyOrigin()
-              .AllowAnyMethod()
-              .AllowAnyHeader();
-    });
+        // En desarrollo, permitir cualquier origen
+        options.AddDefaultPolicy(policy =>
+        {
+            policy.AllowAnyOrigin()
+                  .AllowAnyMethod()
+                  .AllowAnyHeader();
+        });
+    }
+    else
+    {
+        // En producción, solo orígenes específicos
+        options.AddDefaultPolicy(policy =>
+        {
+            var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() 
+                ?? Array.Empty<string>();
+            
+            policy.WithOrigins(allowedOrigins)
+                  .AllowAnyMethod()
+                  .AllowAnyHeader()
+                  .AllowCredentials();
+        });
+    }
 });
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+
+// 1. Manejo global de excepciones (primero)
+app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
+
+// 2. Headers de seguridad
+app.UseMiddleware<SecurityHeadersMiddleware>();
+
+// 3. HTTPS redirection (solo en producción)
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
+    app.UseHttpsRedirection();
 }
 
-app.UseHttpsRedirection();
-app.UseStaticFiles();
+// 4. Validación de tenant (antes de routing)
+app.UseMiddleware<TenantValidationMiddleware>();
 
+app.UseStaticFiles();
 app.UseRouting();
 
-// Middleware de validación de consentimientos (antes de autorización)
+// 5. CORS
+app.UseCors();
+
+// 6. Middleware de validación de consentimientos
 app.UseConsentValidation();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
