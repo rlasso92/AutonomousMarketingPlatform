@@ -19,32 +19,57 @@ public class ExternalAutomationService : IExternalAutomationService
         _logger = logger;
     }
 
-    public async Task<string> TriggerAutomationAsync(string workflowId, object payload, CancellationToken cancellationToken = default)
+    public async Task<string> TriggerAutomationAsync(
+        Guid tenantId,
+        string eventType,
+        object eventData,
+        Guid? userId = null,
+        Guid? relatedEntityId = null,
+        Dictionary<string, object>? additionalContext = null,
+        CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Triggering external automation: WorkflowId={WorkflowId}", workflowId);
+        _logger.LogInformation("Triggering external automation: TenantId={TenantId}, EventType={EventType}", tenantId, eventType);
         // TODO: Implementar llamada real a n8n
         await Task.Delay(100, cancellationToken); // Simulación
-        return Guid.NewGuid().ToString(); // Retornar execution ID mock
+        return Guid.NewGuid().ToString(); // Retornar request ID mock
     }
 
-    public async Task<AutomationExecutionStatus> GetExecutionStatusAsync(string executionId, CancellationToken cancellationToken = default)
+    public async Task<AutomationExecutionStatus> GetExecutionStatusAsync(
+        Guid tenantId,
+        string requestId,
+        CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Getting execution status: ExecutionId={ExecutionId}", executionId);
+        _logger.LogInformation("Getting execution status: TenantId={TenantId}, RequestId={RequestId}", tenantId, requestId);
         // TODO: Implementar consulta real a n8n
         await Task.Delay(50, cancellationToken); // Simulación
         return new AutomationExecutionStatus
         {
-            ExecutionId = executionId,
-            Status = "Completed",
-            Result = "Mock result"
+            RequestId = requestId,
+            Status = "Completed"
         };
     }
 
-    public async Task ProcessWebhookResponseAsync(string executionId, object responseData, CancellationToken cancellationToken = default)
+    public async Task<bool> CancelExecutionAsync(
+        Guid tenantId,
+        string requestId,
+        CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Processing webhook response: ExecutionId={ExecutionId}", executionId);
+        _logger.LogInformation("Canceling execution: TenantId={TenantId}, RequestId={RequestId}", tenantId, requestId);
+        // TODO: Implementar cancelación real a n8n
+        await Task.Delay(50, cancellationToken); // Simulación
+        return true;
+    }
+
+    public async Task ProcessWebhookResponseAsync(
+        Guid tenantId,
+        string requestId,
+        WebhookResponseData responseData,
+        CancellationToken cancellationToken = default)
+    {
+        _logger.LogInformation("Processing webhook response: TenantId={TenantId}, RequestId={RequestId}", tenantId, requestId);
         // TODO: Implementar procesamiento real
         await Task.Delay(50, cancellationToken); // Simulación
     }
 }
+
 
