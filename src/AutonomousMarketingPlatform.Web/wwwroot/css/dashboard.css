@@ -263,30 +263,103 @@
    CARD DE SISTEMA AUTÓNOMO
    ============================================ */
 
-.card-success {
-    border-top: 3px solid var(--color-success);
+.automation-indicator {
+    border-top: 4px solid var(--color-success);
+    box-shadow: 0 4px 12px rgba(39, 174, 96, 0.2);
+    background: linear-gradient(135deg, #ffffff 0%, #f0f9f4 100%);
 }
 
-.card-success .card-body {
-    padding: 2rem 1.5rem;
+.automation-indicator .card-header {
+    background: linear-gradient(135deg, var(--color-success) 0%, #229954 100%) !important;
+    color: white;
+    border-bottom: none;
 }
 
-.card-success h2 {
-    font-size: 3rem;
-    margin-bottom: 1rem;
+.automation-icon {
+    font-size: 4rem;
+    color: var(--color-success);
+    animation: robotPulse 2s infinite;
+    position: relative;
 }
 
-.card-success .fa-robot {
-    animation: pulse 2s infinite;
+.automation-icon::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: rgba(39, 174, 96, 0.1);
+    animation: ripple 2s infinite;
 }
 
-@keyframes pulse {
+@keyframes robotPulse {
     0%, 100% {
+        transform: scale(1);
         opacity: 1;
     }
     50% {
-        opacity: 0.7;
+        transform: scale(1.1);
+        opacity: 0.9;
     }
+}
+
+@keyframes ripple {
+    0% {
+        transform: translate(-50%, -50%) scale(0.8);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1.5);
+        opacity: 0;
+    }
+}
+
+.automation-stats {
+    background: white;
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-number {
+    font-size: var(--font-size-3xl);
+    font-weight: 700;
+    color: var(--color-success);
+    line-height: 1;
+    margin-bottom: 0.25rem;
+}
+
+.stat-label {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.automation-message {
+    background: white;
+    border-radius: 8px;
+    padding: 1rem;
+    text-align: left;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.automation-message p {
+    margin-bottom: 0.5rem;
+    font-size: var(--font-size-sm);
+    color: var(--text-primary);
+}
+
+.card-success {
+    border-top: 3px solid var(--color-success);
 }
 
 /* ============================================
@@ -353,6 +426,58 @@
     }
     100% {
         transform: rotate(360deg);
+    }
+}
+
+/* Badge con pulso para estado activo */
+.pulse-badge {
+    animation: badgePulse 2s infinite;
+}
+
+@keyframes badgePulse {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(39, 174, 96, 0.7);
+    }
+    50% {
+        box-shadow: 0 0 0 8px rgba(39, 174, 96, 0);
+    }
+}
+
+.system-status-badge {
+    text-align: right;
+}
+
+/* Mejoras visuales para tablas */
+.card .table tbody tr {
+    transition: all 0.2s ease;
+}
+
+.card .table tbody tr:hover {
+    background: var(--bg-secondary);
+    transform: translateX(4px);
+}
+
+/* Mejora en small boxes */
+.small-box .inner {
+    position: relative;
+    z-index: 1;
+}
+
+.small-box .icon {
+    z-index: 0;
+}
+
+/* Efecto de "respiración" en cards importantes */
+.card-primary.card-outline {
+    animation: cardBreath 4s infinite;
+}
+
+@keyframes cardBreath {
+    0%, 100% {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    50% {
+        box-shadow: 0 4px 16px rgba(44, 62, 80, 0.15);
     }
 }
 
