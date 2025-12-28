@@ -1,4 +1,5 @@
 using AutonomousMarketingPlatform.Application.Services;
+using AutonomousMarketingPlatform.Domain.Entities;
 using AutonomousMarketingPlatform.Domain.Interfaces;
 using AutonomousMarketingPlatform.Infrastructure.Data;
 using AutonomousMarketingPlatform.Infrastructure.Repositories;
@@ -73,6 +74,53 @@ builder.Services.AddScoped<IMarketingMemoryService, MarketingMemoryService>();
 builder.Services.AddScoped<ISecurityService, SecurityService>();
 builder.Services.AddScoped<IAuditService, AuditService>();
 
+// Configurar ASP.NET Core Identity
+builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
+{
+    // Configuración de contraseña
+    options.Password.RequireDigit = true;
+    options.Password.RequireLowercase = true;
+    options.Password.RequireUppercase = true;
+    options.Password.RequireNonAlphanumeric = true;
+    options.Password.RequiredLength = 8;
+    
+    // Configuración de usuario
+    options.User.RequireUniqueEmail = true;
+    options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+    
+    // Configuración de lockout
+    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
+    options.Lockout.MaxFailedAccessAttempts = 5;
+    options.Lockout.AllowedForNewUsers = true;
+    
+    // Configuración de sign-in
+    options.SignIn.RequireConfirmedEmail = false; // Para MVP, luego activar
+    options.SignIn.RequireConfirmedPhoneNumber = false;
+})
+.AddEntityFrameworkStores<ApplicationDbContext>();
+
+// Configurar cookies de autenticación
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.Cookie.Name = "AutonomousMarketingPlatform.Auth";
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SecurePolicy = builder.Environment.IsProduction() 
+        ? CookieSecurePolicy.Always 
+        : CookieSecurePolicy.SameAsRequest;
+    options.Cookie.SameSite = SameSiteMode.Strict;
+    options.ExpireTimeSpan = TimeSpan.FromHours(24);
+    options.SlidingExpiration = true;
+    options.LoginPath = "/Account/Login";
+    options.LogoutPath = "/Account/Logout";
+    options.AccessDeniedPath = "/Account/AccessDenied";
+});
+
+// Registrar TenantResolverService
+builder.Services.AddScoped<ITenantResolverService, TenantResolverService>();
+
+// Registrar RoleSeeder
+builder.Services.AddScoped<RoleSeeder>();
+
 // Configurar logging estructurado
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
@@ -115,6 +163,16 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+// Seed roles al iniciar (solo en desarrollo o primera vez)
+if (app.Environment.IsDevelopment())
+{
+    using (var scope = app.Services.CreateScope())
+    {
+        var roleSeeder = scope.ServiceProvider.GetRequiredService<RoleSeeder>();
+        await roleSeeder.SeedRolesAsync();
+    }
+}
+
 // Configure the HTTP request pipeline.
 
 // 1. Manejo global de excepciones (primero)
@@ -130,7 +188,19 @@ if (!app.Environment.IsDevelopment())
     app.UseHttpsRedirection();
 }
 
-// 4. Validación de tenant (antes de routing)
+// 4. Tenant Resolver (antes de auth)
+app.Use(async (context, next) =>
+{
+    var tenantResolver = context.RequestServices.GetRequiredService<ITenantResolverService>();
+    var tenantId = await tenantResolver.ResolveTenantIdAsync();
+    if (tenantId.HasValue)
+    {
+        context.Items["TenantId"] = tenantId.Value;
+    }
+    await next();
+});
+
+// 5. Validación de tenant (antes de routing)
 app.UseMiddleware<TenantValidationMiddleware>();
 
 app.UseStaticFiles();
@@ -142,6 +212,7 @@ app.UseCors();
 // 6. Middleware de validación de consentimientos
 app.UseConsentValidation();
 
+// 7. Authentication y Authorization
 app.UseAuthentication();
 app.UseAuthorization();
 

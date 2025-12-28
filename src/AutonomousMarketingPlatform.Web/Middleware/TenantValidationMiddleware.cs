@@ -28,9 +28,12 @@ public class TenantValidationMiddleware
 
     public async Task InvokeAsync(HttpContext context)
     {
-        // Skip validation para health checks y endpoints públicos
+        // Skip validation para health checks, endpoints públicos y login
         var path = context.Request.Path.Value?.ToLower() ?? "";
-        if (path.StartsWith("/health") || path.StartsWith("/api/public"))
+        if (path.StartsWith("/health") || 
+            path.StartsWith("/api/public") || 
+            path.StartsWith("/account/login") ||
+            path.StartsWith("/account/accessdenied"))
         {
             await _next(context);
             return;
@@ -38,11 +41,34 @@ public class TenantValidationMiddleware
 
         if (_validationEnabled)
         {
-            // Obtener TenantId del request (header, claim, subdomain, etc.)
-            var tenantId = GetTenantIdFromRequest(context);
+            // Obtener TenantId del request (ya resuelto por el middleware anterior o desde Items)
+            var tenantId = context.Items["TenantId"] as Guid?;
+
+            // Si no está en Items, intentar obtenerlo
+            if (!tenantId.HasValue)
+            {
+                tenantId = GetTenantIdFromRequest(context);
+            }
+
+            // Si aún no hay tenant y el usuario está autenticado, obtenerlo del claim
+            if (!tenantId.HasValue && context.User?.Identity?.IsAuthenticated == true)
+            {
+                var tenantClaim = context.User.FindFirst("TenantId");
+                if (tenantClaim != null && Guid.TryParse(tenantClaim.Value, out var claimTenantId))
+                {
+                    tenantId = claimTenantId;
+                }
+            }
 
             if (tenantId == null || tenantId == Guid.Empty)
             {
+                // Si no está autenticado, redirigir a login
+                if (context.User?.Identity?.IsAuthenticated != true)
+                {
+                    context.Response.Redirect("/Account/Login");
+                    return;
+                }
+
                 _logger.LogWarning("Request sin TenantId: Path={Path}, IP={IP}",
                     context.Request.Path, context.Connection.RemoteIpAddress);
 

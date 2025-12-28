@@ -1,9 +1,12 @@
 using AutonomousMarketingPlatform.Application.UseCases.Dashboard;
+using AutonomousMarketingPlatform.Web.Attributes;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AutonomousMarketingPlatform.Web.Controllers;
 
+[Authorize]
 public class HomeController : Controller
 {
     private readonly IMediator _mediator;

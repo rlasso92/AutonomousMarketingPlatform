@@ -1,0 +1,173 @@
+@model AutonomousMarketingPlatform.Application.DTOs.LoginDto
+@{
+    ViewData["Title"] = "Iniciar Sesión";
+    Layout = null; // Sin layout para login
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@ViewData["Title"] - Autonomous Marketing Platform</title>
+    
+    <!-- Google Font: Source Sans Pro -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="~/lib/fontawesome-free/css/all.min.css">
+    <!-- AdminLTE -->
+    <link rel="stylesheet" href="~/lib/adminlte/dist/css/adminlte.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="~/css/custom.css">
+    <style>
+        .login-page {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .login-box {
+            width: 100%;
+            max-width: 400px;
+        }
+        .login-card {
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+        .login-card-header {
+            background: white;
+            padding: 2rem;
+            text-align: center;
+            border-bottom: none;
+        }
+        .login-card-body {
+            background: white;
+            padding: 2rem;
+        }
+        .login-logo {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+        .login-subtitle {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+        .btn-login {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            padding: 0.75rem 2rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .btn-login:hover {
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+    </style>
+</head>
+<body class="hold-transition login-page">
+    <div class="login-box">
+        <div class="login-card">
+            <div class="login-card-header">
+                <div class="login-logo">
+                    <i class="fas fa-robot"></i> AMP
+                </div>
+                <p class="login-subtitle">Autonomous Marketing Platform</p>
+            </div>
+            <div class="login-card-body">
+                <p class="login-box-msg">Inicia sesión para continuar</p>
+
+                @if (!string.IsNullOrEmpty(ViewData["TenantId"]?.ToString()))
+                {
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> Tenant: @ViewData["TenantId"]
+                    </div>
+                }
+
+                @if (ViewData["LockoutEnd"] != null)
+                {
+                    <div class="alert alert-warning">
+                        <i class="fas fa-lock"></i> 
+                        Cuenta bloqueada hasta: @(((DateTime?)ViewData["LockoutEnd"])?.ToString("g"))
+                    </div>
+                }
+
+                @if (ViewData["RemainingAttempts"] != null && (int)ViewData["RemainingAttempts"]! < 5)
+                {
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i> 
+                        Intentos restantes: @ViewData["RemainingAttempts"]
+                    </div>
+                }
+
+                <form asp-action="Login" method="post">
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                    
+                    <input type="hidden" asp-for="TenantId" value="@ViewData["TenantId"]" />
+
+                    <div class="input-group mb-3">
+                        <input asp-for="Email" class="form-control" placeholder="Email" type="email" required>
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-envelope"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <span asp-validation-for="Email" class="text-danger"></span>
+
+                    <div class="input-group mb-3">
+                        <input asp-for="Password" class="form-control" placeholder="Contraseña" type="password" required>
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-lock"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <span asp-validation-for="Password" class="text-danger"></span>
+
+                    <div class="row">
+                        <div class="col-8">
+                            <div class="icheck-primary">
+                                <input type="checkbox" asp-for="RememberMe" id="remember">
+                                <label for="remember">
+                                    Recordarme
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-login btn-block">
+                                <i class="fas fa-sign-in-alt mr-2"></i>Iniciar Sesión
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- jQuery -->
+    <script src="~/lib/jquery/jquery.min.js"></script>
+    <!-- Bootstrap 4 -->
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- AdminLTE App -->
+    <script src="~/lib/adminlte/dist/js/adminlte.min.js"></script>
+    <!-- Validation -->
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+</body>
+</html>
+
+

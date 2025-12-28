@@ -1,6 +1,8 @@
 using AutonomousMarketingPlatform.Domain.Entities;
 using AutonomousMarketingPlatform.Domain.Interfaces;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -9,8 +11,9 @@ namespace AutonomousMarketingPlatform.Infrastructure.Data;
 /// <summary>
 /// Contexto de base de datos principal de la aplicación.
 /// Implementa filtrado automático por tenant para garantizar aislamiento de datos.
+/// Extiende IdentityDbContext para soportar ASP.NET Core Identity.
 /// </summary>
-public class ApplicationDbContext : DbContext
+public class ApplicationDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, Guid>
 {
     private readonly IHttpContextAccessor? _httpContextAccessor;
     private readonly IServiceProvider? _serviceProvider;
@@ -21,10 +24,11 @@ public class ApplicationDbContext : DbContext
         _httpContextAccessor = httpContextAccessor;
         _serviceProvider = serviceProvider;
     }
-
+    
     // DbSets
     public DbSet<Tenant> Tenants { get; set; }
-    public DbSet<User> Users { get; set; }
+    // Nota: Users ahora se maneja a través de ApplicationUser (Identity)
+    // public DbSet<User> Users { get; set; } // Mantener para migración, luego eliminar
     public DbSet<Consent> Consents { get; set; }
     public DbSet<Campaign> Campaigns { get; set; }
     public DbSet<Content> Contents { get; set; }
@@ -33,10 +37,54 @@ public class ApplicationDbContext : DbContext
     public DbSet<AutomationState> AutomationStates { get; set; }
     public DbSet<AutomationExecution> AutomationExecutions { get; set; }
     public DbSet<AuditLog> AuditLogs { get; set; }
+    public DbSet<UserTenant> UserTenants { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+        
+        // Configurar Identity para usar Guid como clave y nombres de tabla personalizados
+        modelBuilder.Entity<ApplicationUser>(entity =>
+        {
+            entity.ToTable("AspNetUsers");
+            entity.HasIndex(e => new { e.TenantId, e.Email }).IsUnique();
+            entity.Property(e => e.FullName).IsRequired().HasMaxLength(200);
+            
+            entity.HasOne(e => e.Tenant)
+                .WithMany()
+                .HasForeignKey(e => e.TenantId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+        
+        modelBuilder.Entity<ApplicationRole>(entity =>
+        {
+            entity.ToTable("AspNetRoles");
+        });
+        
+        modelBuilder.Entity<IdentityUserRole<Guid>>(entity =>
+        {
+            entity.ToTable("AspNetUserRoles");
+        });
+        
+        modelBuilder.Entity<IdentityUserClaim<Guid>>(entity =>
+        {
+            entity.ToTable("AspNetUserClaims");
+        });
+        
+        modelBuilder.Entity<IdentityUserLogin<Guid>>(entity =>
+        {
+            entity.ToTable("AspNetUserLogins");
+        });
+        
+        modelBuilder.Entity<IdentityUserToken<Guid>>(entity =>
+        {
+            entity.ToTable("AspNetUserTokens");
+        });
+        
+        modelBuilder.Entity<IdentityRoleClaim<Guid>>(entity =>
+        {
+            entity.ToTable("AspNetRoleClaims");
+        });
 
         // Configuración de Tenant
         modelBuilder.Entity<Tenant>(entity =>
@@ -162,6 +210,29 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.Action).IsRequired().HasMaxLength(100);
             entity.Property(e => e.EntityType).IsRequired().HasMaxLength(100);
             entity.Property(e => e.Result).IsRequired().HasMaxLength(50);
+        });
+
+        // Configuración de UserTenant
+        modelBuilder.Entity<UserTenant>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => new { e.UserId, e.TenantId }).IsUnique();
+            entity.HasIndex(e => new { e.TenantId, e.RoleId });
+            
+            entity.HasOne(e => e.User)
+                .WithMany(u => u.UserTenants)
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+            
+            entity.HasOne(e => e.Tenant)
+                .WithMany()
+                .HasForeignKey(e => e.TenantId)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            entity.HasOne(e => e.Role)
+                .WithMany()
+                .HasForeignKey(e => e.RoleId)
+                .OnDelete(DeleteBehavior.Restrict);
         });
 
         // Aplicar índices para mejorar rendimiento en consultas multi-tenant
