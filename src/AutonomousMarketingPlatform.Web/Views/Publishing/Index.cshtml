@@ -1,0 +1,181 @@
+@model List<AutonomousMarketingPlatform.Application.DTOs.PublishingJobListDto>
+@{
+    ViewData["Title"] = "Publicaciones";
+    var campaignId = ViewBag.CampaignId as Guid?;
+    var statusFilter = ViewBag.StatusFilter as string;
+    var channelFilter = ViewBag.ChannelFilter as string;
+}
+
+<div class="content-wrapper">
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1><i class="fas fa-paper-plane mr-2"></i>Publicaciones</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="/">Inicio</a></li>
+                        <li class="breadcrumb-item active">Publicaciones</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="content">
+        <div class="container-fluid">
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    @TempData["SuccessMessage"]
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            }
+
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Lista de Publicaciones</h3>
+                            <div class="card-tools">
+                                <a href="@Url.Action("Generate")" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-plus mr-1"></i>Generar Publicación
+                                </a>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <!-- Filtros -->
+                            <div class="row mb-3">
+                                <div class="col-md-3">
+                                    <label>Filtrar por Estado:</label>
+                                    <select id="statusFilter" class="form-control">
+                                        <option value="">Todos</option>
+                                        <option value="Pending" selected="@(statusFilter == "Pending")">Pending</option>
+                                        <option value="Processing" selected="@(statusFilter == "Processing")">Processing</option>
+                                        <option value="RequiresApproval" selected="@(statusFilter == "RequiresApproval")">Requires Approval</option>
+                                        <option value="Success" selected="@(statusFilter == "Success")">Success</option>
+                                        <option value="Failed" selected="@(statusFilter == "Failed")">Failed</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label>Filtrar por Canal:</label>
+                                    <select id="channelFilter" class="form-control">
+                                        <option value="">Todos</option>
+                                        <option value="Instagram" selected="@(channelFilter == "Instagram")">Instagram</option>
+                                        <option value="Facebook" selected="@(channelFilter == "Facebook")">Facebook</option>
+                                        <option value="TikTok" selected="@(channelFilter == "TikTok")">TikTok</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <table id="publishingJobsTable" class="table table-bordered table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Canal</th>
+                                        <th>Estado</th>
+                                        <th>Programada</th>
+                                        <th>Publicada</th>
+                                        <th>URL</th>
+                                        <th>Requiere Aprobación</th>
+                                        <th>Creado</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var job in Model)
+                                    {
+                                        <tr>
+                                            <td><span class="badge badge-primary">@job.Channel</span></td>
+                                            <td>
+                                                @{
+                                                    var statusClass = job.Status switch
+                                                    {
+                                                        "Success" => "badge-success",
+                                                        "Failed" => "badge-danger",
+                                                        "Processing" => "badge-warning",
+                                                        "RequiresApproval" => "badge-info",
+                                                        _ => "badge-secondary"
+                                                    };
+                                                }
+                                                <span class="badge @statusClass">@job.Status</span>
+                                            </td>
+                                            <td>@(job.ScheduledDate?.ToString("dd/MM/yyyy HH:mm") ?? "N/A")</td>
+                                            <td>@(job.PublishedDate?.ToString("dd/MM/yyyy HH:mm") ?? "N/A")</td>
+                                            <td>
+                                                @if (!string.IsNullOrEmpty(job.PublishedUrl))
+                                                {
+                                                    <a href="@job.PublishedUrl" target="_blank">Ver publicación</a>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">N/A</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (job.RequiresApproval)
+                                                {
+                                                    <span class="badge badge-warning">Sí</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge badge-secondary">No</span>
+                                                }
+                                            </td>
+                                            <td>@job.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                                            <td>
+                                                <a href="@Url.Action("Details", new { id = job.Id })" class="btn btn-sm btn-info" title="Ver detalles">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                @if (job.Status == "RequiresApproval" && !string.IsNullOrEmpty(job.PublishedUrl))
+                                                {
+                                                    <a href="@Url.Action("DownloadPackage", new { id = job.Id })" class="btn btn-sm btn-success" title="Descargar paquete">
+                                                        <i class="fas fa-download"></i>
+                                                    </a>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#publishingJobsTable').DataTable({
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json"
+                },
+                "order": [[6, "desc"]],
+                "pageLength": 25,
+                "responsive": true
+            });
+
+            $('#statusFilter').on('change', function () {
+                var status = $(this).val();
+                var channel = $('#channelFilter').val();
+                var url = '@Url.Action("Index")' + '?status=' + status;
+                if (channel) url += '&channel=' + channel;
+                window.location.href = url;
+            });
+
+            $('#channelFilter').on('change', function () {
+                var channel = $(this).val();
+                var status = $('#statusFilter').val();
+                var url = '@Url.Action("Index")' + '?channel=' + channel;
+                if (status) url += '&status=' + status;
+                window.location.href = url;
+            });
+        });
+    </script>
+}
+

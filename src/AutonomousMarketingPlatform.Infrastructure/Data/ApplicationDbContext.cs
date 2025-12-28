@@ -43,6 +43,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
     public DbSet<MarketingAssetPrompt> MarketingAssetPrompts { get; set; }
     public DbSet<CampaignDraft> CampaignDrafts { get; set; }
     public DbSet<TenantAIConfig> TenantAIConfigs { get; set; }
+    public DbSet<PublishingJob> PublishingJobs { get; set; }
+    public DbSet<CampaignMetrics> CampaignMetrics { get; set; }
+    public DbSet<PublishingJobMetrics> PublishingJobMetrics { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -133,12 +136,87 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
         modelBuilder.Entity<Campaign>(entity =>
         {
             entity.HasKey(e => e.Id);
+            entity.HasIndex(e => new { e.TenantId, e.Status });
             entity.Property(e => e.Name).IsRequired().HasMaxLength(200);
+            entity.Property(e => e.Description).HasMaxLength(1000);
             entity.Property(e => e.Status).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.Budget).HasPrecision(18, 2);
+            entity.Property(e => e.Objectives).HasMaxLength(2000);
+            entity.Property(e => e.TargetAudience).HasMaxLength(2000);
+            entity.Property(e => e.TargetChannels).HasMaxLength(500);
+            entity.Property(e => e.Notes).HasMaxLength(5000);
             
             entity.HasOne(e => e.Tenant)
                 .WithMany(t => t.Campaigns)
                 .HasForeignKey(e => e.TenantId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        // Configuración de PublishingJob
+        modelBuilder.Entity<PublishingJob>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => new { e.TenantId, e.CampaignId, e.Status });
+            entity.HasIndex(e => new { e.TenantId, e.ScheduledDate });
+            entity.Property(e => e.Channel).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.Status).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.Content).HasMaxLength(5000);
+            entity.Property(e => e.Hashtags).HasMaxLength(500);
+            entity.Property(e => e.PublishedUrl).HasMaxLength(1000);
+            entity.Property(e => e.ExternalPostId).HasMaxLength(200);
+            entity.Property(e => e.MediaUrl).HasMaxLength(1000);
+            entity.Property(e => e.ErrorMessage).HasMaxLength(2000);
+            entity.Property(e => e.Payload).HasMaxLength(10000);
+            entity.Property(e => e.DownloadUrl).HasMaxLength(2000);
+            
+            entity.HasOne(e => e.Campaign)
+                .WithMany(c => c.PublishingJobs)
+                .HasForeignKey(e => e.CampaignId)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            entity.HasOne(e => e.MarketingPack)
+                .WithMany()
+                .HasForeignKey(e => e.MarketingPackId)
+                .OnDelete(DeleteBehavior.SetNull);
+            
+            entity.HasOne(e => e.GeneratedCopy)
+                .WithMany()
+                .HasForeignKey(e => e.GeneratedCopyId)
+                .OnDelete(DeleteBehavior.SetNull);
+            
+            entity.HasOne(e => e.MarketingAssetPrompt)
+                .WithMany()
+                .HasForeignKey(e => e.MarketingAssetPromptId)
+                .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        // Configuración de CampaignMetrics
+        modelBuilder.Entity<CampaignMetrics>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => new { e.TenantId, e.CampaignId, e.MetricDate }).IsUnique();
+            entity.HasIndex(e => new { e.TenantId, e.MetricDate });
+            entity.Property(e => e.Source).HasMaxLength(50);
+            entity.Property(e => e.Notes).HasMaxLength(2000);
+            
+            entity.HasOne(e => e.Campaign)
+                .WithMany()
+                .HasForeignKey(e => e.CampaignId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        // Configuración de PublishingJobMetrics
+        modelBuilder.Entity<PublishingJobMetrics>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => new { e.TenantId, e.PublishingJobId, e.MetricDate }).IsUnique();
+            entity.HasIndex(e => new { e.TenantId, e.MetricDate });
+            entity.Property(e => e.Source).HasMaxLength(50);
+            entity.Property(e => e.Notes).HasMaxLength(2000);
+            
+            entity.HasOne(e => e.PublishingJob)
+                .WithMany()
+                .HasForeignKey(e => e.PublishingJobId)
                 .OnDelete(DeleteBehavior.Restrict);
         });
 
@@ -331,6 +409,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
         modelBuilder.Entity<MarketingAssetPrompt>().HasIndex(e => e.TenantId);
         modelBuilder.Entity<CampaignDraft>().HasIndex(e => e.TenantId);
         modelBuilder.Entity<TenantAIConfig>().HasIndex(e => e.TenantId);
+        modelBuilder.Entity<PublishingJob>().HasIndex(e => e.TenantId);
+        modelBuilder.Entity<CampaignMetrics>().HasIndex(e => e.TenantId);
+        modelBuilder.Entity<PublishingJobMetrics>().HasIndex(e => e.TenantId);
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

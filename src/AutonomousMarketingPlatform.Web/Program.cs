@@ -59,6 +59,16 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 // Registrar MediatR para CQRS
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.Load("AutonomousMarketingPlatform.Application")));
 
+// Registrar FluentValidation manualmente
+builder.Services.AddScoped<FluentValidation.IValidator<AutonomousMarketingPlatform.Application.DTOs.CreateCampaignDto>, 
+    AutonomousMarketingPlatform.Application.Validators.CreateCampaignDtoValidator>();
+builder.Services.AddScoped<FluentValidation.IValidator<AutonomousMarketingPlatform.Application.DTOs.UpdateCampaignDto>, 
+    AutonomousMarketingPlatform.Application.Validators.UpdateCampaignDtoValidator>();
+builder.Services.AddScoped<FluentValidation.IValidator<AutonomousMarketingPlatform.Application.DTOs.RegisterCampaignMetricsDto>, 
+    AutonomousMarketingPlatform.Application.Validators.RegisterCampaignMetricsDtoValidator>();
+builder.Services.AddScoped<FluentValidation.IValidator<AutonomousMarketingPlatform.Application.DTOs.RegisterPublishingJobMetricsDto>, 
+    AutonomousMarketingPlatform.Application.Validators.RegisterPublishingJobMetricsDtoValidator>();
+
 // Registrar servicios de consentimiento
 builder.Services.AddScoped<IConsentValidationService, ConsentValidationService>();
 
@@ -85,6 +95,28 @@ builder.Services.AddScoped<IExternalAutomationService, ExternalAutomationService
 
 // Registrar proveedor de IA
 builder.Services.AddHttpClient<IAIProvider, AutonomousMarketingPlatform.Infrastructure.Services.AI.OpenAIProvider>();
+
+// Registrar servicios de publicación
+builder.Services.AddSingleton<AutonomousMarketingPlatform.Domain.Interfaces.IPublishingAdapter, 
+    AutonomousMarketingPlatform.Infrastructure.Services.Publishing.ManualPublishingAdapter>();
+
+// Registrar background service para procesar cola de publicaciones (también implementa IPublishingJobService)
+builder.Services.AddSingleton<AutonomousMarketingPlatform.Infrastructure.Services.Publishing.PublishingJobProcessorService>();
+builder.Services.AddSingleton<AutonomousMarketingPlatform.Application.Services.IPublishingJobService>(
+    serviceProvider => serviceProvider.GetRequiredService<AutonomousMarketingPlatform.Infrastructure.Services.Publishing.PublishingJobProcessorService>());
+builder.Services.AddHostedService(serviceProvider => 
+    serviceProvider.GetRequiredService<AutonomousMarketingPlatform.Infrastructure.Services.Publishing.PublishingJobProcessorService>());
+
+// Registrar servicios de métricas
+builder.Services.AddScoped<AutonomousMarketingPlatform.Application.Services.IMetricsService, 
+    AutonomousMarketingPlatform.Infrastructure.Services.MetricsService>();
+
+// Registrar servicios de aprendizaje automático
+builder.Services.AddScoped<AutonomousMarketingPlatform.Application.Services.IMemoryLearningService, 
+    AutonomousMarketingPlatform.Infrastructure.Services.MemoryLearningService>();
+
+// Registrar background service para aprendizaje automático desde métricas
+builder.Services.AddHostedService<AutonomousMarketingPlatform.Infrastructure.Services.MetricsLearningBackgroundService>();
 
 // Configurar ASP.NET Core Identity
 builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>

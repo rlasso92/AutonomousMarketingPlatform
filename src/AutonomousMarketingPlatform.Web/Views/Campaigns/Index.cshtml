@@ -1,0 +1,155 @@
+@model List<AutonomousMarketingPlatform.Application.DTOs.CampaignListDto>
+@{
+    ViewData["Title"] = "Campañas";
+    var statusFilter = ViewBag.StatusFilter as string;
+}
+
+<div class="content-wrapper">
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1><i class="fas fa-bullhorn mr-2"></i>Campañas</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="/">Inicio</a></li>
+                        <li class="breadcrumb-item active">Campañas</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="content">
+        <div class="container-fluid">
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    @TempData["SuccessMessage"]
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            }
+
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    @TempData["ErrorMessage"]
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            }
+
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Lista de Campañas</h3>
+                            <div class="card-tools">
+                                <a href="@Url.Action("Create")" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-plus mr-1"></i>Nueva Campaña
+                                </a>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <!-- Filtros -->
+                            <div class="row mb-3">
+                                <div class="col-md-3">
+                                    <label>Filtrar por Estado:</label>
+                                    <select id="statusFilter" class="form-control">
+                                        <option value="">Todos</option>
+                                        <option value="Draft" selected="@(statusFilter == "Draft")">Draft</option>
+                                        <option value="Active" selected="@(statusFilter == "Active")">Active</option>
+                                        <option value="Paused" selected="@(statusFilter == "Paused")">Paused</option>
+                                        <option value="Archived" selected="@(statusFilter == "Archived")">Archived</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <table id="campaignsTable" class="table table-bordered table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Nombre</th>
+                                        <th>Estado</th>
+                                        <th>Fecha Inicio</th>
+                                        <th>Fecha Fin</th>
+                                        <th>Contenidos</th>
+                                        <th>Marketing Packs</th>
+                                        <th>Publicaciones</th>
+                                        <th>Creado</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var campaign in Model)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <strong>@campaign.Name</strong>
+                                                @if (!string.IsNullOrEmpty(campaign.Description))
+                                                {
+                                                    <br />
+                                                    <small class="text-muted">@(campaign.Description.Length > 50 ? campaign.Description.Substring(0, 50) + "..." : campaign.Description)</small>
+                                                }
+                                            </td>
+                                            <td>
+                                                @{
+                                                    var statusClass = campaign.Status switch
+                                                    {
+                                                        "Active" => "badge-success",
+                                                        "Paused" => "badge-warning",
+                                                        "Archived" => "badge-secondary",
+                                                        _ => "badge-info"
+                                                    };
+                                                }
+                                                <span class="badge @statusClass">@campaign.Status</span>
+                                            </td>
+                                            <td>@(campaign.StartDate?.ToString("dd/MM/yyyy") ?? "N/A")</td>
+                                            <td>@(campaign.EndDate?.ToString("dd/MM/yyyy") ?? "N/A")</td>
+                                            <td><span class="badge badge-info">@campaign.ContentCount</span></td>
+                                            <td><span class="badge badge-primary">@campaign.MarketingPackCount</span></td>
+                                            <td><span class="badge badge-success">@campaign.PublishingJobCount</span></td>
+                                            <td>@campaign.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                                            <td>
+                                                <a href="@Url.Action("Details", new { id = campaign.Id })" class="btn btn-sm btn-info" title="Ver detalles">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a href="@Url.Action("Edit", new { id = campaign.Id })" class="btn btn-sm btn-warning" title="Editar">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#campaignsTable').DataTable({
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json"
+                },
+                "order": [[7, "desc"]],
+                "pageLength": 25,
+                "responsive": true
+            });
+
+            $('#statusFilter').on('change', function () {
+                var status = $(this).val();
+                window.location.href = '@Url.Action("Index")' + (status ? '?status=' + status : '');
+            });
+        });
+    </script>
+}
+

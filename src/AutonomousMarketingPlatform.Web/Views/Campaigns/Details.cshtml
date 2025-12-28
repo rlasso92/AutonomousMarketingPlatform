@@ -1,0 +1,342 @@
+@model AutonomousMarketingPlatform.Application.DTOs.CampaignDetailDto
+@{
+    ViewData["Title"] = "Detalle de Campaña";
+}
+
+<div class="content-wrapper">
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1><i class="fas fa-bullhorn mr-2"></i>@Model.Name</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="/">Inicio</a></li>
+                        <li class="breadcrumb-item"><a href="@Url.Action("Index")">Campañas</a></li>
+                        <li class="breadcrumb-item active">Detalle</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="content">
+        <div class="container-fluid">
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    @TempData["SuccessMessage"]
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            }
+
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    @TempData["ErrorMessage"]
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            }
+
+            <div class="row">
+                <!-- Información Principal -->
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-info-circle mr-2"></i>Información General
+                            </h3>
+                            <div class="card-tools">
+                                <a href="@Url.Action("Campaign", "Metrics", new { campaignId = Model.Id })" 
+                                   class="btn btn-sm btn-primary mr-2" title="Ver Métricas">
+                                    <i class="fas fa-chart-line mr-1"></i>Ver Métricas
+                                </a>
+                                @{
+                                    var statusClass = Model.Status switch
+                                    {
+                                        "Active" => "badge-success",
+                                        "Paused" => "badge-warning",
+                                        "Archived" => "badge-secondary",
+                                        _ => "badge-info"
+                                    };
+                                }
+                                <span class="badge @statusClass badge-lg">@Model.Status</span>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <dl class="row">
+                                <dt class="col-sm-3">Descripción:</dt>
+                                <dd class="col-sm-9">@(Model.Description ?? "Sin descripción")</dd>
+
+                                <dt class="col-sm-3">Fecha de Inicio:</dt>
+                                <dd class="col-sm-9">@(Model.StartDate?.ToString("dd/MM/yyyy") ?? "No definida")</dd>
+
+                                <dt class="col-sm-3">Fecha de Fin:</dt>
+                                <dd class="col-sm-9">@(Model.EndDate?.ToString("dd/MM/yyyy") ?? "No definida")</dd>
+
+                                <dt class="col-sm-3">Presupuesto:</dt>
+                                <dd class="col-sm-9">@(Model.Budget?.ToString("C") ?? "No definido")</dd>
+
+                                @if (Model.TargetChannels != null && Model.TargetChannels.Any())
+                                {
+                                    <dt class="col-sm-3">Canales Objetivo:</dt>
+                                    <dd class="col-sm-9">
+                                        @foreach (var channel in Model.TargetChannels)
+                                        {
+                                            <span class="badge badge-primary mr-1">@channel</span>
+                                        }
+                                    </dd>
+                                }
+
+                                @if (!string.IsNullOrEmpty(Model.Notes))
+                                {
+                                    <dt class="col-sm-3">Notas:</dt>
+                                    <dd class="col-sm-9">@Model.Notes</dd>
+                                }
+
+                                <dt class="col-sm-3">Creado:</dt>
+                                <dd class="col-sm-9">@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</dd>
+
+                                @if (Model.UpdatedAt.HasValue)
+                                {
+                                    <dt class="col-sm-3">Última Actualización:</dt>
+                                    <dd class="col-sm-9">@Model.UpdatedAt.Value.ToString("dd/MM/yyyy HH:mm")</dd>
+                                }
+                            </dl>
+                        </div>
+                        <div class="card-footer">
+                            <a href="@Url.Action("Edit", new { id = Model.Id })" class="btn btn-warning">
+                                <i class="fas fa-edit mr-1"></i>Editar
+                            </a>
+                            <form asp-action="Delete" method="post" style="display: inline;" onsubmit="return confirm('¿Está seguro de que desea eliminar esta campaña?');">
+                                <input type="hidden" name="id" value="@Model.Id" />
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-danger">
+                                    <i class="fas fa-trash mr-1"></i>Eliminar
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Estadísticas -->
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title"><i class="fas fa-chart-bar mr-2"></i>Estadísticas</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="info-box mb-3">
+                                <span class="info-box-icon bg-info"><i class="fas fa-file-image"></i></span>
+                                <div class="info-box-content">
+                                    <span class="info-box-text">Contenidos</span>
+                                    <span class="info-box-number">@Model.Contents.Count</span>
+                                </div>
+                            </div>
+
+                            <div class="info-box mb-3">
+                                <span class="info-box-icon bg-primary"><i class="fas fa-robot"></i></span>
+                                <div class="info-box-content">
+                                    <span class="info-box-text">Marketing Packs</span>
+                                    <span class="info-box-number">@Model.MarketingPacks.Count</span>
+                                </div>
+                            </div>
+
+                            <div class="info-box mb-3">
+                                <span class="info-box-icon bg-success"><i class="fas fa-paper-plane"></i></span>
+                                <div class="info-box-content">
+                                    <span class="info-box-text">Publicaciones</span>
+                                    <span class="info-box-number">@Model.PublishingJobs.Count</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contenidos -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title"><i class="fas fa-file-image mr-2"></i>Contenidos (@Model.Contents.Count)</h3>
+                        </div>
+                        <div class="card-body">
+                            @if (Model.Contents.Any())
+                            {
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Tipo</th>
+                                                <th>Descripción</th>
+                                                <th>URL</th>
+                                                <th>Creado</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var content in Model.Contents)
+                                            {
+                                                <tr>
+                                                    <td><span class="badge badge-info">@content.ContentType</span></td>
+                                                    <td>@(content.Description ?? "Sin descripción")</td>
+                                                    <td><a href="@content.FileUrl" target="_blank">Ver archivo</a></td>
+                                                    <td>@content.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+                            else
+                            {
+                                <p class="text-muted">No hay contenidos asociados a esta campaña.</p>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Marketing Packs -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title"><i class="fas fa-robot mr-2"></i>Marketing Packs Generados (@Model.MarketingPacks.Count)</h3>
+                        </div>
+                        <div class="card-body">
+                            @if (Model.MarketingPacks.Any())
+                            {
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Estado</th>
+                                                <th>Versión</th>
+                                                <th>Copies</th>
+                                                <th>Prompts</th>
+                                                <th>Creado</th>
+                                                <th>Acciones</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var pack in Model.MarketingPacks)
+                                            {
+                                                <tr>
+                                                    <td>@pack.Id.ToString().Substring(0, 8)...</td>
+                                                    <td><span class="badge badge-info">@pack.Status</span></td>
+                                                    <td>v@pack.Version</td>
+                                                    <td><span class="badge badge-primary">@pack.CopyCount</span></td>
+                                                    <td><span class="badge badge-success">@pack.AssetPromptCount</span></td>
+                                                    <td>@pack.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                                                    <td>
+                                                        <a href="@Url.Action("ViewPack", "AI", new { id = pack.Id })" class="btn btn-sm btn-info">
+                                                            <i class="fas fa-eye"></i> Ver
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+                            else
+                            {
+                                <p class="text-muted">No hay marketing packs generados para esta campaña.</p>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Publicaciones -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title"><i class="fas fa-paper-plane mr-2"></i>Publicaciones (@Model.PublishingJobs.Count)</h3>
+                        </div>
+                        <div class="card-body">
+                            @if (Model.PublishingJobs.Any())
+                            {
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Canal</th>
+                                                <th>Estado</th>
+                                                <th>Programada</th>
+                                                <th>Publicada</th>
+                                                <th>URL</th>
+                                                <th>Acciones</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var job in Model.PublishingJobs)
+                                            {
+                                                <tr>
+                                                    <td><span class="badge badge-primary">@job.Channel</span></td>
+                                                    <td>
+                                                        @{
+                                                            var jobStatusClass = job.Status switch
+                                                            {
+                                                                "Published" => "badge-success",
+                                                                "Failed" => "badge-danger",
+                                                                "Publishing" => "badge-warning",
+                                                                _ => "badge-info"
+                                                            };
+                                                        }
+                                                        <span class="badge @jobStatusClass">@job.Status</span>
+                                                    </td>
+                                                    <td>@(job.ScheduledDate?.ToString("dd/MM/yyyy HH:mm") ?? "N/A")</td>
+                                                    <td>@(job.PublishedDate?.ToString("dd/MM/yyyy HH:mm") ?? "N/A")</td>
+                                                    <td>
+                                                        @if (!string.IsNullOrEmpty(job.PublishedUrl))
+                                                        {
+                                                            <a href="@job.PublishedUrl" target="_blank">Ver publicación</a>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="text-muted">N/A</span>
+                                                        }
+                                                    </td>
+                                                    <td>
+                                                        @if (!string.IsNullOrEmpty(job.ErrorMessage))
+                                                        {
+                                                            <button type="button" class="btn btn-sm btn-danger" data-toggle="tooltip" title="@job.ErrorMessage">
+                                                                <i class="fas fa-exclamation-triangle"></i>
+                                                            </button>
+                                                        }
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+                            else
+                            {
+                                <p class="text-muted">No hay publicaciones programadas para esta campaña.</p>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+@section Scripts {
+    <script>
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+    </script>
+}
+

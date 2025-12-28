@@ -1,0 +1,192 @@
+@model AutonomousMarketingPlatform.Application.DTOs.CampaignMetricsSummaryDto
+@{
+    ViewData["Title"] = $"Métricas - {Model.CampaignName}";
+    var fromDate = ViewBag.FromDate as DateTime?;
+    var toDate = ViewBag.ToDate as DateTime?;
+}
+
+<div class="content-wrapper">
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1><i class="fas fa-chart-line mr-2"></i>Métricas: @Model.CampaignName</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="/">Inicio</a></li>
+                        <li class="breadcrumb-item"><a href="@Url.Action("Index")">Métricas</a></li>
+                        <li class="breadcrumb-item active">@Model.CampaignName</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="content">
+        <div class="container-fluid">
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    @TempData["SuccessMessage"]
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            }
+
+            <!-- Resumen -->
+            <div class="row">
+                <div class="col-lg-3 col-6">
+                    <div class="small-box bg-info">
+                        <div class="inner">
+                            <h3>@Model.TotalImpressions.ToString("N0")</h3>
+                            <p>Impresiones</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-6">
+                    <div class="small-box bg-success">
+                        <div class="inner">
+                            <h3>@Model.TotalClicks.ToString("N0")</h3>
+                            <p>Clics</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-mouse-pointer"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-6">
+                    <div class="small-box bg-warning">
+                        <div class="inner">
+                            <h3>@Model.TotalEngagement.ToString("N0")</h3>
+                            <p>Engagement</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-6">
+                    <div class="small-box bg-danger">
+                        <div class="inner">
+                            <h3>@Model.TotalPosts</h3>
+                            <p>Posts Publicados</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-paper-plane"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tasas -->
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Tasas de Rendimiento</h3>
+                        </div>
+                        <div class="card-body">
+                            <dl class="row">
+                                <dt class="col-sm-6">Click-Through Rate (CTR):</dt>
+                                <dd class="col-sm-6">
+                                    <strong>@(Model.AverageClickThroughRate?.ToString("F2") ?? "N/A")%</strong>
+                                </dd>
+                                <dt class="col-sm-6">Engagement Rate:</dt>
+                                <dd class="col-sm-6">
+                                    <strong>@(Model.AverageEngagementRate?.ToString("F2") ?? "N/A")%</strong>
+                                </dd>
+                                <dt class="col-sm-6">Días con métricas:</dt>
+                                <dd class="col-sm-6"><strong>@Model.DaysWithMetrics</strong></dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Desglose de Engagement</h3>
+                        </div>
+                        <div class="card-body">
+                            <dl class="row">
+                                <dt class="col-sm-6">Likes:</dt>
+                                <dd class="col-sm-6"><strong>@Model.TotalLikes.ToString("N0")</strong></dd>
+                                <dt class="col-sm-6">Comentarios:</dt>
+                                <dd class="col-sm-6"><strong>@Model.TotalComments.ToString("N0")</strong></dd>
+                                <dt class="col-sm-6">Compartidos:</dt>
+                                <dd class="col-sm-6"><strong>@Model.TotalShares.ToString("N0")</strong></dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Métricas diarias -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Métricas Diarias</h3>
+                    <div class="card-tools">
+                        <a href="@Url.Action("RegisterCampaign", new { campaignId = Model.CampaignId })" class="btn btn-primary btn-sm">
+                            <i class="fas fa-plus mr-1"></i>Registrar Métricas
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    @if (Model.DailyMetrics.Any())
+                    {
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Impresiones</th>
+                                    <th>Clics</th>
+                                    <th>Engagement</th>
+                                    <th>Likes</th>
+                                    <th>Comentarios</th>
+                                    <th>Compartidos</th>
+                                    <th>CTR</th>
+                                    <th>Eng. Rate</th>
+                                    <th>Fuente</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var metric in Model.DailyMetrics.OrderByDescending(m => m.MetricDate))
+                                {
+                                    <tr>
+                                        <td>@metric.MetricDate.ToString("dd/MM/yyyy")</td>
+                                        <td>@metric.Impressions.ToString("N0")</td>
+                                        <td>@metric.Clicks.ToString("N0")</td>
+                                        <td>@metric.Engagement.ToString("N0")</td>
+                                        <td>@metric.Likes.ToString("N0")</td>
+                                        <td>@metric.Comments.ToString("N0")</td>
+                                        <td>@metric.Shares.ToString("N0")</td>
+                                        <td>@(metric.ClickThroughRate?.ToString("F2") ?? "N/A")%</td>
+                                        <td>@(metric.EngagementRate?.ToString("F2") ?? "N/A")%</td>
+                                        <td>
+                                            <span class="badge @(metric.IsManualEntry ? "badge-warning" : "badge-info")">
+                                                @(metric.Source ?? "N/A")
+                                            </span>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle mr-2"></i>
+                            No hay métricas registradas para esta campaña. 
+                            <a href="@Url.Action("RegisterCampaign", new { campaignId = Model.CampaignId })">Registrar métricas manualmente</a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+

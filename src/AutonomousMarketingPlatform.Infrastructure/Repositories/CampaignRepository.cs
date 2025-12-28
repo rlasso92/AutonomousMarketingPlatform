@@ -28,8 +28,13 @@ public class CampaignRepository : BaseRepository<Campaign>, ICampaignRepository
     public async Task<Campaign?> GetCampaignWithDetailsAsync(Guid id, Guid tenantId, CancellationToken cancellationToken = default)
     {
         return await _dbSet
-            .Where(c => c.Id == id && c.TenantId == tenantId)
+            .Where(c => c.Id == id && c.TenantId == tenantId && c.IsActive)
             .Include(c => c.Contents)
+            .Include(c => c.MarketingPacks)
+                .ThenInclude(mp => mp.Copies)
+            .Include(c => c.MarketingPacks)
+                .ThenInclude(mp => mp.AssetPrompts)
+            .Include(c => c.PublishingJobs)
             .Include(c => c.MarketingMemories)
             .FirstOrDefaultAsync(cancellationToken);
     }

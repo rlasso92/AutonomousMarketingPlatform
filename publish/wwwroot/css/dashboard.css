@@ -1,0 +1,483 @@
+/**
+ * Estilos específicos para el Dashboard
+ * Diseño SaaS ejecutivo - Transmite control, confianza y automatización
+ */
+
+/* ============================================
+   CARDS PRINCIPALES
+   ============================================ */
+
+.card-primary.card-outline {
+    border-top: 3px solid var(--color-primary);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-bottom: 2px solid var(--color-gray-200);
+    font-weight: 600;
+}
+
+.card-title {
+    color: var(--color-primary);
+    font-size: var(--font-size-lg);
+}
+
+/* ============================================
+   INFO BOXES (Estado del Sistema)
+   ============================================ */
+
+.info-box {
+    display: block;
+    min-height: 90px;
+    background: white;
+    width: 100%;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    border-radius: 4px;
+    margin-bottom: 1rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.info-box:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+}
+
+.info-box-icon {
+    border-top-left-radius: 4px;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 4px;
+    display: block;
+    float: left;
+    height: 90px;
+    width: 90px;
+    text-align: center;
+    font-size: 2.5rem;
+    line-height: 90px;
+    background: var(--color-gray-200);
+}
+
+.info-box-content {
+    padding: 0.75rem 1rem;
+    margin-left: 90px;
+}
+
+.info-box-text {
+    display: block;
+    font-size: var(--font-size-sm);
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 0.25rem;
+}
+
+.info-box-number {
+    display: block;
+    font-weight: 700;
+    font-size: var(--font-size-xl);
+    color: var(--text-primary);
+}
+
+/* ============================================
+   SMALL BOXES (Métricas Principales)
+   ============================================ */
+
+.small-box {
+    border-radius: 4px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    display: block;
+    margin-bottom: 1.5rem;
+    position: relative;
+    transition: all 0.3s ease;
+    border: 1px solid var(--color-gray-200);
+}
+
+.small-box:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.small-box .inner {
+    padding: 1.5rem;
+}
+
+.small-box .inner h3 {
+    font-size: var(--font-size-4xl);
+    font-weight: 700;
+    margin: 0 0 0.5rem 0;
+    white-space: nowrap;
+    padding: 0;
+}
+
+.small-box .inner p {
+    font-size: var(--font-size-base);
+    font-weight: 500;
+    margin: 0;
+}
+
+.small-box .icon {
+    color: rgba(255, 255, 255, 0.15);
+    z-index: 0;
+    position: absolute;
+    right: 1rem;
+    top: 1rem;
+    font-size: 4rem;
+}
+
+.small-box .small-box-footer {
+    position: relative;
+    text-align: center;
+    padding: 0.75rem 0;
+    color: #fff;
+    color: rgba(255, 255, 255, 0.8);
+    display: block;
+    z-index: 10;
+    background: rgba(0, 0, 0, 0.1);
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.small-box .small-box-footer:hover {
+    background: rgba(0, 0, 0, 0.2);
+    color: #fff;
+}
+
+/* Gradientes para Small Boxes */
+.bg-gradient-primary {
+    background: linear-gradient(135deg, var(--color-primary) 0%, #34495e 100%);
+    color: #fff;
+}
+
+.bg-gradient-success {
+    background: linear-gradient(135deg, var(--color-success) 0%, #229954 100%);
+    color: #fff;
+}
+
+.bg-gradient-info {
+    background: linear-gradient(135deg, var(--color-info) 0%, #3498db 100%);
+    color: #fff;
+}
+
+.bg-gradient-warning {
+    background: linear-gradient(135deg, var(--color-warning) 0%, #e67e22 100%);
+    color: #fff;
+}
+
+/* ============================================
+   TABLAS DEL DASHBOARD
+   ============================================ */
+
+.card .table {
+    margin-bottom: 0;
+}
+
+.card .table thead th {
+    background: var(--bg-secondary);
+    border-bottom: 2px solid var(--color-gray-200);
+    font-weight: 600;
+    font-size: var(--font-size-sm);
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    padding: 1rem;
+}
+
+.card .table tbody td {
+    padding: 1rem;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--color-gray-100);
+}
+
+.card .table tbody tr:hover {
+    background: var(--bg-secondary);
+}
+
+.card .table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* ============================================
+   BADGES MEJORADOS
+   ============================================ */
+
+.badge-lg {
+    padding: 0.5rem 1rem;
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+}
+
+.badge .fas.fa-circle {
+    font-size: 0.5rem;
+    margin-right: 0.25rem;
+}
+
+/* ============================================
+   PROGRESS BARS
+   ============================================ */
+
+.progress {
+    height: 8px;
+    border-radius: 4px;
+    background: var(--color-gray-200);
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.6s ease;
+}
+
+.progress-xs {
+    height: 4px;
+}
+
+/* ============================================
+   DESCRIPTION BLOCKS (Métricas)
+   ============================================ */
+
+.description-block {
+    padding: 1rem;
+}
+
+.description-block.border-right {
+    border-right: 1px solid var(--color-gray-200);
+}
+
+.description-header {
+    font-size: var(--font-size-2xl);
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.description-text {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    font-weight: 500;
+}
+
+/* ============================================
+   CARD DE SISTEMA AUTÓNOMO
+   ============================================ */
+
+.automation-indicator {
+    border-top: 4px solid var(--color-success);
+    box-shadow: 0 4px 12px rgba(39, 174, 96, 0.2);
+    background: linear-gradient(135deg, #ffffff 0%, #f0f9f4 100%);
+}
+
+.automation-indicator .card-header {
+    background: linear-gradient(135deg, var(--color-success) 0%, #229954 100%) !important;
+    color: white;
+    border-bottom: none;
+}
+
+.automation-icon {
+    font-size: 4rem;
+    color: var(--color-success);
+    animation: robotPulse 2s infinite;
+    position: relative;
+}
+
+.automation-icon::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: rgba(39, 174, 96, 0.1);
+    animation: ripple 2s infinite;
+}
+
+@keyframes robotPulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.1);
+        opacity: 0.9;
+    }
+}
+
+@keyframes ripple {
+    0% {
+        transform: translate(-50%, -50%) scale(0.8);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1.5);
+        opacity: 0;
+    }
+}
+
+.automation-stats {
+    background: white;
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-number {
+    font-size: var(--font-size-3xl);
+    font-weight: 700;
+    color: var(--color-success);
+    line-height: 1;
+    margin-bottom: 0.25rem;
+}
+
+.stat-label {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.automation-message {
+    background: white;
+    border-radius: 8px;
+    padding: 1rem;
+    text-align: left;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.automation-message p {
+    margin-bottom: 0.5rem;
+    font-size: var(--font-size-sm);
+    color: var(--text-primary);
+}
+
+.card-success {
+    border-top: 3px solid var(--color-success);
+}
+
+/* ============================================
+   ALERTAS MEJORADAS
+   ============================================ */
+
+.alert {
+    border-radius: 4px;
+    border-left: 4px solid;
+    padding: 1rem 1.5rem;
+}
+
+.alert-info {
+    background: #EBF5FB;
+    border-left-color: var(--color-info);
+    color: #0C5460;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 768px) {
+    .info-box {
+        margin-bottom: 1rem;
+    }
+    
+    .small-box .inner h3 {
+        font-size: var(--font-size-3xl);
+    }
+    
+    .card .table {
+        font-size: var(--font-size-sm);
+    }
+}
+
+/* ============================================
+   ANIMACIONES SUTILES
+   ============================================ */
+
+.card {
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Indicador de "Trabajando" */
+.fa-spin {
+    animation: fa-spin 2s infinite linear;
+}
+
+@keyframes fa-spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Badge con pulso para estado activo */
+.pulse-badge {
+    animation: badgePulse 2s infinite;
+}
+
+@keyframes badgePulse {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(39, 174, 96, 0.7);
+    }
+    50% {
+        box-shadow: 0 0 0 8px rgba(39, 174, 96, 0);
+    }
+}
+
+.system-status-badge {
+    text-align: right;
+}
+
+/* Mejoras visuales para tablas */
+.card .table tbody tr {
+    transition: all 0.2s ease;
+}
+
+.card .table tbody tr:hover {
+    background: var(--bg-secondary);
+    transform: translateX(4px);
+}
+
+/* Mejora en small boxes */
+.small-box .inner {
+    position: relative;
+    z-index: 1;
+}
+
+.small-box .icon {
+    z-index: 0;
+}
+
+/* Efecto de "respiración" en cards importantes */
+.card-primary.card-outline {
+    animation: cardBreath 4s infinite;
+}
+
+@keyframes cardBreath {
+    0%, 100% {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    50% {
+        box-shadow: 0 4px 16px rgba(44, 62, 80, 0.15);
+    }
+}
+
