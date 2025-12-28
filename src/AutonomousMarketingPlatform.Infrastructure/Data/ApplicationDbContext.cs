@@ -31,6 +31,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<UserPreference> UserPreferences { get; set; }
     public DbSet<MarketingMemory> MarketingMemories { get; set; }
     public DbSet<AutomationState> AutomationStates { get; set; }
+    public DbSet<AutomationExecution> AutomationExecutions { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -139,6 +140,18 @@ public class ApplicationDbContext : DbContext
                 .OnDelete(DeleteBehavior.SetNull);
         });
 
+        // Configuración de AutomationExecution
+        modelBuilder.Entity<AutomationExecution>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.RequestId).IsUnique();
+            entity.HasIndex(e => new { e.TenantId, e.Status });
+            entity.Property(e => e.RequestId).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.WorkflowId).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.EventType).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.Status).IsRequired().HasMaxLength(50);
+        });
+
         // Aplicar índices para mejorar rendimiento en consultas multi-tenant
         ApplyTenantIndexes(modelBuilder);
     }
@@ -156,6 +169,7 @@ public class ApplicationDbContext : DbContext
         modelBuilder.Entity<UserPreference>().HasIndex(e => e.TenantId);
         modelBuilder.Entity<MarketingMemory>().HasIndex(e => e.TenantId);
         modelBuilder.Entity<AutomationState>().HasIndex(e => e.TenantId);
+        modelBuilder.Entity<AutomationExecution>().HasIndex(e => e.TenantId);
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
