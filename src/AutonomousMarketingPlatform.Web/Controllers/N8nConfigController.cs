@@ -230,12 +230,22 @@ public class N8nConfigController : Controller
     {
         try
         {
+            var isSuperAdmin = User.HasClaim("IsSuperAdmin", "true");
             var tenantId = UserHelper.GetTenantId(User);
             var userId = UserHelper.GetUserId(User);
             
+            // Si es SuperAdmin y el request incluye un tenantId, usarlo
+            if (isSuperAdmin && request.TenantId.HasValue && request.TenantId.Value != Guid.Empty)
+            {
+                tenantId = request.TenantId;
+                _logger.LogInformation(
+                    "SuperAdmin probando webhook para Tenant {TenantId} (especificado en request)",
+                    tenantId);
+            }
+            
             if (!tenantId.HasValue || !userId.HasValue)
             {
-                return Json(new { success = false, message = "Usuario no autenticado correctamente" });
+                return Json(new { success = false, message = "Usuario no autenticado correctamente o TenantId no especificado" });
             }
 
             // Usar el servicio de automatización para disparar el webhook
@@ -379,4 +389,8 @@ public class TestWebhookRequest
     public List<string>? Channels { get; set; }
     public bool? RequiresApproval { get; set; }
     public List<string>? Assets { get; set; }
+    /// <summary>
+    /// TenantId opcional para SuperAdmins (permite especificar el tenant a probar).
+    /// </summary>
+    public Guid? TenantId { get; set; }
 }

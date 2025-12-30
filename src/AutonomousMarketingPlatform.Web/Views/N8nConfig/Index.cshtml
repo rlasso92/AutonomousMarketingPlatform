@@ -412,16 +412,27 @@
         function testWebhook() {
             $('#testWebhookBtn').prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-2"></i>Probando...');
 
+            // Obtener tenantId seleccionado si es SuperAdmin
+            var selectedTenantId = '@(ViewBag.SelectedTenantId != null ? ViewBag.SelectedTenantId.ToString() : "")';
+            var isSuperAdmin = @(ViewBag.IsSuperAdmin == true ? "true" : "false");
+
+            var requestData = {
+                instruction: 'Prueba de webhook desde el frontend - Crear contenido de marketing para Instagram',
+                channels: ['instagram'],
+                requiresApproval: false,
+                assets: []
+            };
+
+            // Si es SuperAdmin y hay un tenantId seleccionado, incluirlo en el request
+            if (isSuperAdmin && selectedTenantId && selectedTenantId !== '') {
+                requestData.tenantId = selectedTenantId;
+            }
+
             $.ajax({
                 url: '/N8nConfig/TestWebhook',
                 method: 'POST',
                 contentType: 'application/json',
-                data: JSON.stringify({
-                    instruction: 'Prueba de webhook desde el frontend - Crear contenido de marketing para Instagram',
-                    channels: ['instagram'],
-                    requiresApproval: false,
-                    assets: []
-                }),
+                data: JSON.stringify(requestData),
                 success: function(response) {
                     var resultDiv = $('#connectionTestResult');
                     resultDiv.show();

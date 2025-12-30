@@ -1,0 +1,88 @@
+@{
+    ViewData["Title"] = "Solicitud Enviada";
+    var requestId = ViewBag.RequestId as string;
+}
+
+<div class="content-wrapper">
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1><i class="fas fa-check-circle mr-2 text-success"></i>Solicitud Enviada Exitosamente</h1>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card card-success">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-check mr-2"></i>¡Solicitud Procesada!
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="alert alert-success">
+                                <h4 class="alert-heading">
+                                    <i class="fas fa-robot mr-2"></i>Contenido en Generación
+                                </h4>
+                                <p>
+                                    Tu solicitud de contenido de marketing ha sido enviada exitosamente a n8n.
+                                    El sistema de IA está procesando tu solicitud y generará el contenido automáticamente.
+                                </p>
+                                @if (!string.IsNullOrEmpty(requestId))
+                                {
+                                    <hr>
+                                    <p class="mb-0">
+                                        <strong>Request ID:</strong> <code>@requestId</code>
+                                        <br>
+                                        <small class="text-muted">Puedes usar este ID para rastrear la ejecución en n8n.</small>
+                                    </p>
+                                }
+                            </div>
+
+                            <div class="info-box bg-info">
+                                <span class="info-box-icon"><i class="fas fa-clock"></i></span>
+                                <div class="info-box-content">
+                                    <span class="info-box-text">Tiempo Estimado</span>
+                                    <span class="info-box-number">2-5 minutos</span>
+                                    <div class="progress">
+                                        <div class="progress-bar" style="width: 100%"></div>
+                                    </div>
+                                    <span class="progress-description">
+                                        El contenido estará disponible en breve. Revisa la sección de Publicaciones.
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="mt-4">
+                                <h5>¿Qué sigue?</h5>
+                                <ul>
+                                    <li>El sistema de IA está analizando tu solicitud</li>
+                                    <li>Se generará el contenido según tus especificaciones</li>
+                                    <li>Si requiere aprobación, recibirás una notificación</li>
+                                    <li>El contenido aparecerá en la sección de <a href="/Publishing">Publicaciones</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <a href="/Publishing" class="btn btn-primary">
+                                <i class="fas fa-paper-plane mr-2"></i>Ver Publicaciones
+                            </a>
+                            <a href="/MarketingRequest/Create" class="btn btn-secondary">
+                                <i class="fas fa-plus mr-2"></i>Nueva Solicitud
+                            </a>
+                            <a href="/" class="btn btn-default">
+                                <i class="fas fa-home mr-2"></i>Ir al Inicio
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+

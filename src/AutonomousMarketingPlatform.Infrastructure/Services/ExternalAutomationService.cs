@@ -67,6 +67,11 @@ public class ExternalAutomationService : IExternalAutomationService
                     eventType);
                 return Guid.NewGuid().ToString();
             }
+            
+            _logger.LogInformation(
+                "Using webhook URL for event type {EventType}: {WebhookUrl}",
+                eventType,
+                webhookUrl);
 
             // Construir payload para n8n según el tipo de evento
             object payload;
@@ -153,31 +158,105 @@ public class ExternalAutomationService : IExternalAutomationService
                     DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
                 });
                 var content = new StringContent(jsonContent, System.Text.Encoding.UTF8, "application/json");
+                
+                _logger.LogInformation(
+                    "Enviando POST a n8n webhook: URL={WebhookUrl}, Payload={Payload}",
+                    webhookUrl,
+                    jsonContent);
+                
                 response = await _httpClient.PostAsync(webhookUrl, content, cancellationToken);
                 
-                _logger.LogInformation("Payload enviado a n8n (marketing.request): {Payload}", jsonContent);
+                _logger.LogInformation(
+                    "Respuesta de n8n: StatusCode={StatusCode}, ReasonPhrase={ReasonPhrase}",
+                    response.StatusCode,
+                    response.ReasonPhrase);
             }
             else
             {
+                _logger.LogInformation("Enviando POST a n8n webhook: URL={WebhookUrl}", webhookUrl);
                 response = await _httpClient.PostAsJsonAsync(
                     webhookUrl,
                     payload,
                     cancellationToken);
+                _logger.LogInformation(
+                    "Respuesta de n8n: StatusCode={StatusCode}, ReasonPhrase={ReasonPhrase}",
+                    response.StatusCode,
+                    response.ReasonPhrase);
             }
 
-            response.EnsureSuccessStatusCode();
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorContent = await response.Content.ReadAsStringAsync(cancellationToken);
+                _logger.LogError(
+                    "Error al llamar a n8n webhook: StatusCode={StatusCode}, ReasonPhrase={ReasonPhrase}, Response={Response}, URL={WebhookUrl}",
+                    response.StatusCode,
+                    response.ReasonPhrase,
+                    errorContent,
+                    webhookUrl);
+                throw new HttpRequestException(
+                    $"Error al llamar a n8n: {response.StatusCode} {response.ReasonPhrase}. URL: {webhookUrl}. Response: {errorContent}");
+            }
 
             var responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
-            var responseData = JsonSerializer.Deserialize<Dictionary<string, object>>(responseContent);
-
-            var requestId = responseData?.ContainsKey("requestId") == true
-                ? responseData["requestId"]?.ToString() ?? Guid.NewGuid().ToString()
-                : Guid.NewGuid().ToString();
+            
+            // Manejo defensivo: n8n puede responder vacío, texto plano, HTML o JSON
+            string requestId;
+            
+            if (string.IsNullOrWhiteSpace(responseContent))
+            {
+                _logger.LogWarning(
+                    "n8n webhook respondió vacío para evento {EventType}. Generando requestId automático.",
+                    eventType);
+                requestId = Guid.NewGuid().ToString();
+            }
+            else
+            {
+                // Intentar deserializar como JSON
+                Dictionary<string, object>? responseData = null;
+                try
+                {
+                    responseData = JsonSerializer.Deserialize<Dictionary<string, object>>(
+                        responseContent,
+                        new JsonSerializerOptions
+                        {
+                            PropertyNameCaseInsensitive = true
+                        });
+                }
+                catch (JsonException ex)
+                {
+                    _logger.LogWarning(
+                        ex,
+                        "n8n webhook respondió con contenido no-JSON para evento {EventType}. Response: {Response}",
+                        eventType,
+                        responseContent);
+                    // Continuar con requestId generado
+                }
+                
+                // Extraer requestId si está disponible en la respuesta JSON
+                if (responseData != null && responseData.ContainsKey("requestId"))
+                {
+                    requestId = responseData["requestId"]?.ToString() ?? Guid.NewGuid().ToString();
+                }
+                else if (responseData != null && responseData.ContainsKey("executionId"))
+                {
+                    // Algunos workflows de n8n devuelven executionId en lugar de requestId
+                    requestId = responseData["executionId"]?.ToString() ?? Guid.NewGuid().ToString();
+                }
+                else
+                {
+                    // Generar un requestId si no está en la respuesta
+                    requestId = Guid.NewGuid().ToString();
+                    _logger.LogInformation(
+                        "n8n no devolvió requestId en la respuesta. Generado: {RequestId}",
+                        requestId);
+                }
+            }
 
             _logger.LogInformation(
-                "n8n workflow triggered successfully: EventType={EventType}, RequestId={RequestId}",
+                "n8n workflow triggered successfully: EventType={EventType}, RequestId={RequestId}, ResponseLength={ResponseLength}",
                 eventType,
-                requestId);
+                requestId,
+                responseContent?.Length ?? 0);
 
             return requestId;
         }
@@ -405,6 +484,13 @@ public class ExternalAutomationService : IExternalAutomationService
 
             if (config != null)
             {
+                _logger.LogInformation(
+                    "Configuración de n8n cargada desde BD para Tenant {TenantId}: BaseUrl={BaseUrl}, DefaultWebhookUrl={DefaultWebhookUrl}, WebhookUrlsJson={WebhookUrlsJson}",
+                    tenantId,
+                    config.BaseUrl,
+                    config.DefaultWebhookUrl,
+                    config.WebhookUrlsJson);
+                
                 // Actualizar contador de uso
                 config.LastUsedAt = DateTime.UtcNow;
                 config.UsageCount++;
@@ -456,15 +542,28 @@ public class ExternalAutomationService : IExternalAutomationService
             {
                 webhookUrls = JsonSerializer.Deserialize<Dictionary<string, string>>(config.WebhookUrlsJson) 
                     ?? new Dictionary<string, string>();
+                _logger.LogInformation(
+                    "WebhookUrls deserializados para Tenant {TenantId}: {WebhookUrlsJson}, Keys={Keys}",
+                    config.TenantId,
+                    config.WebhookUrlsJson,
+                    string.Join(", ", webhookUrls.Keys));
             }
             catch (JsonException ex)
             {
-                _logger.LogWarning(ex, "Error al deserializar WebhookUrlsJson para Tenant {TenantId}", config.TenantId);
+                _logger.LogError(ex, "Error al deserializar WebhookUrlsJson para Tenant {TenantId}: {WebhookUrlsJson}", 
+                    config.TenantId, config.WebhookUrlsJson);
             }
+        }
+        else
+        {
+            _logger.LogWarning(
+                "WebhookUrlsJson está vacío para Tenant {TenantId}, usando DefaultWebhookUrl: {DefaultWebhookUrl}",
+                config.TenantId,
+                config.DefaultWebhookUrl);
         }
 
         // Mapear tipos de eventos a URLs de webhooks de n8n
-        return eventType.ToLower() switch
+        var url = eventType.ToLower() switch
         {
             "marketing.request" => webhookUrls.GetValueOrDefault("MarketingRequest") ?? config.DefaultWebhookUrl,
             "validate.consents" => webhookUrls.GetValueOrDefault("ValidateConsents") ?? config.DefaultWebhookUrl,
@@ -479,6 +578,14 @@ public class ExternalAutomationService : IExternalAutomationService
             "metrics.learning" => webhookUrls.GetValueOrDefault("MetricsLearning") ?? config.DefaultWebhookUrl,
             _ => config.DefaultWebhookUrl
         };
+        
+        _logger.LogInformation(
+            "URL del webhook para evento {EventType}: {WebhookUrl} (desde {Source})",
+            eventType,
+            url,
+            webhookUrls.ContainsKey("MarketingRequest") ? "WebhookUrlsJson" : "DefaultWebhookUrl");
+        
+        return url;
     }
 }
 
