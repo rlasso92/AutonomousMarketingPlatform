@@ -3,8 +3,10 @@ using AutonomousMarketingPlatform.Application.DTOs;
 using AutonomousMarketingPlatform.Application.UseCases.Campaigns;
 using AutonomousMarketingPlatform.Web.Controllers;
 using AutonomousMarketingPlatform.Web.Helpers;
+using AutonomousMarketingPlatform.Infrastructure.Data;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
@@ -15,13 +17,15 @@ public class CampaignsControllerTests
 {
     private readonly Mock<IMediator> _mediatorMock;
     private readonly Mock<ILogger<CampaignsController>> _loggerMock;
+    private readonly Mock<IDbContextFactory<ApplicationDbContext>> _dbContextFactoryMock;
     private readonly CampaignsController _controller;
 
     public CampaignsControllerTests()
     {
         _mediatorMock = new Mock<IMediator>();
         _loggerMock = new Mock<ILogger<CampaignsController>>();
-        _controller = new CampaignsController(_mediatorMock.Object, _loggerMock.Object);
+        _dbContextFactoryMock = new Mock<IDbContextFactory<ApplicationDbContext>>();
+        _controller = new CampaignsController(_mediatorMock.Object, _loggerMock.Object, _dbContextFactoryMock.Object);
     }
 
     private ClaimsPrincipal CreateUserWithClaims(Guid userId, Guid tenantId, string role = "Owner")
@@ -126,7 +130,7 @@ public class CampaignsControllerTests
     }
 
     [Fact]
-    public void Create_Get_ShouldReturnViewWithEmptyDto()
+    public async Task Create_Get_ShouldReturnViewWithEmptyDto()
     {
         // Arrange
         var userId = Guid.NewGuid();
@@ -140,8 +144,12 @@ public class CampaignsControllerTests
             }
         };
 
+        // Setup mock para ListTenantsQuery (si es SuperAdmin)
+        _mediatorMock.Setup(m => m.Send(It.IsAny<Application.UseCases.Tenants.ListTenantsQuery>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<Application.DTOs.TenantDto>());
+
         // Act
-        var result = _controller.Create();
+        var result = await _controller.Create();
 
         // Assert
         var viewResult = Assert.IsType<ViewResult>(result);
@@ -186,6 +194,10 @@ public class CampaignsControllerTests
 
         _mediatorMock.Setup(m => m.Send(It.IsAny<CreateCampaignCommand>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(createdCampaign);
+        
+        // Setup mock para ListTenantsQuery (si es SuperAdmin)
+        _mediatorMock.Setup(m => m.Send(It.IsAny<Application.UseCases.Tenants.ListTenantsQuery>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<Application.DTOs.TenantDto>());
 
         // Act
         var result = await _controller.Create(model);
@@ -230,6 +242,10 @@ public class CampaignsControllerTests
         };
 
         _controller.ModelState.AddModelError("Name", "El nombre es requerido");
+        
+        // Setup mock para ListTenantsQuery (si es SuperAdmin)
+        _mediatorMock.Setup(m => m.Send(It.IsAny<Application.UseCases.Tenants.ListTenantsQuery>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<Application.DTOs.TenantDto>());
 
         // Act
         var result = await _controller.Create(model);

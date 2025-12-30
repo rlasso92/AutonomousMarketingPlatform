@@ -16,6 +16,7 @@ public class CampaignListDto
     public int PublishingJobCount { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
+    public Guid? TenantId { get; set; }
 }
 
 /// <summary>

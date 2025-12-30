@@ -22,9 +22,9 @@ public class CreateCampaignDtoValidator : AbstractValidator<CreateCampaignDto>
             .WithMessage("El estado debe ser: Draft, Active, Paused o Archived.");
 
         RuleFor(x => x.EndDate)
-            .GreaterThan(x => x.StartDate)
+            .GreaterThanOrEqualTo(x => x.StartDate)
             .When(x => x.StartDate.HasValue && x.EndDate.HasValue)
-            .WithMessage("La fecha de fin debe ser posterior a la fecha de inicio.");
+            .WithMessage("La fecha de fin debe ser posterior o igual a la fecha de inicio.");
 
         RuleFor(x => x.Budget)
             .GreaterThanOrEqualTo(0)
@@ -52,9 +52,9 @@ public class UpdateCampaignDtoValidator : AbstractValidator<UpdateCampaignDto>
             .WithMessage("El estado debe ser: Draft, Active, Paused o Archived.");
 
         RuleFor(x => x.EndDate)
-            .GreaterThan(x => x.StartDate)
+            .GreaterThanOrEqualTo(x => x.StartDate)
             .When(x => x.StartDate.HasValue && x.EndDate.HasValue)
-            .WithMessage("La fecha de fin debe ser posterior a la fecha de inicio.");
+            .WithMessage("La fecha de fin debe ser posterior o igual a la fecha de inicio.");
 
         RuleFor(x => x.Budget)
             .GreaterThanOrEqualTo(0)

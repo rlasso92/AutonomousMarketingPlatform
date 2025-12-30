@@ -1,4 +1,5 @@
 using AutonomousMarketingPlatform.Application.Services;
+using AutonomousMarketingPlatform.Application.UseCases.Campaigns;
 using AutonomousMarketingPlatform.Domain.Entities;
 using AutonomousMarketingPlatform.Domain.Interfaces;
 using AutonomousMarketingPlatform.Infrastructure.Data;
@@ -59,7 +60,9 @@ builder.Services.AddScoped<ITenantRepository, TenantRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // Registrar MediatR para CQRS
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.Load("AutonomousMarketingPlatform.Application")));
+// Usar el assembly directamente en lugar de cargarlo por nombre
+var applicationAssembly = typeof(AutonomousMarketingPlatform.Application.UseCases.Campaigns.CreateCampaignCommand).Assembly;
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(applicationAssembly));
 
 // Registrar FluentValidation manualmente
 builder.Services.AddScoped<FluentValidation.IValidator<AutonomousMarketingPlatform.Application.DTOs.CreateCampaignDto>, 

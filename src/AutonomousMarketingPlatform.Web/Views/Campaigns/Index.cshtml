@@ -3,6 +3,9 @@
     ViewData["Title"] = "Campañas";
     Layout = "~/Views/Shared/_Layout.cshtml";
     var statusFilter = ViewBag.StatusFilter as string;
+    var isSuperAdmin = ViewBag.IsSuperAdmin as bool? ?? false;
+    var tenants = ViewBag.Tenants as List<AutonomousMarketingPlatform.Application.DTOs.TenantDto> ?? new List<AutonomousMarketingPlatform.Application.DTOs.TenantDto>();
+    var selectedTenantId = ViewBag.SelectedTenantId as Guid?;
 }
 
 <div class="content-header">
@@ -49,6 +52,9 @@
                         <div class="card-header">
                             <h3 class="card-title">Lista de Campañas</h3>
                             <div class="card-tools">
+                                <button id="testCreateCampaignBtn" class="btn btn-success btn-sm mr-2" title="Prueba: Crear campaña y solicitar contenido">
+                                    <i class="fas fa-flask mr-1"></i>Prueba Completa
+                                </button>
                                 <a href="@Url.Action("Create")" class="btn btn-primary btn-sm">
                                     <i class="fas fa-plus mr-1"></i>Nueva Campaña
                                 </a>
@@ -57,6 +63,20 @@
                         <div class="card-body">
                             <!-- Filtros -->
                             <div class="row mb-3">
+                                @if (isSuperAdmin)
+                                {
+                                    <div class="col-md-4">
+                                        <label>Seleccionar Tenant:</label>
+                                        <select id="tenantFilter" class="form-control">
+                                            <option value="">Todas las campañas</option>
+                                            @foreach (var tenant in tenants.Where(t => t.IsActive))
+                                            {
+                                                var isSelected = selectedTenantId.HasValue && selectedTenantId.Value == tenant.Id;
+                                                <option value="@tenant.Id" selected="@isSelected">@tenant.Name</option>
+                                            }
+                                        </select>
+                                    </div>
+                                }
                                 <div class="col-md-3">
                                     <label>Filtrar por Estado:</label>
                                     <select id="statusFilter" class="form-control">
@@ -72,6 +92,10 @@
                             <table id="campaignsTable" class="table table-bordered table-striped table-hover">
                                 <thead>
                                     <tr>
+                                        @if (isSuperAdmin)
+                                        {
+                                            <th>Tenant</th>
+                                        }
                                         <th>Nombre</th>
                                         <th>Estado</th>
                                         <th>Fecha Inicio</th>
@@ -84,42 +108,75 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach (var campaign in Model)
+                                    @if (Model != null && Model.Any())
+                                    {
+                                        @foreach (var campaign in Model)
+                                        {
+                                            <tr>
+                                                @if (isSuperAdmin)
+                                                {
+                                                    <td>
+                                                        @{
+                                                            var campaignTenant = tenants.FirstOrDefault(t => t.Id == campaign.TenantId);
+                                                        }
+                                                        @if (campaignTenant != null)
+                                                        {
+                                                            <span class="badge badge-secondary">@campaignTenant.Name</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="text-muted">N/A</span>
+                                                        }
+                                                    </td>
+                                                }
+                                                <td>
+                                                    <strong>@campaign.Name</strong>
+                                                    @if (!string.IsNullOrEmpty(campaign.Description))
+                                                    {
+                                                        <br />
+                                                        <small class="text-muted">@(campaign.Description.Length > 50 ? campaign.Description.Substring(0, 50) + "..." : campaign.Description)</small>
+                                                    }
+                                                </td>
+                                                <td>
+                                                    @{
+                                                        var statusClass = campaign.Status switch
+                                                        {
+                                                            "Active" => "badge-success",
+                                                            "Paused" => "badge-warning",
+                                                            "Archived" => "badge-secondary",
+                                                            _ => "badge-info"
+                                                        };
+                                                    }
+                                                    <span class="badge @statusClass">@campaign.Status</span>
+                                                </td>
+                                                <td>@(campaign.StartDate?.ToString("dd/MM/yyyy") ?? "N/A")</td>
+                                                <td>@(campaign.EndDate?.ToString("dd/MM/yyyy") ?? "N/A")</td>
+                                                <td><span class="badge badge-info">@campaign.ContentCount</span></td>
+                                                <td><span class="badge badge-primary">@campaign.MarketingPackCount</span></td>
+                                                <td><span class="badge badge-success">@campaign.PublishingJobCount</span></td>
+                                                <td>@campaign.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                                                <td>
+                                                    <a href="@Url.Action("Details", new { id = campaign.Id })" class="btn btn-sm btn-info" title="Ver detalles">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                    <a href="@Url.Action("Edit", new { id = campaign.Id })" class="btn btn-sm btn-warning" title="Editar">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                    else
                                     {
                                         <tr>
-                                            <td>
-                                                <strong>@campaign.Name</strong>
-                                                @if (!string.IsNullOrEmpty(campaign.Description))
-                                                {
-                                                    <br />
-                                                    <small class="text-muted">@(campaign.Description.Length > 50 ? campaign.Description.Substring(0, 50) + "..." : campaign.Description)</small>
-                                                }
-                                            </td>
-                                            <td>
-                                                @{
-                                                    var statusClass = campaign.Status switch
-                                                    {
-                                                        "Active" => "badge-success",
-                                                        "Paused" => "badge-warning",
-                                                        "Archived" => "badge-secondary",
-                                                        _ => "badge-info"
-                                                    };
-                                                }
-                                                <span class="badge @statusClass">@campaign.Status</span>
-                                            </td>
-                                            <td>@(campaign.StartDate?.ToString("dd/MM/yyyy") ?? "N/A")</td>
-                                            <td>@(campaign.EndDate?.ToString("dd/MM/yyyy") ?? "N/A")</td>
-                                            <td><span class="badge badge-info">@campaign.ContentCount</span></td>
-                                            <td><span class="badge badge-primary">@campaign.MarketingPackCount</span></td>
-                                            <td><span class="badge badge-success">@campaign.PublishingJobCount</span></td>
-                                            <td>@campaign.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
-                                            <td>
-                                                <a href="@Url.Action("Details", new { id = campaign.Id })" class="btn btn-sm btn-info" title="Ver detalles">
-                                                    <i class="fas fa-eye"></i>
-                                                </a>
-                                                <a href="@Url.Action("Edit", new { id = campaign.Id })" class="btn btn-sm btn-warning" title="Editar">
-                                                    <i class="fas fa-edit"></i>
-                                                </a>
+                                            <td colspan="@(isSuperAdmin ? 10 : 9)" class="text-center py-4" data-empty="true">
+                                                <div class="text-muted">
+                                                    <i class="fas fa-inbox fa-3x mb-3"></i>
+                                                    <p class="mb-2">No hay campañas registradas.</p>
+                                                    <a href="@Url.Action("Create")" class="btn btn-primary">
+                                                        <i class="fas fa-plus mr-1"></i>Crear Primera Campaña
+                                                    </a>
+                                                </div>
                                             </td>
                                         </tr>
                                     }
@@ -135,18 +192,83 @@
 @section Scripts {
     <script>
         $(document).ready(function () {
-            $('#campaignsTable').DataTable({
-                "language": {
-                    "url": "//cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json"
-                },
-                "order": [[7, "desc"]],
-                "pageLength": 25,
-                "responsive": true
-            });
+            // Solo inicializar DataTables si hay datos en la tabla (no cuando muestra mensaje de "no hay datos")
+            var table = $('#campaignsTable');
+            var hasEmptyMessage = table.find('tbody tr td[data-empty="true"]').length > 0;
+            
+            if (!hasEmptyMessage && table.find('tbody tr').length > 0) {
+                table.DataTable({
+                    "language": {
+                        "url": "//cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json"
+                    },
+                    "order": [[7, "desc"]],
+                    "pageLength": 25,
+                    "responsive": true,
+                    "columnDefs": [
+                        { "orderable": false, "targets": 8 } // Deshabilitar ordenamiento en columna de Acciones
+                    ]
+                });
+            }
 
             $('#statusFilter').on('change', function () {
                 var status = $(this).val();
-                window.location.href = '@Url.Action("Index")' + (status ? '?status=' + status : '');
+                var tenantId = $('#tenantFilter').val();
+                var url = '@Url.Action("Index")';
+                var params = [];
+                if (status) params.push('status=' + status);
+                if (tenantId) params.push('tenantId=' + tenantId);
+                window.location.href = url + (params.length > 0 ? '?' + params.join('&') : '');
+            });
+
+            @if (isSuperAdmin)
+            {
+                <text>
+                $('#tenantFilter').on('change', function () {
+                    var tenantId = $(this).val();
+                    var status = $('#statusFilter').val();
+                    var url = '@Url.Action("Index")';
+                    var params = [];
+                    if (tenantId) params.push('tenantId=' + tenantId);
+                    if (status) params.push('status=' + status);
+                    window.location.href = url + (params.length > 0 ? '?' + params.join('&') : '');
+                });
+                </text>
+            }
+
+            // Botón de prueba completa
+            $('#testCreateCampaignBtn').on('click', function() {
+                var btn = $(this);
+                btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i>Creando...');
+                
+                $.ajax({
+                    url: '@Url.Action("TestCreateCampaignAndRequestContent")',
+                    method: 'POST',
+                    headers: {
+                        'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val() || ''
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            alert('✅ ¡Éxito!\n\n' +
+                                'Campaña creada: ' + response.campaignName + '\n' +
+                                'Campaign ID: ' + response.campaignId + '\n' +
+                                'Request ID (n8n): ' + response.requestId + '\n\n' +
+                                'La solicitud fue enviada a n8n correctamente.');
+                            // Recargar la página para ver la nueva campaña
+                            window.location.reload();
+                        } else {
+                            alert('❌ Error: ' + response.message);
+                            btn.prop('disabled', false).html('<i class="fas fa-flask mr-1"></i>Prueba Completa');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        var errorMsg = 'Error al ejecutar la prueba';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMsg = xhr.responseJSON.message;
+                        }
+                        alert('❌ Error: ' + errorMsg);
+                        btn.prop('disabled', false).html('<i class="fas fa-flask mr-1"></i>Prueba Completa');
+                    }
+                });
             });
         });
     </script>

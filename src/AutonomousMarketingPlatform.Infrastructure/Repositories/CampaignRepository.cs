@@ -27,8 +27,15 @@ public class CampaignRepository : BaseRepository<Campaign>, ICampaignRepository
 
     public async Task<Campaign?> GetCampaignWithDetailsAsync(Guid id, Guid tenantId, CancellationToken cancellationToken = default)
     {
-        return await _dbSet
-            .Where(c => c.Id == id && c.TenantId == tenantId && c.IsActive)
+        // Si tenantId es Guid.Empty (SuperAdmin), no filtrar por tenant
+        var query = _dbSet.Where(c => c.Id == id && c.IsActive);
+        
+        if (tenantId != Guid.Empty)
+        {
+            query = query.Where(c => c.TenantId == tenantId);
+        }
+        
+        return await query
             .Include(c => c.Contents)
             .Include(c => c.MarketingPacks)
                 .ThenInclude(mp => mp.Copies)

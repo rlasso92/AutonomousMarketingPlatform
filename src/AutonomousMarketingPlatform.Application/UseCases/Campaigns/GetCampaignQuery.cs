@@ -13,6 +13,7 @@ public class GetCampaignQuery : IRequest<CampaignDetailDto?>
 {
     public Guid TenantId { get; set; }
     public Guid CampaignId { get; set; }
+    public bool IsSuperAdmin { get; set; }
 }
 
 /// <summary>
@@ -33,7 +34,12 @@ public class GetCampaignQueryHandler : IRequestHandler<GetCampaignQuery, Campaig
 
     public async Task<CampaignDetailDto?> Handle(GetCampaignQuery request, CancellationToken cancellationToken)
     {
-        var campaign = await _campaignRepository.GetCampaignWithDetailsAsync(request.CampaignId, request.TenantId, cancellationToken);
+        // Si es SuperAdmin y TenantId es Guid.Empty, no filtrar por tenant
+        var tenantId = request.IsSuperAdmin && request.TenantId == Guid.Empty 
+            ? Guid.Empty 
+            : request.TenantId;
+            
+        var campaign = await _campaignRepository.GetCampaignWithDetailsAsync(request.CampaignId, tenantId, cancellationToken);
         
         if (campaign == null || !campaign.IsActive)
         {
