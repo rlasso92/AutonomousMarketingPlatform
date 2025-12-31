@@ -118,11 +118,11 @@
                                             <strong>No otorgado</strong>
                                         </div>
 
-                                        <form asp-action="Grant" asp-controller="Consents" method="post" class="d-inline">
+                                        <form asp-action="Grant" asp-controller="Consents" method="post" class="d-inline" id="grantForm_@consent.ConsentType">
                                             @Html.AntiForgeryToken()
                                             <input type="hidden" name="ConsentType" value="@consent.ConsentType" />
                                             <input type="hidden" name="ConsentVersion" value="1.0" />
-                                            <button type="submit" class="btn btn-sm btn-primary">
+                                            <button type="submit" class="btn btn-sm btn-primary" id="grantBtn_@consent.ConsentType">
                                                 <i class="fas fa-check"></i> Otorgar Consentimiento
                                             </button>
                                         </form>
@@ -163,4 +163,32 @@
         </div>
     </div>
 </section>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Manejar envío de formularios de consentimiento
+            $('form[id^="grantForm_"]').on('submit', function(e) {
+                var $form = $(this);
+                var $btn = $form.find('button[type="submit"]');
+                var originalText = $btn.html();
+                
+                // Deshabilitar botón y mostrar loading
+                $btn.prop('disabled', true);
+                $btn.html('<i class="fas fa-spinner fa-spin"></i> Procesando...');
+                
+                // Si hay error, restaurar botón después de 3 segundos
+                setTimeout(function() {
+                    if ($btn.prop('disabled')) {
+                        $btn.prop('disabled', false);
+                        $btn.html(originalText);
+                    }
+                }, 10000);
+            });
+            
+            // Log para debugging
+            console.log('Consents page loaded');
+        });
+    </script>
+}
 

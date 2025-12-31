@@ -58,18 +58,32 @@ public class ConsentsController : Controller
 
     /// <summary>
     /// Otorga un consentimiento.
+    /// El usuario otorga su propio consentimiento para usar funcionalidades del sistema.
     /// </summary>
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Grant([FromForm] CreateConsentDto dto)
     {
+        _logger.LogInformation("Grant consent llamado. ConsentType={ConsentType}, ConsentVersion={ConsentVersion}", 
+            dto?.ConsentType, dto?.ConsentVersion);
+
         var userId = UserHelper.GetUserId(User);
         var tenantId = UserHelper.GetTenantId(User);
 
+        _logger.LogInformation("UserId={UserId}, TenantId={TenantId}", userId, tenantId);
+
         if (!userId.HasValue || !tenantId.HasValue)
         {
+            _logger.LogWarning("Usuario sin UserId o TenantId. Redirigiendo a Login");
             TempData["ErrorMessage"] = "Error de autenticación. Por favor, inicie sesión nuevamente.";
             return RedirectToAction("Login", "Account");
+        }
+
+        if (string.IsNullOrEmpty(dto?.ConsentType))
+        {
+            _logger.LogWarning("ConsentType vacío o nulo");
+            TempData["ErrorMessage"] = "Error: Tipo de consentimiento no especificado.";
+            return RedirectToAction("Index", "Consents");
         }
 
         try
@@ -83,14 +97,21 @@ public class ConsentsController : Controller
                 IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString()
             };
 
+            _logger.LogInformation("Enviando GrantConsentCommand: UserId={UserId}, TenantId={TenantId}, ConsentType={ConsentType}", 
+                command.UserId, command.TenantId, command.ConsentType);
+
             var result = await _mediator.Send(command);
-            TempData["SuccessMessage"] = $"Consentimiento '{dto.ConsentType}' otorgado correctamente.";
+            
+            _logger.LogInformation("Consentimiento otorgado exitosamente. ConsentId={ConsentId}", result.Id);
+            
+            TempData["SuccessMessage"] = $"Consentimiento otorgado correctamente.";
             return RedirectToAction("Index", "Consents");
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error al otorgar consentimiento {ConsentType} para usuario {UserId}", dto.ConsentType, userId.Value);
-            TempData["ErrorMessage"] = "Error al otorgar el consentimiento. Por favor, intente nuevamente.";
+            _logger.LogError(ex, "Error al otorgar consentimiento {ConsentType} para usuario {UserId}. Exception={ExceptionType}, Message={Message}", 
+                dto?.ConsentType, userId.Value, ex.GetType().Name, ex.Message);
+            TempData["ErrorMessage"] = $"Error al otorgar el consentimiento: {ex.Message}";
             return RedirectToAction("Index", "Consents");
         }
     }
