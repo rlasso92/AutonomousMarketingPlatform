@@ -4,7 +4,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.IO;
 
 namespace AutonomousMarketingPlatform.Infrastructure.Data;
 
@@ -46,6 +48,41 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
     public DbSet<PublishingJob> PublishingJobs { get; set; }
     public DbSet<CampaignMetrics> CampaignMetrics { get; set; }
     public DbSet<PublishingJobMetrics> PublishingJobMetrics { get; set; }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        // Si no está configurado en Program.cs, usar cadena de conexión directamente
+        if (!optionsBuilder.IsConfigured)
+        {
+            // Intentar obtener desde variable de entorno primero
+            var envConnectionString = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection");
+            
+            // Si no está en variable de entorno, intentar desde appsettings
+            if (string.IsNullOrEmpty(envConnectionString))
+            {
+                var basePath = Path.Combine(Directory.GetCurrentDirectory(), "..", "AutonomousMarketingPlatform.Web");
+                if (!Directory.Exists(basePath))
+                {
+                    basePath = Directory.GetCurrentDirectory();
+                }
+                
+                var configuration = new ConfigurationBuilder()
+                    .SetBasePath(basePath)
+                    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                    .AddJsonFile("appsettings.Production.json", optional: true, reloadOnChange: true)
+                    .Build();
+                
+                envConnectionString = configuration.GetConnectionString("DefaultConnection");
+            }
+            
+            if (!string.IsNullOrEmpty(envConnectionString))
+            {
+                optionsBuilder.UseNpgsql(envConnectionString);
+            }
+        }
+        
+        base.OnConfiguring(optionsBuilder);
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
