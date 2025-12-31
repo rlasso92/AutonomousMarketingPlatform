@@ -81,6 +81,17 @@ public class ConsentsApiController : ControllerBase
                 "AutoPublishing",
                 cancellationToken);
 
+            if (!aiConsent || !publishingConsent)
+            {
+                return Ok(new
+                {
+                    success = false,
+                    reason = "Missing required consents",
+                    aiConsent,
+                    publishingConsent
+                });
+            }
+
             _logger.LogInformation(
                 "Consent check for User {UserId} in Tenant {TenantId}: AI={AiConsent}, Publishing={PublishingConsent}",
                 userId,
