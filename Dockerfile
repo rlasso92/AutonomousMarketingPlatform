@@ -16,6 +16,11 @@ RUN dotnet restore
 COPY . .
 WORKDIR /src/src/AutonomousMarketingPlatform.Web
 
+# Copiar explícitamente Views y wwwroot al build stage para asegurar que estén disponibles
+# Esto es necesario porque COPY . . puede no copiar correctamente estas carpetas
+COPY src/AutonomousMarketingPlatform.Web/Views ./Views
+COPY src/AutonomousMarketingPlatform.Web/wwwroot ./wwwroot
+
 # Asegurar que las vistas Razor se incluyan explícitamente en el publish
 # Las vistas deben estar disponibles en tiempo de ejecución
 RUN dotnet publish AutonomousMarketingPlatform.Web.csproj -c Release -o /app/publish --no-restore \
@@ -29,8 +34,8 @@ WORKDIR /app
 # Copy published app (esto incluye DLLs, configs, etc.)
 COPY --from=build /app/publish .
 
-# Copiar explícitamente Views y wwwroot desde el build stage si no están en publish
-# Esto asegura que las vistas estén disponibles en tiempo de ejecución
+# Copiar explícitamente Views y wwwroot desde el build stage
+# Las rutas son relativas al WORKDIR del build stage: /src/src/AutonomousMarketingPlatform.Web
 COPY --from=build /src/src/AutonomousMarketingPlatform.Web/Views ./Views
 COPY --from=build /src/src/AutonomousMarketingPlatform.Web/wwwroot ./wwwroot
 
