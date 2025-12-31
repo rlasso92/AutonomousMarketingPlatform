@@ -33,13 +33,28 @@ public class GetUserConsentsQueryHandler : IRequestHandler<GetUserConsentsQuery,
 
     public async Task<UserConsentsDto> Handle(GetUserConsentsQuery request, CancellationToken cancellationToken)
     {
-        // Verificar que el usuario existe y pertenece al tenant
+        // Verificar que el usuario existe
         var user = await _userManager.FindByIdAsync(request.UserId.ToString());
         if (user == null)
         {
-            throw new UnauthorizedAccessException($"Usuario con ID {request.UserId} no encontrado.");
+            // Si el usuario no existe, retornar lista vacía en lugar de lanzar excepción
+            // Esto permite que la página de consentimientos se muestre aunque el usuario no tenga consentimientos
+            return new UserConsentsDto
+            {
+                UserId = request.UserId,
+                Consents = new List<ConsentDto>
+                {
+                    new ConsentDto { ConsentType = "AIGeneration", ConsentTypeDisplayName = "Generación de Contenido con IA", Description = "Permite al sistema generar contenido publicitario usando inteligencia artificial.", Required = true, IsGranted = false },
+                    new ConsentDto { ConsentType = "DataProcessing", ConsentTypeDisplayName = "Procesamiento de Datos", Description = "Permite procesar y analizar datos para mejorar el marketing.", Required = true, IsGranted = false },
+                    new ConsentDto { ConsentType = "AutoPublishing", ConsentTypeDisplayName = "Publicación Automática", Description = "Permite publicar contenido automáticamente en redes sociales.", Required = false, IsGranted = false },
+                    new ConsentDto { ConsentType = "Analytics", ConsentTypeDisplayName = "Análisis y Métricas", Description = "Permite recopilar y analizar métricas de rendimiento.", Required = false, IsGranted = false }
+                },
+                AllRequiredConsentsGranted = false,
+                MissingRequiredConsents = new List<string> { "Generación de Contenido con IA", "Procesamiento de Datos" }
+            };
         }
         
+        // Verificar que el usuario pertenece al tenant
         if (user.TenantId != request.TenantId)
         {
             throw new UnauthorizedAccessException($"El usuario {request.UserId} no pertenece al tenant {request.TenantId}. Tenant del usuario: {user.TenantId}.");
