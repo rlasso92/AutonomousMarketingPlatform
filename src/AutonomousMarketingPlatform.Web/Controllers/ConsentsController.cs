@@ -51,7 +51,8 @@ public class ConsentsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error al obtener consentimientos del usuario {UserId}", userId.Value);
-            return View("Error");
+            TempData["ErrorMessage"] = "Error al cargar los consentimientos. Por favor, intente nuevamente.";
+            return RedirectToAction("Index", "Home");
         }
     }
 

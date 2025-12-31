@@ -35,9 +35,14 @@ public class GetUserConsentsQueryHandler : IRequestHandler<GetUserConsentsQuery,
     {
         // Verificar que el usuario existe y pertenece al tenant
         var user = await _userManager.FindByIdAsync(request.UserId.ToString());
-        if (user == null || user.TenantId != request.TenantId)
+        if (user == null)
         {
-            throw new UnauthorizedAccessException("Usuario no encontrado o no pertenece al tenant.");
+            throw new UnauthorizedAccessException($"Usuario con ID {request.UserId} no encontrado.");
+        }
+        
+        if (user.TenantId != request.TenantId)
+        {
+            throw new UnauthorizedAccessException($"El usuario {request.UserId} no pertenece al tenant {request.TenantId}. Tenant del usuario: {user.TenantId}.");
         }
 
         // Obtener todos los consentimientos del usuario
