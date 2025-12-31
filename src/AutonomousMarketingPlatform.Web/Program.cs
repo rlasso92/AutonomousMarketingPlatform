@@ -218,17 +218,17 @@ builder.Services.AddScoped<ITenantResolverService, TenantResolverService>();
 builder.Services.AddScoped<RoleSeeder>();
 builder.Services.AddScoped<UserSeeder>();
 
+// Registrar servicio de logging persistente PRIMERO (Singleton para que el proveedor pueda usarlo)
+// Debe registrarse antes del proveedor para que esté disponible cuando se cree
+builder.Services.AddSingleton<ILoggingService, LoggingService>();
+
 // Configurar logging estructurado
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 builder.Logging.AddDebug();
 
-// Registrar servicio de logging persistente (Singleton para que el proveedor pueda usarlo)
-builder.Services.AddSingleton<ILoggingService, LoggingService>();
-
-// Agregar proveedor de logging persistente en base de datos
-// Solo persiste logs de Warning o superior para no saturar la BD
-builder.Services.AddSingleton<ILoggerProvider, AutonomousMarketingPlatform.Infrastructure.Logging.DatabaseLoggerProvider>();
+// El proveedor de logging a base de datos se agregará después de construir la app
+// para tener acceso a los servicios necesarios (ILoggingService, IHttpContextAccessor)
 
 if (builder.Environment.IsProduction())
 {
@@ -287,6 +287,16 @@ try
 {
     app = builder.Build();
     Console.WriteLine("[INFO] Aplicación construida exitosamente");
+    
+    // Agregar el proveedor de logging a la base de datos al sistema de logging
+    // Esto debe hacerse después de construir la app para tener acceso al servicio
+    var loggingService = app.Services.GetRequiredService<ILoggingService>();
+    var httpContextAccessor = app.Services.GetService<IHttpContextAccessor>();
+    var databaseLoggerProvider = new AutonomousMarketingPlatform.Infrastructure.Logging.DatabaseLoggerProvider(
+        loggingService, 
+        httpContextAccessor);
+    app.Services.GetRequiredService<ILoggerFactory>().AddProvider(databaseLoggerProvider);
+    Console.WriteLine("[INFO] Proveedor de logging a base de datos agregado exitosamente");
 }
 catch (Exception ex)
 {
