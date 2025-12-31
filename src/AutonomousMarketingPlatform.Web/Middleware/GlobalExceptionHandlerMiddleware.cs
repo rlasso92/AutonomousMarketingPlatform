@@ -95,8 +95,23 @@ public class GlobalExceptionHandlerMiddleware
             default:
                 response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 errorResponse.Code = "INTERNAL_ERROR";
+                
+                // En producción, loguear el mensaje completo pero mostrar mensaje genérico al usuario
+                var exceptionMessage = exception.Message;
+                var innerExceptionMessage = exception.InnerException?.Message;
+                
+                // Log crítico: siempre loguear el mensaje completo
+                _logger.LogError(
+                    "INTERNAL_ERROR | RequestId={RequestId} | Path={Path} | Method={Method} | ExceptionType={ExceptionType} | Message={Message} | InnerMessage={InnerMessage}",
+                    requestId,
+                    context.Request.Path,
+                    context.Request.Method,
+                    exception.GetType().FullName,
+                    exceptionMessage,
+                    innerExceptionMessage ?? "N/A");
+                
                 errorResponse.Message = _environment.IsDevelopment()
-                    ? exception.Message
+                    ? exceptionMessage
                     : "Ha ocurrido un error interno. Por favor, intente más tarde.";
                 
                 // Solo incluir detalles en desarrollo
@@ -105,7 +120,12 @@ public class GlobalExceptionHandlerMiddleware
                     errorResponse.Details = new
                     {
                         ExceptionType = exception.GetType().Name,
-                        StackTrace = exception.StackTrace
+                        StackTrace = exception.StackTrace,
+                        InnerException = exception.InnerException != null ? new
+                        {
+                            Type = exception.InnerException.GetType().Name,
+                            Message = exception.InnerException.Message
+                        } : null
                     };
                 }
                 break;
