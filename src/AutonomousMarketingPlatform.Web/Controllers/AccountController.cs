@@ -52,19 +52,36 @@ public class AccountController : Controller
             
             ViewData["ReturnUrl"] = returnUrl;
             
-            // Intentar obtener tenant del request
-            _logger.LogInformation("Intentando resolver tenant...");
-            var tenantId = await _tenantResolver.ResolveTenantIdAsync();
-            _logger.LogInformation("Tenant resuelto: {TenantId}", tenantId?.ToString() ?? "NULL");
+            // Intentar obtener tenant del request (con manejo de errores)
+            Guid? tenantId = null;
+            try
+            {
+                _logger.LogInformation("Intentando resolver tenant...");
+                tenantId = await _tenantResolver.ResolveTenantIdAsync();
+                _logger.LogInformation("Tenant resuelto: {TenantId}", tenantId?.ToString() ?? "NULL");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Error al resolver tenant, continuando sin tenant");
+                // Continuar sin tenant (puede ser super admin)
+            }
             ViewData["TenantId"] = tenantId;
 
             // Crear modelo con valores por defecto para desarrollo
             var model = new LoginDto();
-            var env = HttpContext.RequestServices.GetRequiredService<IWebHostEnvironment>();
-            if (env.IsDevelopment())
+            try
             {
-                model.Email = "admin@test.com";
-                model.Password = "Admin123!";
+                var env = HttpContext.RequestServices.GetRequiredService<IWebHostEnvironment>();
+                if (env.IsDevelopment())
+                {
+                    model.Email = "admin@test.com";
+                    model.Password = "Admin123!";
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "No se pudo obtener IWebHostEnvironment, continuando sin valores por defecto");
+                // Continuar sin valores por defecto
             }
 
             _logger.LogInformation("=== AccountController.Login (GET) completado exitosamente ===");
