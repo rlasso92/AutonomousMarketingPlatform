@@ -26,9 +26,13 @@ RUN dotnet publish AutonomousMarketingPlatform.Web.csproj -c Release -o /app/pub
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
 
-# Copy published app (esto incluye DLLs, configs, Views, wwwroot, etc.)
-# El SDK de .NET incluye automáticamente Views y wwwroot en el publish
+# Copy published app (esto incluye DLLs, configs, etc.)
 COPY --from=build /app/publish .
+
+# Copiar explícitamente Views y wwwroot desde el build stage
+# Esto asegura que estén disponibles incluso si no se copiaron en el publish
+COPY --from=build /src/src/AutonomousMarketingPlatform.Web/Views ./Views
+COPY --from=build /src/src/AutonomousMarketingPlatform.Web/wwwroot ./wwwroot
 
 # Expose port (Render will set PORT env var dynamically)
 EXPOSE 8080
