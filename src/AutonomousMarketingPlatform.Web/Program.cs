@@ -533,12 +533,20 @@ app.UseConsentValidation();
 app.UseAuthorization();
 
 // 14. Endpoint raíz público para health checks de Render
-// IMPORTANTE: Debe estar ANTES de MapControllers/MapControllerRoute para tener prioridad
-// Los endpoints mínimos tienen prioridad sobre el routing convencional
+// IMPORTANTE: Solo responder a GET / si no está autenticado (health check)
+// Si está autenticado, dejar que el routing convencional maneje la ruta
 Console.WriteLine("[INFO] Configurando endpoint raíz público...");
-app.MapGet("/", () => 
+app.MapGet("/", (HttpContext context) => 
 {
-    Console.WriteLine($"[INFO] Request recibido en endpoint raíz: {DateTime.UtcNow:yyyy-MM-dd HH:mm:ss} UTC");
+    // Si el usuario está autenticado, redirigir al dashboard
+    if (context.User?.Identity?.IsAuthenticated == true)
+    {
+        context.Response.Redirect("/Home/Index");
+        return Results.Empty;
+    }
+    
+    // Si no está autenticado, mostrar health check
+    Console.WriteLine($"[INFO] Request recibido en endpoint raíz (health check): {DateTime.UtcNow:yyyy-MM-dd HH:mm:ss} UTC");
     return Results.Ok(new { 
         status = "ok", 
         service = "Autonomous Marketing Platform",
