@@ -15,7 +15,7 @@ RUN dotnet restore
 # Copy everything else and build
 COPY . .
 WORKDIR /src/src/AutonomousMarketingPlatform.Web
-RUN dotnet publish -c Release -o /app/publish --no-restore
+RUN dotnet publish AutonomousMarketingPlatform.Web.csproj -c Release -o /app/publish --no-restore
 
 # Stage 2: Runtime
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
