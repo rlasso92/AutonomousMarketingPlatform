@@ -36,6 +36,8 @@
     <!-- Asegurar que las vistas compiladas se incluyan en el output -->
     <RazorCompileOnBuild>true</RazorCompileOnBuild>
     <RazorCompileOnPublish>true</RazorCompileOnPublish>
+    <!-- Incluir archivos .cshtml en el publish (necesarios para runtime compilation si está habilitado) -->
+    <CopyRazorGenerateFilesToPublishDirectory>true</CopyRazorGenerateFilesToPublishDirectory>
   </PropertyGroup>
 
 </Project>

@@ -15,7 +15,12 @@ RUN dotnet restore
 # Copy everything else and build
 COPY . .
 WORKDIR /src/src/AutonomousMarketingPlatform.Web
-RUN dotnet publish AutonomousMarketingPlatform.Web.csproj -c Release -o /app/publish --no-restore
+
+# Asegurar que las vistas Razor se incluyan explícitamente en el publish
+# Las vistas deben estar disponibles en tiempo de ejecución
+RUN dotnet publish AutonomousMarketingPlatform.Web.csproj -c Release -o /app/publish --no-restore \
+    /p:CopyRazorGenerateFilesToPublishDirectory=true \
+    /p:CopyRefAssembliesToPublishDirectory=false
 
 # Stage 2: Runtime
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
