@@ -5,7 +5,7 @@ services:
     plan: starter
     region: virginia
     branch: main
-    buildCommand: dotnet publish src/AutonomousMarketingPlatform.Web/AutonomousMarketingPlatform.Web.csproj -c Release -o ./publish
+    buildCommand: dotnet restore && dotnet publish src/AutonomousMarketingPlatform.Web/AutonomousMarketingPlatform.Web.csproj -c Release -o ./publish
     startCommand: cd publish && dotnet AutonomousMarketingPlatform.Web.dll
     envVars:
       - key: ASPNETCORE_ENVIRONMENT
