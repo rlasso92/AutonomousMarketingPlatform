@@ -13,13 +13,27 @@ using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 using System.Linq;
 
+// ============================================
+// INICIO DE LA APLICACIÓN - LOGGING TEMPRANO
+// ============================================
+Console.WriteLine("============================================");
+Console.WriteLine("INICIANDO Autonomous Marketing Platform");
+Console.WriteLine($"Timestamp: {DateTime.UtcNow:yyyy-MM-dd HH:mm:ss} UTC");
+Console.WriteLine($"Environment: {Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Not Set"}");
+Console.WriteLine("============================================");
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Configurar puerto para Render (lee PORT de variable de entorno)
 var port = Environment.GetEnvironmentVariable("PORT");
 if (!string.IsNullOrEmpty(port))
 {
+    Console.WriteLine($"[INFO] Configurando puerto desde variable de entorno: {port}");
     builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
+}
+else
+{
+    Console.WriteLine("[WARNING] Variable de entorno PORT no encontrada, usando configuración por defecto");
 }
 
 // Add services to the container.
@@ -36,10 +50,15 @@ if (string.IsNullOrEmpty(connectionString))
     var errorMsg = "Connection string 'DefaultConnection' not found. " +
         "Please configure 'ConnectionStrings__DefaultConnection' environment variable or add it to appsettings.json";
     Console.WriteLine($"[ERROR] {errorMsg}");
+    Console.WriteLine("[ERROR] La aplicación no puede iniciar sin una cadena de conexión válida.");
     throw new InvalidOperationException(errorMsg);
 }
 
-Console.WriteLine($"[INFO] Using connection string from: {(Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection") != null ? "Environment Variable" : "Configuration File")}");
+var connectionSource = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection") != null 
+    ? "Environment Variable" 
+    : "Configuration File";
+Console.WriteLine($"[INFO] Connection string obtenida desde: {connectionSource}");
+Console.WriteLine($"[INFO] Connection string (oculta): Host=***, Database=***");
 
 // Registrar servicios de infraestructura primero (para evitar dependencia circular)
 builder.Services.AddHttpContextAccessor();
@@ -255,17 +274,39 @@ builder.Services.AddCors(options =>
     }
 });
 
-var app = builder.Build();
+Console.WriteLine("[INFO] Construyendo aplicación...");
+WebApplication app;
+try
+{
+    app = builder.Build();
+    Console.WriteLine("[INFO] Aplicación construida exitosamente");
+}
+catch (Exception ex)
+{
+    Console.WriteLine($"[ERROR] Error al construir la aplicación: {ex.GetType().Name}");
+    Console.WriteLine($"[ERROR] Mensaje: {ex.Message}");
+    Console.WriteLine($"[ERROR] StackTrace: {ex.StackTrace}");
+    if (ex.InnerException != null)
+    {
+        Console.WriteLine($"[ERROR] InnerException: {ex.InnerException.GetType().Name}");
+        Console.WriteLine($"[ERROR] InnerException Message: {ex.InnerException.Message}");
+    }
+    throw;
+}
 
 // Seed roles (siempre, en desarrollo y producción)
+Console.WriteLine("[INFO] Iniciando seeding de datos del sistema...");
 using (var scope = app.Services.CreateScope())
 {
     try
     {
+        Console.WriteLine("[INFO] Seeding roles...");
         var roleSeeder = scope.ServiceProvider.GetRequiredService<RoleSeeder>();
         await roleSeeder.SeedRolesAsync();
+        Console.WriteLine("[INFO] Roles seeded exitosamente");
 
         // Crear tenant por defecto si no existe (siempre, para que funcione sin subdominio)
+        Console.WriteLine("[INFO] Verificando/creando tenant por defecto...");
         var userSeeder = scope.ServiceProvider.GetRequiredService<UserSeeder>();
         var defaultTenant = await userSeeder.CreateTestTenantAsync(
             name: "Tenant por Defecto",
@@ -276,12 +317,27 @@ using (var scope = app.Services.CreateScope())
         {
             var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
             logger.LogInformation("Tenant por defecto verificado/creado: {TenantId}", defaultTenant.Id);
+            Console.WriteLine($"[INFO] Tenant por defecto: {defaultTenant.Id}");
         }
+        else
+        {
+            Console.WriteLine("[WARNING] No se pudo crear/verificar tenant por defecto");
+        }
+        Console.WriteLine("[INFO] Seeding de datos del sistema completado");
     }
     catch (Exception ex)
     {
         var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
         logger.LogError(ex, "Error al inicializar datos del sistema");
+        Console.WriteLine($"[ERROR] Error en seeding: {ex.GetType().Name}");
+        Console.WriteLine($"[ERROR] Mensaje: {ex.Message}");
+        Console.WriteLine($"[ERROR] StackTrace: {ex.StackTrace}");
+        if (ex.InnerException != null)
+        {
+            Console.WriteLine($"[ERROR] InnerException: {ex.InnerException.GetType().Name}");
+            Console.WriteLine($"[ERROR] InnerException Message: {ex.InnerException.Message}");
+        }
+        // NO lanzar excepción aquí, permitir que la app inicie aunque falle el seeding
     }
 }
 
@@ -338,6 +394,7 @@ if (app.Environment.IsDevelopment())
 }
 
 // Configure the HTTP request pipeline.
+Console.WriteLine("[INFO] Configurando pipeline de middlewares...");
 
 // ============================================
 // ORDEN CRÍTICO DE MIDDLEWARES PARA RENDER
@@ -345,16 +402,46 @@ if (app.Environment.IsDevelopment())
 
 // 1. ForwardedHeaders (PRIMERO - antes de cualquier middleware que use Request.Scheme/Host)
 // Esto permite que ASP.NET Core entienda que está detrás del reverse proxy de Render
+Console.WriteLine("[INFO] Configurando ForwardedHeaders...");
 app.UseForwardedHeaders();
 
-// 2. Manejo global de excepciones
-// TEMPORALMENTE DESACTIVADO PARA DEBUGGING
+// 2. Middleware de logging de requests (para debugging en Render)
+app.Use(async (context, next) =>
+{
+    var startTime = DateTime.UtcNow;
+    var path = context.Request.Path;
+    var method = context.Request.Method;
+    var requestId = context.TraceIdentifier;
+    
+    Console.WriteLine($"[REQUEST] {method} {path} | RequestId={requestId} | {startTime:yyyy-MM-dd HH:mm:ss} UTC");
+    
+    try
+    {
+        await next();
+        var duration = (DateTime.UtcNow - startTime).TotalMilliseconds;
+        Console.WriteLine($"[RESPONSE] {method} {path} | Status={context.Response.StatusCode} | Duration={duration:F2}ms | RequestId={requestId}");
+    }
+    catch (Exception ex)
+    {
+        var duration = (DateTime.UtcNow - startTime).TotalMilliseconds;
+        Console.WriteLine($"[ERROR] {method} {path} | Exception={ex.GetType().Name} | Message={ex.Message} | Duration={duration:F2}ms | RequestId={requestId}");
+        Console.WriteLine($"[ERROR] StackTrace: {ex.StackTrace}");
+        if (ex.InnerException != null)
+        {
+            Console.WriteLine($"[ERROR] InnerException: {ex.InnerException.GetType().Name} | Message={ex.InnerException.Message}");
+        }
+        throw; // Re-lanzar para que otro middleware lo maneje
+    }
+});
+
+// 3. Manejo global de excepciones
+// TEMPORALMENTE DESACTIVADO PARA DEBUGGING - usando logging directo en consola
 // app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
 
-// 3. Headers de seguridad
+// 4. Headers de seguridad
 app.UseMiddleware<SecurityHeadersMiddleware>();
 
-// 4. NO usar UseHttpsRedirection() ni UseHsts() en Render
+// 5. NO usar UseHttpsRedirection() ni UseHsts() en Render
 // Render ya maneja HTTPS en el reverse proxy, forzar redirección causa:
 // - "Failed to determine the https port for redirect"
 // - Loops de redirección
@@ -366,19 +453,19 @@ app.UseMiddleware<SecurityHeadersMiddleware>();
 //     app.UseHttpsRedirection();
 // }
 
-// 5. Static files
+// 6. Static files
 app.UseStaticFiles();
 
-// 6. Routing (debe ir antes de Authentication/Authorization)
+// 7. Routing (debe ir antes de Authentication/Authorization)
 app.UseRouting();
 
-// 7. CORS (después de Routing, antes de Authentication)
+// 8. CORS (después de Routing, antes de Authentication)
 app.UseCors();
 
-// 8. Authentication (debe ir después de UseRouting)
+// 9. Authentication (debe ir después de UseRouting)
 app.UseAuthentication();
 
-// 9. Tenant Resolver (después de auth, para poder leer claims)
+// 10. Tenant Resolver (después de auth, para poder leer claims)
 app.Use(async (context, next) =>
 {
     try
@@ -394,40 +481,74 @@ app.Use(async (context, next) =>
             var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
             logger.LogWarning("TenantResolver no pudo resolver tenant: Path={Path}, Host={Host}", 
                 context.Request.Path, context.Request.Host.Host);
+            // En producción, también loguear a consola para debugging
+            Console.WriteLine($"[WARNING] TenantResolver no pudo resolver tenant: Path={context.Request.Path}, Host={context.Request.Host.Host}");
         }
     }
     catch (Exception ex)
     {
         var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
         logger.LogError(ex, "Error en TenantResolver middleware: Path={Path}", context.Request.Path);
+        // Log también a consola para debugging en Render
+        Console.WriteLine($"[ERROR] TenantResolver middleware exception: {ex.GetType().Name}");
+        Console.WriteLine($"[ERROR] Mensaje: {ex.Message}");
+        Console.WriteLine($"[ERROR] Path: {context.Request.Path}");
         // No lanzar excepción aquí, dejar que el middleware de validación maneje
     }
     await next();
 });
 
-// 10. Validación de tenant (después de auth, para poder verificar super admin)
+// 11. Validación de tenant (después de auth, para poder verificar super admin)
 app.UseMiddleware<TenantValidationMiddleware>();
 
-// 11. Middleware de validación de consentimientos
+// 12. Middleware de validación de consentimientos
 app.UseConsentValidation();
 
-// 12. Authorization (DEBE ir después de UseRouting y ANTES de MapControllerRoute)
+// 13. Authorization (DEBE ir después de UseRouting y ANTES de MapControllerRoute)
 app.UseAuthorization();
 
-// 13. Endpoint raíz público para health checks de Render
+// 14. Endpoint raíz público para health checks de Render
 // IMPORTANTE: Debe estar ANTES de MapControllerRoute para tener prioridad
-app.MapGet("/", () => Results.Ok(new { 
-    status = "ok", 
-    service = "Autonomous Marketing Platform",
-    timestamp = DateTime.UtcNow 
-})).AllowAnonymous();
+Console.WriteLine("[INFO] Configurando endpoint raíz público...");
+app.MapGet("/", () => 
+{
+    Console.WriteLine($"[INFO] Request recibido en endpoint raíz: {DateTime.UtcNow:yyyy-MM-dd HH:mm:ss} UTC");
+    return Results.Ok(new { 
+        status = "ok", 
+        service = "Autonomous Marketing Platform",
+        timestamp = DateTime.UtcNow 
+    });
+}).AllowAnonymous();
 
-// 14. Map controllers y Razor Pages
+// 15. Map controllers y Razor Pages
+Console.WriteLine("[INFO] Mapeando rutas de controllers y Razor Pages...");
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.MapRazorPages();
 
-app.Run();
+Console.WriteLine("[INFO] Pipeline de middlewares configurado exitosamente");
+Console.WriteLine("[INFO] Iniciando servidor web...");
+Console.WriteLine("============================================");
+
+try
+{
+    app.Run();
+}
+catch (Exception ex)
+{
+    Console.WriteLine("============================================");
+    Console.WriteLine($"[ERROR CRÍTICO] Error al iniciar el servidor: {ex.GetType().Name}");
+    Console.WriteLine($"[ERROR CRÍTICO] Mensaje: {ex.Message}");
+    Console.WriteLine($"[ERROR CRÍTICO] StackTrace: {ex.StackTrace}");
+    if (ex.InnerException != null)
+    {
+        Console.WriteLine($"[ERROR CRÍTICO] InnerException: {ex.InnerException.GetType().Name}");
+        Console.WriteLine($"[ERROR CRÍTICO] InnerException Message: {ex.InnerException.Message}");
+        Console.WriteLine($"[ERROR CRÍTICO] InnerException StackTrace: {ex.InnerException.StackTrace}");
+    }
+    Console.WriteLine("============================================");
+    throw;
+}
 
