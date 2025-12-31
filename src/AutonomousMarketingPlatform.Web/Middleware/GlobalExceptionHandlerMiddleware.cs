@@ -43,8 +43,18 @@ public class GlobalExceptionHandlerMiddleware
 
         _logger.LogError(
             exception,
-            "Unhandled exception: RequestId={RequestId}, TenantId={TenantId}, Path={Path}",
-            requestId, tenantId, context.Request.Path);
+            "Unhandled exception: RequestId={RequestId}, TenantId={TenantId}, Path={Path}, Method={Method}, QueryString={QueryString}",
+            requestId, tenantId, context.Request.Path, context.Request.Method, context.Request.QueryString);
+        
+        // Log detallado del stack trace siempre (incluso en producción para debugging)
+        _logger.LogError("Exception Type: {ExceptionType}, Message: {Message}, StackTrace: {StackTrace}",
+            exception.GetType().FullName, exception.Message, exception.StackTrace);
+        
+        if (exception.InnerException != null)
+        {
+            _logger.LogError("Inner Exception: {InnerExceptionType}, Message: {InnerMessage}",
+                exception.InnerException.GetType().FullName, exception.InnerException.Message);
+        }
 
         var response = context.Response;
         response.ContentType = "application/json";
