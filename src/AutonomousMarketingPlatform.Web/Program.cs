@@ -25,8 +25,12 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 
 // Configurar Entity Framework Core con PostgreSQL
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
-    ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+// Intentar obtener desde variables de entorno primero (para Render), luego desde configuración
+var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection")
+    ?? builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? throw new InvalidOperationException(
+        "Connection string 'DefaultConnection' not found. " +
+        "Please configure 'ConnectionStrings__DefaultConnection' environment variable or add it to appsettings.json");
 
 // Registrar servicios de infraestructura primero (para evitar dependencia circular)
 builder.Services.AddHttpContextAccessor();
