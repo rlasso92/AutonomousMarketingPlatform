@@ -42,24 +42,41 @@ public class AccountController : Controller
     [AllowAnonymous]
     public async Task<IActionResult> Login(string? returnUrl = null)
     {
-        // NO redirigir aquí - esto causa loops de redirección
-        // La redirección solo debe ocurrir en el POST después de login exitoso
-        
-        ViewData["ReturnUrl"] = returnUrl;
-        
-        // Intentar obtener tenant del request
-        var tenantId = await _tenantResolver.ResolveTenantIdAsync();
-        ViewData["TenantId"] = tenantId;
-
-        // Crear modelo con valores por defecto para desarrollo
-        var model = new LoginDto();
-        if (HttpContext.RequestServices.GetRequiredService<IWebHostEnvironment>().IsDevelopment())
+        try
         {
-            model.Email = "admin@test.com";
-            model.Password = "Admin123!";
-        }
+            _logger.LogInformation("=== AccountController.Login (GET) iniciado ===");
+            _logger.LogInformation("ReturnUrl: {ReturnUrl}, Path: {Path}", returnUrl, HttpContext.Request.Path);
+            
+            // NO redirigir aquí - esto causa loops de redirección
+            // La redirección solo debe ocurrir en el POST después de login exitoso
+            
+            ViewData["ReturnUrl"] = returnUrl;
+            
+            // Intentar obtener tenant del request
+            _logger.LogInformation("Intentando resolver tenant...");
+            var tenantId = await _tenantResolver.ResolveTenantIdAsync();
+            _logger.LogInformation("Tenant resuelto: {TenantId}", tenantId?.ToString() ?? "NULL");
+            ViewData["TenantId"] = tenantId;
 
-        return View(model);
+            // Crear modelo con valores por defecto para desarrollo
+            var model = new LoginDto();
+            var env = HttpContext.RequestServices.GetRequiredService<IWebHostEnvironment>();
+            if (env.IsDevelopment())
+            {
+                model.Email = "admin@test.com";
+                model.Password = "Admin123!";
+            }
+
+            _logger.LogInformation("=== AccountController.Login (GET) completado exitosamente ===");
+            return View(model);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "=== ERROR en AccountController.Login (GET) ===");
+            _logger.LogError("Exception Type: {Type}, Message: {Message}, StackTrace: {StackTrace}", 
+                ex.GetType().FullName, ex.Message, ex.StackTrace);
+            throw; // Re-lanzar para que se vea el error real
+        }
     }
 
     /// <summary>
