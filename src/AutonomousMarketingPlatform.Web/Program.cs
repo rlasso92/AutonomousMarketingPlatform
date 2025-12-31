@@ -8,6 +8,7 @@ using AutonomousMarketingPlatform.Infrastructure.Services;
 using AutonomousMarketingPlatform.Web.Middleware;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 using System.Linq;
@@ -209,6 +210,22 @@ if (builder.Environment.IsProduction())
     // builder.Logging.AddApplicationInsights();
 }
 
+// Configurar ForwardedHeaders para reverse proxy (Render)
+// IMPORTANTE: Debe configurarse ANTES de cualquier middleware que use Request.Scheme o Request.Host
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | 
+                                ForwardedHeaders.XForwardedProto | 
+                                ForwardedHeaders.XForwardedHost;
+    
+    // En Render, confiar en todos los proxies (Render maneja la seguridad)
+    options.KnownNetworks.Clear();
+    options.KnownProxies.Clear();
+    
+    // Limitar a un número razonable de proxies
+    options.ForwardLimit = 1;
+});
+
 // Configurar CORS de forma segura
 builder.Services.AddCors(options =>
 {
@@ -322,27 +339,46 @@ if (app.Environment.IsDevelopment())
 
 // Configure the HTTP request pipeline.
 
-// 1. Manejo global de excepciones (primero)
+// ============================================
+// ORDEN CRÍTICO DE MIDDLEWARES PARA RENDER
+// ============================================
+
+// 1. ForwardedHeaders (PRIMERO - antes de cualquier middleware que use Request.Scheme/Host)
+// Esto permite que ASP.NET Core entienda que está detrás del reverse proxy de Render
+app.UseForwardedHeaders();
+
+// 2. Manejo global de excepciones
 // TEMPORALMENTE DESACTIVADO PARA DEBUGGING
 // app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
 
-// 2. Headers de seguridad
+// 3. Headers de seguridad
 app.UseMiddleware<SecurityHeadersMiddleware>();
 
-// 3. HTTPS redirection (solo en producción)
-if (!app.Environment.IsDevelopment())
-{
-    app.UseHsts();
-    app.UseHttpsRedirection();
-}
+// 4. NO usar UseHttpsRedirection() ni UseHsts() en Render
+// Render ya maneja HTTPS en el reverse proxy, forzar redirección causa:
+// - "Failed to determine the https port for redirect"
+// - Loops de redirección
+// - Health checks fallan
+// Comentado explícitamente:
+// if (!app.Environment.IsDevelopment())
+// {
+//     app.UseHsts();
+//     app.UseHttpsRedirection();
+// }
 
+// 5. Static files
 app.UseStaticFiles();
+
+// 6. Routing (debe ir antes de Authentication/Authorization)
 app.UseRouting();
 
-// 4. Authentication (debe ir después de UseRouting)
+// 7. CORS (después de Routing, antes de Authentication)
+app.UseCors();
+
+// 8. Authentication (debe ir después de UseRouting)
 app.UseAuthentication();
 
-// 5. Tenant Resolver (después de auth, para poder leer claims)
+// 9. Tenant Resolver (después de auth, para poder leer claims)
 app.Use(async (context, next) =>
 {
     try
@@ -369,18 +405,24 @@ app.Use(async (context, next) =>
     await next();
 });
 
-// 6. Validación de tenant (después de auth, para poder verificar super admin)
+// 10. Validación de tenant (después de auth, para poder verificar super admin)
 app.UseMiddleware<TenantValidationMiddleware>();
 
-// 7. CORS
-app.UseCors();
-
-// 8. Middleware de validación de consentimientos
+// 11. Middleware de validación de consentimientos
 app.UseConsentValidation();
 
-// 9. Authorization (DEBE ir después de UseRouting y ANTES de MapControllerRoute)
+// 12. Authorization (DEBE ir después de UseRouting y ANTES de MapControllerRoute)
 app.UseAuthorization();
 
+// 13. Endpoint raíz público para health checks de Render
+// IMPORTANTE: Debe estar ANTES de MapControllerRoute para tener prioridad
+app.MapGet("/", () => Results.Ok(new { 
+    status = "ok", 
+    service = "Autonomous Marketing Platform",
+    timestamp = DateTime.UtcNow 
+})).AllowAnonymous();
+
+// 14. Map controllers y Razor Pages
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
