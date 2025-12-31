@@ -319,18 +319,9 @@ public class AccountController : Controller
                     return Redirect(returnUrl);
                 }
 
-                // Fallback: Redirigir según rol del usuario
-                var isSuperAdmin = tenantId == Guid.Empty;
-                if (isSuperAdmin)
-                {
-                    _logger.LogInformation("Redirigiendo SuperAdmin a Home/Index");
-                    return RedirectToAction("Index", "Home");
-                }
-                else
-                {
-                    _logger.LogInformation("Redirigiendo usuario normal a Home/Index");
-                    return RedirectToAction("Index", "Home");
-                }
+                // Redirigir al dashboard (Home/Index)
+                _logger.LogInformation("Redirigiendo a Home/Index después de login exitoso");
+                return RedirectToAction("Index", "Home");
             }
         }
 
