@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using AutonomousMarketingPlatform.Application.Services;
 using AutonomousMarketingPlatform.Infrastructure.Data;
+using AutonomousMarketingPlatform.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace AutonomousMarketingPlatform.Web.Controllers;
