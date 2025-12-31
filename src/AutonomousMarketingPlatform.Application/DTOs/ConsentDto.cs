@@ -26,6 +26,11 @@ public class CreateConsentDto
     public string ConsentType { get; set; } = string.Empty;
     public bool IsGranted { get; set; }
     public string? ConsentVersion { get; set; }
+    /// <summary>
+    /// ID del usuario al que se otorga el consentimiento (opcional, solo para super admin).
+    /// Si no se especifica, se otorga al usuario autenticado.
+    /// </summary>
+    public Guid? TargetUserId { get; set; }
 }
 
 /// <summary>

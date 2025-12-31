@@ -3,6 +3,7 @@ using AutonomousMarketingPlatform.Domain.Entities;
 using AutonomousMarketingPlatform.Domain.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 
 namespace AutonomousMarketingPlatform.Application.UseCases.Consents;
 
@@ -23,13 +24,19 @@ public class RevokeConsentCommandHandler : IRequestHandler<RevokeConsentCommand,
 {
     private readonly IRepository<Consent> _consentRepository;
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly ILogger<RevokeConsentCommandHandler> _logger;
 
     public RevokeConsentCommandHandler(
         IRepository<Consent> consentRepository,
-        UserManager<ApplicationUser> userManager)
+        UserManager<ApplicationUser> userManager,
+        IUnitOfWork unitOfWork,
+        ILogger<RevokeConsentCommandHandler> logger)
     {
         _consentRepository = consentRepository;
         _userManager = userManager;
+        _unitOfWork = unitOfWork;
+        _logger = logger;
     }
 
     public async Task<ConsentDto> Handle(RevokeConsentCommand request, CancellationToken cancellationToken)
@@ -64,6 +71,12 @@ public class RevokeConsentCommandHandler : IRequestHandler<RevokeConsentCommand,
         consent.IsGranted = false;
         consent.RevokedAt = DateTime.UtcNow;
         await _consentRepository.UpdateAsync(consent, cancellationToken);
+
+        // Guardar cambios en la base de datos
+        _logger.LogInformation("Guardando cambios en la base de datos para revocación de consentimiento...");
+        var savedChanges = await _unitOfWork.SaveChangesAsync(cancellationToken);
+        _logger.LogInformation("Cambios guardados exitosamente. SavedChanges={SavedChanges}, ConsentId={ConsentId}", 
+            savedChanges, consent.Id);
 
         return new ConsentDto
         {

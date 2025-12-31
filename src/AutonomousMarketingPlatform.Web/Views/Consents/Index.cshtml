@@ -50,14 +50,70 @@
             </div>
         }
 
+        @if (ViewBag.IsSuperAdmin == true)
+        {
+            <div class="card mb-4">
+                <div class="card-header bg-info">
+                    <h3 class="card-title text-white">
+                        <i class="fas fa-user-shield"></i> Modo Super Administrador
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">
+                        Como super administrador, puede otorgar consentimientos a cualquier usuario del sistema.
+                    </p>
+                    <form method="get" asp-action="UserConsents" class="form-inline">
+                        <div class="form-group mr-2">
+                            <label for="userId" class="mr-2">Seleccionar Usuario:</label>
+                            <select name="userId" id="userId" class="form-control" onchange="this.form.submit()">
+                                <option value="">-- Seleccione un usuario --</option>
+                                @if (ViewBag.Users != null)
+                                {
+                                    @foreach (var user in (List<AutonomousMarketingPlatform.Application.DTOs.UserListDto>)ViewBag.Users)
+                                    {
+                                        var isSelected = ViewBag.TargetUser != null && ((AutonomousMarketingPlatform.Application.DTOs.UserDto)ViewBag.TargetUser).Id == user.Id;
+                                        <option value="@user.Id" selected="@isSelected">
+                                            @user.FullName (@user.Email) - @user.TenantName
+                                        </option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                        @if (ViewBag.TargetUser != null)
+                        {
+                            var targetUser = (AutonomousMarketingPlatform.Application.DTOs.UserDto)ViewBag.TargetUser;
+                            <div class="form-group">
+                                <span class="badge badge-primary">Usuario seleccionado: @targetUser.FullName (@targetUser.Email)</span>
+                                <a href="@Url.Action("Index")" class="btn btn-sm btn-secondary ml-2">Ver mis consentimientos</a>
+                            </div>
+                        }
+                    </form>
+                </div>
+            </div>
+        }
+
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Gestión de Consentimientos</h3>
+                <h3 class="card-title">
+                    Gestión de Consentimientos
+                    @if (ViewBag.TargetUser != null)
+                    {
+                        var targetUser = (AutonomousMarketingPlatform.Application.DTOs.UserDto)ViewBag.TargetUser;
+                        <small class="text-muted">- Usuario: @targetUser.FullName</small>
+                    }
+                </h3>
             </div>
             <div class="card-body">
                 <p class="text-muted">
-                    Para utilizar las funcionalidades de marketing autónomo con IA, es necesario otorgar su consentimiento explícito.
-                    Puede revisar y gestionar sus consentimientos en cualquier momento.
+                    @if (ViewBag.IsSuperAdmin == true && ViewBag.TargetUser != null)
+                    {
+                        <text>Consentimientos del usuario seleccionado. Puede otorgar o revocar consentimientos en su nombre.</text>
+                    }
+                    else
+                    {
+                        <text>Para utilizar las funcionalidades de marketing autónomo con IA, es necesario otorgar su consentimiento explícito.
+                        Puede revisar y gestionar sus consentimientos en cualquier momento.</text>
+                    }
                 </p>
 
                 <div class="row">
@@ -118,12 +174,25 @@
                                             <strong>No otorgado</strong>
                                         </div>
 
-                                        <form asp-action="Grant" asp-controller="Consents" method="post" class="d-inline" id="grantForm_@consent.ConsentType">
+                                        <form action="@Url.Action("Grant", "Consents")" method="post" class="d-inline" id="grantForm_@consent.ConsentType">
                                             @Html.AntiForgeryToken()
                                             <input type="hidden" name="ConsentType" value="@consent.ConsentType" />
                                             <input type="hidden" name="ConsentVersion" value="1.0" />
+                                            @if (ViewBag.IsSuperAdmin == true && ViewBag.TargetUser != null)
+                                            {
+                                                var targetUser = (AutonomousMarketingPlatform.Application.DTOs.UserDto)ViewBag.TargetUser;
+                                                <input type="hidden" name="TargetUserId" value="@targetUser.Id" />
+                                            }
                                             <button type="submit" class="btn btn-sm btn-primary" id="grantBtn_@consent.ConsentType">
-                                                <i class="fas fa-check"></i> Otorgar Consentimiento
+                                                <i class="fas fa-check"></i> 
+                                                @if (ViewBag.IsSuperAdmin == true && ViewBag.TargetUser != null)
+                                                {
+                                                    <text>Otorgar Consentimiento (Super Admin)</text>
+                                                }
+                                                else
+                                                {
+                                                    <text>Otorgar Consentimiento</text>
+                                                }
                                             </button>
                                         </form>
                                     }
