@@ -1,131 +1,109 @@
 @model AutonomousMarketingPlatform.Application.DTOs.LoginDto
 @{
     ViewData["Title"] = "Iniciar Sesión";
-    Layout = "_Layout_Login";
+    Layout = "_AuthLayout";
 }
 
-<div class="login-box">
-    <!-- Login Logo (AdminLTE class) -->
-    <div class="login-logo">
-        <b>Autonomous</b> Marketing
-    </div>
-    
-    <!-- Card (AdminLTE class) -->
-    <div class="card login-card">
-        <div class="card-body login-card-body">
-            <!-- Title -->
-            <p class="login-title">Inicia sesión</p>
-            <p class="login-subtitle">El sistema que genera y publica marketing por ti</p>
+<div class="login-form">
+    <!-- Title -->
+    <h1 class="login-title">Autonomous Marketing</h1>
+    <p class="login-subtitle">El sistema que genera y publica marketing por ti</p>
             
-            <!-- Tenant Info -->
-            @if (!string.IsNullOrEmpty(ViewData["TenantId"]?.ToString()))
-            {
-                <div class="alert alert-info login-alert">
-                    <strong>Tenant:</strong> @ViewData["TenantId"]
-                </div>
-            }
-            
-            <!-- Lockout Warning -->
-            @if (ViewData["LockoutEnd"] != null)
-            {
-                <div class="alert alert-warning login-alert">
-                    <strong>Cuenta bloqueada</strong><br>
-                    Tu cuenta ha sido bloqueada temporalmente hasta: @(((DateTime?)ViewData["LockoutEnd"])?.ToString("g"))
-                </div>
-            }
-            
-            <!-- Remaining Attempts Warning -->
-            @if (ViewData["RemainingAttempts"] != null && (int)ViewData["RemainingAttempts"]! < 5)
-            {
-                <div class="alert alert-warning login-alert">
-                    <strong>Atención</strong><br>
-                    Intentos restantes: @ViewData["RemainingAttempts"]
-                </div>
-            }
-            
-            <!-- Validation Summary -->
-            @if (!ViewData.ModelState.IsValid)
-            {
-                <div class="alert alert-danger login-validation-summary" asp-validation-summary="All">
-                    <ul class="mb-0">
-                        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
-                        {
-                            <li>@error.ErrorMessage</li>
-                        }
-                    </ul>
-                </div>
-            }
-            
-            <!-- Login Form -->
-            <form asp-action="Login" asp-controller="Account" method="post" id="loginForm" enctype="application/x-www-form-urlencoded">
-                @Html.AntiForgeryToken()
-                
-                @if (ViewData["TenantId"] != null)
-                {
-                    <input type="hidden" asp-for="TenantId" name="TenantId" value="@ViewData["TenantId"]" />
-                }
-                else
-                {
-                    <input type="hidden" asp-for="TenantId" name="TenantId" value="" />
-                }
-                <input type="hidden" name="returnUrl" value="@ViewData["ReturnUrl"]" />
-                
-                <!-- Email Field (AdminLTE form-control) -->
-                <div class="form-group">
-                    <input 
-                        asp-for="Email" 
-                        name="Email"
-                        id="Email"
-                        type="email" 
-                        class="form-control" 
-                        placeholder="Correo electrónico" 
-                        value="admin@test.com"
-                        required 
-                        autocomplete="email"
-                        autofocus>
-                    <span asp-validation-for="Email" class="text-danger login-field-error"></span>
-                </div>
-                
-                <!-- Password Field (AdminLTE form-control) -->
-                <div class="form-group">
-                    <input 
-                        asp-for="Password" 
-                        name="Password"
-                        id="Password"
-                        type="password" 
-                        class="form-control" 
-                        placeholder="Contraseña" 
-                        value="Admin123!"
-                        required 
-                        autocomplete="current-password">
-                    <span asp-validation-for="Password" class="text-danger login-field-error"></span>
-                </div>
-                
-                <!-- Remember Me (AdminLTE icheck) -->
-                <div class="form-group d-flex justify-content-between align-items-center">
-                    <div class="icheck-primary">
-                        <input type="checkbox" asp-for="RememberMe" name="RememberMe" id="remember" value="true">
-                        <label for="remember">Recordarme</label>
-                    </div>
-                </div>
-                
-                <!-- Submit Button (AdminLTE btn classes) -->
-                <button type="submit" class="btn btn-primary btn-block login-btn" id="loginBtn">
-                    <span class="btn-text">Iniciar sesión</span>
-                </button>
-            </form>
-            
-            <!-- Help Text -->
-            <p class="login-help">
-                ¿Problemas para acceder? <a href="#" class="login-help-link">Contacta soporte</a>
-            </p>
+    <!-- Tenant Info -->
+    @if (!string.IsNullOrEmpty(ViewData["TenantId"]?.ToString()))
+    {
+        <div class="alert alert-info">
+            <strong>Tenant:</strong> @ViewData["TenantId"]
         </div>
-    </div>
+    }
     
-    <!-- Footer -->
-    <p class="login-footer">
-        © @DateTime.Now.Year Autonomous Marketing Platform. Todos los derechos reservados.
-    </p>
+    <!-- Lockout Warning -->
+    @if (ViewData["LockoutEnd"] != null)
+    {
+        <div class="alert alert-warning">
+            <strong>Cuenta bloqueada</strong><br>
+            Tu cuenta ha sido bloqueada temporalmente hasta: @(((DateTime?)ViewData["LockoutEnd"])?.ToString("g"))
+        </div>
+    }
+    
+    <!-- Remaining Attempts Warning -->
+    @if (ViewData["RemainingAttempts"] != null && (int)ViewData["RemainingAttempts"]! < 5)
+    {
+        <div class="alert alert-warning">
+            <strong>Atención</strong><br>
+            Intentos restantes: @ViewData["RemainingAttempts"]
+        </div>
+    }
+    
+    <!-- Validation Summary -->
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger">
+            <ul style="margin: 0; padding-left: 20px;">
+                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    <li>@error.ErrorMessage</li>
+                }
+            </ul>
+        </div>
+    }
+            
+    <!-- Login Form -->
+    <form asp-action="Login" asp-controller="Account" method="post" id="loginForm">
+        @Html.AntiForgeryToken()
+        
+        @if (ViewData["TenantId"] != null)
+        {
+            <input type="hidden" asp-for="TenantId" name="TenantId" value="@ViewData["TenantId"]" />
+        }
+        else
+        {
+            <input type="hidden" asp-for="TenantId" name="TenantId" value="" />
+        }
+        <input type="hidden" name="returnUrl" value="@ViewData["ReturnUrl"]" />
+        
+        <!-- Email Field -->
+        <div class="form-group">
+            <input 
+                asp-for="Email" 
+                name="Email"
+                id="Email"
+                type="email" 
+                class="form-control" 
+                placeholder="Correo electrónico" 
+                required 
+                autocomplete="email"
+                autofocus>
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+        
+        <!-- Password Field -->
+        <div class="form-group">
+            <input 
+                asp-for="Password" 
+                name="Password"
+                id="Password"
+                type="password" 
+                class="form-control" 
+                placeholder="Contraseña" 
+                required 
+                autocomplete="current-password">
+            <span asp-validation-for="Password" class="text-danger"></span>
+        </div>
+        
+        <!-- Remember Me -->
+        <div class="form-group">
+            <label>
+                <input type="checkbox" asp-for="RememberMe" name="RememberMe" id="remember" value="true">
+                Recordarme
+            </label>
+        </div>
+        
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-primary" id="loginBtn">
+            Iniciar sesión
+        </button>
+    </form>
 </div>
 
 @section Scripts {
@@ -135,28 +113,16 @@
             
             const form = document.getElementById('loginForm');
             const submitBtn = document.getElementById('loginBtn');
-            const btnText = submitBtn ? submitBtn.querySelector('.btn-text') : null;
             
-            if (form && submitBtn && btnText) {
+            if (form && submitBtn) {
                 form.addEventListener('submit', function(e) {
-                    // NO prevenir el submit, solo cambiar el texto del botón
-                    // El formulario debe enviarse normalmente
                     if (form.checkValidity()) {
                         submitBtn.disabled = true;
-                        btnText.textContent = 'Validando...';
-                        submitBtn.classList.add('login-btn-loading');
-                        // NO hacer e.preventDefault() - dejar que el formulario se envíe
+                        submitBtn.textContent = 'Validando...';
                     } else {
-                        // Si la validación falla, no deshabilitar el botón
                         e.preventDefault();
                     }
                 });
-                
-                form.addEventListener('invalid', function(e) {
-                    submitBtn.disabled = false;
-                    btnText.textContent = 'Iniciar sesión';
-                    submitBtn.classList.remove('login-btn-loading');
-                }, true);
             }
         })();
     </script>

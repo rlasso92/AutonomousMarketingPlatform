@@ -211,6 +211,14 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.AccessDeniedPath = "/Account/AccessDenied";
 });
 
+// NOTA: DataProtection Keys
+// ASP.NET Core Identity usa DataProtection automáticamente para proteger cookies y tokens.
+// En Render, los contenedores son efímeros, por lo que las keys se regeneran en cada reinicio.
+// Esto es aceptable para MVP. Para producción multi-instancia, se debe implementar:
+// - Persistencia en Redis o base de datos
+// - O usar un servicio de DataProtection compartido
+// Por ahora, NO se configura persistencia para evitar dependencias adicionales.
+
 // Registrar TenantResolverService
 builder.Services.AddScoped<ITenantResolverService, TenantResolverService>();
 

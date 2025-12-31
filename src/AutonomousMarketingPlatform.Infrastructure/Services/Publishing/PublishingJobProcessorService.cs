@@ -46,6 +46,12 @@ public class PublishingJobProcessorService : BackgroundService, IPublishingJobSe
                 // Esperar antes del siguiente ciclo
                 await Task.Delay(_processingInterval, stoppingToken);
             }
+            catch (TaskCanceledException)
+            {
+                // El servicio está siendo detenido correctamente, no es un error
+                _logger.LogInformation("PublishingJobProcessor detenido correctamente.");
+                break;
+            }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error en ciclo de procesamiento de PublishingJobProcessorService");
