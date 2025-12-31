@@ -197,11 +197,11 @@
           "parameters": [
             { 
               "name": "tenantId", 
-              "value": "={{ $node[\"Set Validated Data\"].json.tenantId }}" 
+              "value": "={{ $node[\"set-validated-data\"].json.tenantId }}" 
             },
             { 
               "name": "userId", 
-              "value": "={{ $node[\"Set Validated Data\"].json.userId }}" 
+              "value": "={{ $node[\"set-validated-data\"].json.userId }}" 
             }
           ]
         },
