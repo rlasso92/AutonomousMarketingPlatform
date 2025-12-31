@@ -83,6 +83,11 @@ public class TenantResolverService : ITenantResolverService
             return defaultTenantId;
         }
 
+        // Si no se pudo resolver el tenant, loguear el error pero no lanzar excepción aquí
+        // El middleware de validación se encargará de manejar el caso
+        _logger.LogWarning("No se pudo resolver tenant: Host={Host}, Subdomain={Subdomain}, Authenticated={Authenticated}",
+            host, subdomain ?? "null", httpContext.User?.Identity?.IsAuthenticated ?? false);
+        
         return null;
     }
 
@@ -139,26 +144,41 @@ public class TenantResolverService : ITenantResolverService
         {
             using var context = await _dbContextFactory.CreateDbContextAsync();
             
+            _logger.LogDebug("Buscando tenant por defecto con subdomain 'default'");
+            
             // Primero intentar encontrar un tenant con subdomain "default"
             var defaultTenant = await context.Tenants
                 .FirstOrDefaultAsync(t => t.Subdomain == "default" && t.IsActive);
             
             if (defaultTenant != null)
             {
+                _logger.LogInformation("Tenant por defecto encontrado: {TenantId}, Name={Name}", 
+                    defaultTenant.Id, defaultTenant.Name);
                 return defaultTenant.Id;
             }
 
+            _logger.LogDebug("No se encontró tenant con subdomain 'default', buscando primer tenant activo");
+            
             // Si no existe "default", usar el primer tenant activo
             var firstTenant = await context.Tenants
                 .Where(t => t.IsActive)
                 .OrderBy(t => t.CreatedAt)
                 .FirstOrDefaultAsync();
             
-            return firstTenant?.Id;
+            if (firstTenant != null)
+            {
+                _logger.LogInformation("Usando primer tenant activo como default: {TenantId}, Name={Name}, Subdomain={Subdomain}", 
+                    firstTenant.Id, firstTenant.Name, firstTenant.Subdomain);
+                return firstTenant.Id;
+            }
+            
+            _logger.LogWarning("No se encontró ningún tenant activo en la base de datos");
+            return null;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error al obtener tenant por defecto");
+            _logger.LogError(ex, "Error al obtener tenant por defecto: {ExceptionType}, {Message}", 
+                ex.GetType().Name, ex.Message);
             return null;
         }
     }
