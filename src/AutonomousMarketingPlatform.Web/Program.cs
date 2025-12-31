@@ -508,7 +508,8 @@ app.UseConsentValidation();
 app.UseAuthorization();
 
 // 14. Endpoint raíz público para health checks de Render
-// IMPORTANTE: Debe estar ANTES de MapControllerRoute para tener prioridad
+// IMPORTANTE: Debe estar ANTES de MapControllers/MapControllerRoute para tener prioridad
+// Los endpoints mínimos tienen prioridad sobre el routing convencional
 Console.WriteLine("[INFO] Configurando endpoint raíz público...");
 app.MapGet("/", () => 
 {
@@ -518,10 +519,15 @@ app.MapGet("/", () =>
         service = "Autonomous Marketing Platform",
         timestamp = DateTime.UtcNow 
     });
-}).AllowAnonymous();
+}).AllowAnonymous().WithName("RootHealthCheck");
 
 // 15. Map controllers y Razor Pages
+// IMPORTANTE: Usamos MapControllers() que solo mapea controllers con atributos de ruta
+// Luego agregamos MapControllerRoute para rutas convencionales, pero el endpoint "/" ya está mapeado arriba
 Console.WriteLine("[INFO] Mapeando rutas de controllers y Razor Pages...");
+app.MapControllers(); // Mapea controllers con atributos [Route]
+
+// Mapear rutas convencionales, pero "/" ya está capturado por el endpoint mínimo arriba
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
