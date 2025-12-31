@@ -38,6 +38,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
     public DbSet<AutomationState> AutomationStates { get; set; }
     public DbSet<AutomationExecution> AutomationExecutions { get; set; }
     public DbSet<AuditLog> AuditLogs { get; set; }
+    public DbSet<ApplicationLog> ApplicationLogs { get; set; }
     public DbSet<UserTenant> UserTenants { get; set; }
     public DbSet<MarketingPack> MarketingPacks { get; set; }
     public DbSet<GeneratedCopy> GeneratedCopies { get; set; }

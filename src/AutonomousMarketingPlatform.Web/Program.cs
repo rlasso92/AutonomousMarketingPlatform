@@ -223,6 +223,13 @@ builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 builder.Logging.AddDebug();
 
+// Registrar servicio de logging persistente (Singleton para que el proveedor pueda usarlo)
+builder.Services.AddSingleton<ILoggingService, LoggingService>();
+
+// Agregar proveedor de logging persistente en base de datos
+// Solo persiste logs de Warning o superior para no saturar la BD
+builder.Services.AddSingleton<ILoggerProvider, AutonomousMarketingPlatform.Infrastructure.Logging.DatabaseLoggerProvider>();
+
 if (builder.Environment.IsProduction())
 {
     // En producción, agregar Application Insights o similar
