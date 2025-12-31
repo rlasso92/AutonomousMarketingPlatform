@@ -1,12 +1,11 @@
 services:
   - type: web
     name: autonomous-marketing-platform
-    env: dotnet
+    env: docker
     plan: starter
     region: virginia
     branch: main
-    buildCommand: dotnet restore && dotnet publish src/AutonomousMarketingPlatform.Web/AutonomousMarketingPlatform.Web.csproj -c Release -o ./publish
-    startCommand: cd publish && dotnet AutonomousMarketingPlatform.Web.dll
+    dockerfilePath: ./Dockerfile
     envVars:
       - key: ASPNETCORE_ENVIRONMENT
         value: Production
