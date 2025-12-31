@@ -60,7 +60,6 @@ public class ConsentsController : Controller
     /// Otorga un consentimiento.
     /// </summary>
     [HttpPost]
-    [Route("Consents/Grant")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Grant([FromForm] CreateConsentDto dto)
     {
@@ -86,13 +85,13 @@ public class ConsentsController : Controller
 
             var result = await _mediator.Send(command);
             TempData["SuccessMessage"] = $"Consentimiento '{dto.ConsentType}' otorgado correctamente.";
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index", "Consents");
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error al otorgar consentimiento {ConsentType} para usuario {UserId}", dto.ConsentType, userId.Value);
             TempData["ErrorMessage"] = "Error al otorgar el consentimiento. Por favor, intente nuevamente.";
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index", "Consents");
         }
     }
 
