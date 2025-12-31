@@ -34,7 +34,7 @@
       "position": [450, 300],
       "parameters": {
         "method": "GET",
-        "url": "={{ ($env.BACKEND_URL && $env.BACKEND_URL !== 'http://localhost:5000') ? $env.BACKEND_URL : 'https://autonomousmarketingplatform.onrender.com' }}/api/consents/check",
+        "url": "={{ ($env.BACKEND_URL && $env.BACKEND_URL !== 'http://localhost:5000') ? $env.BACKEND_URL : 'https://autonomousmarketingplatform.onrender.com' }}/api/ConsentsApi/check",
         "sendQuery": true,
         "queryParameters": {
           "parameters": [
