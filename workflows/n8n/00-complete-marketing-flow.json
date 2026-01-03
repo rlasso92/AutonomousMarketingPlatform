@@ -26,37 +26,37 @@
                                                              "assignments":  [
                                                                                  {
                                                                                      "name":  "tenantId",
-                                                                                     "value":  "={{ $json.body?.tenantId ?? $json.tenantId }}",
+                                                                                     "value":  "={{ $json.body?.body?.tenantId ?? $json.body?.tenantId ?? $json.tenantId }}",
                                                                                      "type":  "string"
                                                                                  },
                                                                                  {
                                                                                      "name":  "userId",
-                                                                                     "value":  "={{ $json.body?.userId ?? $json.userId }}",
+                                                                                     "value":  "={{ $json.body?.body?.userId ?? $json.body?.userId ?? $json.userId }}",
                                                                                      "type":  "string"
                                                                                  },
                                                                                  {
                                                                                      "name":  "instruction",
-                                                                                     "value":  "={{ $json.body?.instruction ?? $json.instruction }}",
+                                                                                     "value":  "={{ $json.body?.body?.instruction ?? $json.body?.instruction ?? $json.instruction }}",
                                                                                      "type":  "string"
                                                                                  },
                                                                                  {
                                                                                      "name":  "campaignId",
-                                                                                     "value":  "={{ $json.body?.campaignId ?? $json.campaignId ?? null }}",
+                                                                                     "value":  "={{ $json.body?.body?.campaignId ?? $json.body?.campaignId ?? $json.campaignId ?? null }}",
                                                                                      "type":  "string"
                                                                                  },
                                                                                  {
                                                                                      "name":  "requiresApproval",
-                                                                                     "value":  "={{ Boolean($json.body?.requiresApproval ?? $json.requiresApproval ?? false) }}",
+                                                                                     "value":  "={{ Boolean($json.body?.body?.requiresApproval ?? $json.body?.requiresApproval ?? $json.requiresApproval ?? false) }}",
                                                                                      "type":  "boolean"
                                                                                  },
                                                                                  {
                                                                                      "name":  "channelsNormalized",
-                                                                                     "value":  "={{ (() => { const ch = $json.body?.channels ?? $json.channels ?? []; return Array.isArray(ch) ? ch : (ch ? [ch] : []); })() }}",
+                                                                                     "value":  "={{ (() => { const ch = $json.body?.body?.channels ?? $json.body?.channels ?? $json.channels ?? []; return Array.isArray(ch) ? ch : (ch ? [ch] : []); })() }}",
                                                                                      "type":  "array"
                                                                                  },
                                                                                  {
                                                                                      "name":  "assets",
-                                                                                     "value":  "={{ (() => { const a = $json.body?.assets ?? $json.assets ?? []; return Array.isArray(a) ? a : (a ? [a] : []); })() }}",
+                                                                                     "value":  "={{ (() => { const a = $json.body?.body?.assets ?? $json.body?.assets ?? $json.assets ?? []; return Array.isArray(a) ? a : (a ? [a] : []); })() }}",
                                                                                      "type":  "array"
                                                                                  }
                                                                              ]
@@ -223,42 +223,42 @@
                                                                                  },
                                                                                  {
                                                                                      "name":  "tenantId",
-                                                                                     "value":  "={{ $json.body?.tenantId ?? $json.tenantId }}",
+                                                                                     "value":  "={{ $json.tenantId }}",
                                                                                      "type":  "string"
                                                                                  },
                                                                                  {
                                                                                      "name":  "userId",
-                                                                                     "value":  "={{ $json.body?.userId ?? $json.userId }}",
+                                                                                     "value":  "={{ $json.userId }}",
                                                                                      "type":  "string"
                                                                                  },
                                                                                  {
                                                                                      "name":  "campaignId",
-                                                                                     "value":  "={{ $json.body?.campaignId ?? $json.campaignId ?? null }}",
+                                                                                     "value":  "={{ $json.campaignId ?? null }}",
                                                                                      "type":  "string"
                                                                                  },
                                                                                  {
                                                                                      "name":  "instruction",
-                                                                                     "value":  "={{ $json.body?.instruction ?? $json.instruction }}",
+                                                                                     "value":  "={{ $json.instruction }}",
                                                                                      "type":  "string"
                                                                                  },
                                                                                  {
                                                                                      "name":  "channels",
-                                                                                     "value":  "={{ $json.body?.channels ?? $json.channels }}",
+                                                                                     "value":  "={{ $json.channels }}",
                                                                                      "type":  "array"
                                                                                  },
                                                                                  {
                                                                                      "name":  "assets",
-                                                                                     "value":  "={{ $json.body?.assets ?? $json.assets }}",
+                                                                                     "value":  "={{ $json.assets }}",
                                                                                      "type":  "array"
                                                                                  },
                                                                                  {
                                                                                      "name":  "requiresApproval",
-                                                                                     "value":  "={{ $json.body?.requiresApproval ?? $json.requiresApproval }}",
+                                                                                     "value":  "={{ $json.requiresApproval }}",
                                                                                      "type":  "boolean"
                                                                                  },
                                                                                  {
                                                                                      "name":  "validatedData",
-                                                                                     "value":  "={{ $json.body?.validatedData ?? $json.validatedData }}",
+                                                                                     "value":  "={{ $json.validatedData }}",
                                                                                      "type":  "object"
                                                                                  }
                                                                              ]
@@ -285,11 +285,11 @@
                                                                  "parameters":  [
                                                                                     {
                                                                                         "name":  "tenantId",
-                                                                                        "value":  "={{ $json.body?.tenantId ?? $json.tenantId ?? $('Set Cognitive Engine Version').item.json.tenantId }}"
+                                                                                        "value":  "={{ $json.tenantId ?? $('Set Cognitive Engine Version').item.json.tenantId }}"
                                                                                     },
                                                                                     {
                                                                                         "name":  "userId",
-                                                                                        "value":  "={{ $json.body?.userId ?? $json.userId ?? $('Set Cognitive Engine Version').item.json.userId }}"
+                                                                                        "value":  "={{ $json.userId ?? $('Set Cognitive Engine Version').item.json.userId }}"
                                                                                     }
                                                                                 ]
                                                              },
