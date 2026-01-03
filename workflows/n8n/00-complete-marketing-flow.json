@@ -285,11 +285,11 @@
                                                                  "parameters":  [
                                                                                     {
                                                                                         "name":  "tenantId",
-                                                                                        "value":  "={{ $json.tenantId }}"
+                                                                                        "value":  "={{ $('Set Cognitive Engine Version').item.json.tenantId }}"
                                                                                     },
                                                                                     {
                                                                                         "name":  "userId",
-                                                                                        "value":  "={{ $json.userId }}"
+                                                                                        "value":  "={{ $('Set Cognitive Engine Version').item.json.userId }}"
                                                                                     }
                                                                                 ]
                                                              },
@@ -317,12 +317,12 @@
                                                              "assignments":  [
                                                                                  {
                                                                                      "name":  "aiConsent",
-                                                                                     "value":  "={{ Boolean($json.AiConsent ?? $json.aiConsent ?? $json.data?.AiConsent ?? $json.data?.aiConsent ?? false) }}",
+                                                                                     "value":  "={{ ($json.AiConsent ?? $json.aiConsent ?? $json.data?.AiConsent ?? $json.data?.aiConsent ?? false) === true }}",
                                                                                      "type":  "boolean"
                                                                                  },
                                                                                  {
                                                                                      "name":  "publishingConsent",
-                                                                                     "value":  "={{ Boolean($json.PublishingConsent ?? $json.publishingConsent ?? $json.data?.PublishingConsent ?? $json.data?.publishingConsent ?? false) }}",
+                                                                                     "value":  "={{ ($json.PublishingConsent ?? $json.publishingConsent ?? $json.data?.PublishingConsent ?? $json.data?.publishingConsent ?? false) === true }}",
                                                                                      "type":  "boolean"
                                                                                  },
                                                                                  {
