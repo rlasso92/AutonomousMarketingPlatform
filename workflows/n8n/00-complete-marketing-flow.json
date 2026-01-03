@@ -15,7 +15,7 @@
                       "type":  "n8n-nodes-base.webhook",
                       "typeVersion":  2,
                       "position":  [
-                                       250,
+                                       100,
                                        300
                                    ],
                       "webhookId":  "complete-marketing-flow-webhook"
@@ -719,8 +719,8 @@
                       "type":  "n8n-nodes-base.openAi",
                       "typeVersion":  1,
                       "position":  [
-                                       2250,
-                                       500
+                                       2100,
+                                       300
                                    ],
                       "credentials":  {
                                           "openAiApi":  {
@@ -770,8 +770,8 @@
                       "type":  "n8n-nodes-base.openAi",
                       "typeVersion":  1,
                       "position":  [
-                                       2650,
-                                       500
+                                       2500,
+                                       300
                                    ],
                       "credentials":  {
                                           "openAiApi":  {
