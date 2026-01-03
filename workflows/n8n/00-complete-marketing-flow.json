@@ -204,8 +204,82 @@
                   },
                   {
                       "parameters":  {
+                                         "assignments":  {
+                                                             "assignments":  [
+                                                                                 {
+                                                                                     "name":  "cognitiveEngineVersion",
+                                                                                     "value":  "v1.0-cognitive-engine",
+                                                                                     "type":  "string"
+                                                                                 },
+                                                                                 {
+                                                                                     "name":  "enginePhase",
+                                                                                     "value":  "production",
+                                                                                     "type":  "string"
+                                                                                 },
+                                                                                 {
+                                                                                     "name":  "engineType",
+                                                                                     "value":  "monolithic",
+                                                                                     "type":  "string"
+                                                                                 },
+                                                                                 {
+                                                                                     "name":  "tenantId",
+                                                                                     "value":  "={{ $json.tenantId }}",
+                                                                                     "type":  "string"
+                                                                                 },
+                                                                                 {
+                                                                                     "name":  "userId",
+                                                                                     "value":  "={{ $json.userId }}",
+                                                                                     "type":  "string"
+                                                                                 },
+                                                                                 {
+                                                                                     "name":  "campaignId",
+                                                                                     "value":  "={{ $json.campaignId ?? null }}",
+                                                                                     "type":  "string"
+                                                                                 },
+                                                                                 {
+                                                                                     "name":  "instruction",
+                                                                                     "value":  "={{ $json.instruction }}",
+                                                                                     "type":  "string"
+                                                                                 },
+                                                                                 {
+                                                                                     "name":  "channels",
+                                                                                     "value":  "={{ $json.channels }}",
+                                                                                     "type":  "array"
+                                                                                 },
+                                                                                 {
+                                                                                     "name":  "assets",
+                                                                                     "value":  "={{ $json.assets }}",
+                                                                                     "type":  "array"
+                                                                                 },
+                                                                                 {
+                                                                                     "name":  "requiresApproval",
+                                                                                     "value":  "={{ $json.requiresApproval }}",
+                                                                                     "type":  "boolean"
+                                                                                 },
+                                                                                 {
+                                                                                     "name":  "validatedData",
+                                                                                     "value":  "={{ $json.validatedData }}",
+                                                                                     "type":  "object"
+                                                                                 }
+                                                                             ]
+                                                         },
+                                         "options":  {
+
+                                                     }
+                                     },
+                      "id":  "set-cognitive-engine-version",
+                      "name":  "Set Cognitive Engine Version",
+                      "type":  "n8n-nodes-base.set",
+                      "typeVersion":  3,
+                      "position":  [
+                                       1150,
+                                       400
+                                   ]
+                  },
+                  {
+                      "parameters":  {
                                          "method":  "GET",
-                                         "url":  "={{ ($env.BACKEND_URL \u0026\u0026 $env.BACKEND_URL !== \u0027http://localhost:5000\u0027) ? $env.BACKEND_URL : \u0027https://autonomousmarketingplatform.onrender.com\u0027 }}/api/ConsentsApi/check",
+                                         "url":  "https://autonomousmarketingplatform.onrender.com/api/ConsentsApi/check",
                                          "sendQuery":  true,
                                          "queryParameters":  {
                                                                  "parameters":  [
@@ -243,52 +317,52 @@
                                                              "assignments":  [
                                                                                  {
                                                                                      "name":  "aiConsent",
-                                                                                     "value":  "={{ Boolean($json.aiConsent ?? $json.data?.aiConsent ?? $json.AiConsent ?? false) }}",
+                                                                                     "value":  "={{ Boolean($json.AiConsent ?? $json.aiConsent ?? $json.data?.AiConsent ?? $json.data?.aiConsent ?? false) }}",
                                                                                      "type":  "boolean"
                                                                                  },
                                                                                  {
                                                                                      "name":  "publishingConsent",
-                                                                                     "value":  "={{ Boolean($json.publishingConsent ?? $json.data?.publishingConsent ?? $json.PublishingConsent ?? false) }}",
+                                                                                     "value":  "={{ Boolean($json.PublishingConsent ?? $json.publishingConsent ?? $json.data?.PublishingConsent ?? $json.data?.publishingConsent ?? false) }}",
                                                                                      "type":  "boolean"
                                                                                  },
                                                                                  {
                                                                                      "name":  "tenantId",
-                                                                                     "value":  "={{ $(\u0027Set Validated Data\u0027).item.json.tenantId }}",
+                                                                                     "value":  "={{ $('Set Cognitive Engine Version').item.json.tenantId }}",
                                                                                      "type":  "string"
                                                                                  },
                                                                                  {
                                                                                      "name":  "userId",
-                                                                                     "value":  "={{ $(\u0027Set Validated Data\u0027).item.json.userId }}",
+                                                                                     "value":  "={{ $('Set Cognitive Engine Version').item.json.userId }}",
                                                                                      "type":  "string"
                                                                                  },
                                                                                  {
                                                                                      "name":  "campaignId",
-                                                                                     "value":  "={{ $(\u0027Set Validated Data\u0027).item.json.campaignId }}",
+                                                                                     "value":  "={{ $('Set Cognitive Engine Version').item.json.campaignId }}",
                                                                                      "type":  "string"
                                                                                  },
                                                                                  {
                                                                                      "name":  "instruction",
-                                                                                     "value":  "={{ $(\u0027Set Validated Data\u0027).item.json.instruction }}",
+                                                                                     "value":  "={{ $('Set Cognitive Engine Version').item.json.instruction }}",
                                                                                      "type":  "string"
                                                                                  },
                                                                                  {
                                                                                      "name":  "channels",
-                                                                                     "value":  "={{ $(\u0027Set Validated Data\u0027).item.json.channels }}",
+                                                                                     "value":  "={{ $('Set Cognitive Engine Version').item.json.channels }}",
                                                                                      "type":  "array"
                                                                                  },
                                                                                  {
                                                                                      "name":  "assets",
-                                                                                     "value":  "={{ $(\u0027Set Validated Data\u0027).item.json.assets }}",
+                                                                                     "value":  "={{ $('Set Cognitive Engine Version').item.json.assets }}",
                                                                                      "type":  "array"
                                                                                  },
                                                                                  {
                                                                                      "name":  "requiresApproval",
-                                                                                     "value":  "={{ $(\u0027Set Validated Data\u0027).item.json.requiresApproval }}",
+                                                                                     "value":  "={{ $('Set Cognitive Engine Version').item.json.requiresApproval }}",
                                                                                      "type":  "boolean"
                                                                                  },
                                                                                  {
                                                                                      "name":  "validatedData",
-                                                                                     "value":  "={{ $(\u0027Set Validated Data\u0027).item.json.validatedData }}",
+                                                                                     "value":  "={{ $('Set Cognitive Engine Version').item.json.validatedData }}",
                                                                                      "type":  "object"
                                                                                  }
                                                                              ]
@@ -316,19 +390,12 @@
                                                                         },
                                                             "conditions":  [
                                                                                {
-                                                                                   "leftValue":  "={{ $json.aiConsent }}",
-                                                                                   "rightValue":  true,
+                                                                                   "leftValue":  "={{ $json.aiConsent === true && $json.publishingConsent === true }}",
+                                                                                   "rightValue":  "",
                                                                                    "operator":  {
                                                                                                     "type":  "boolean",
-                                                                                                    "operation":  "equals"
-                                                                                                }
-                                                                               },
-                                                                               {
-                                                                                   "leftValue":  "={{ $json.publishingConsent }}",
-                                                                                   "rightValue":  true,
-                                                                                   "operator":  {
-                                                                                                    "type":  "boolean",
-                                                                                                    "operation":  "equals"
+                                                                                                    "operation":  "true",
+                                                                                                    "singleValue":  true
                                                                                                 }
                                                                                }
                                                                            ],
@@ -367,7 +434,7 @@
                   {
                       "parameters":  {
                                          "method":  "GET",
-                                         "url":  "={{ ($env.BACKEND_URL \u0026\u0026 $env.BACKEND_URL !== \u0027http://localhost:5000\u0027) ? $env.BACKEND_URL : \u0027https://autonomousmarketingplatform.onrender.com\u0027 }}/api/memory/context",
+                                         "url":  "https://autonomousmarketingplatform.onrender.com/api/MemoryApi/context",
                                          "sendQuery":  true,
                                          "queryParameters":  {
                                                                  "parameters":  [
@@ -409,37 +476,37 @@
                                                                                  },
                                                                                  {
                                                                                      "name":  "tenantId",
-                                                                                     "value":  "={{ $(\u0027Normalize Consents\u0027).item.json.tenantId }}",
+                                                                                     "value":  "={{ $json.tenantId }}",
                                                                                      "type":  "string"
                                                                                  },
                                                                                  {
                                                                                      "name":  "userId",
-                                                                                     "value":  "={{ $(\u0027Normalize Consents\u0027).item.json.userId }}",
+                                                                                     "value":  "={{ $json.userId }}",
                                                                                      "type":  "string"
                                                                                  },
                                                                                  {
                                                                                      "name":  "instruction",
-                                                                                     "value":  "={{ $(\u0027Normalize Consents\u0027).item.json.instruction }}",
+                                                                                     "value":  "={{ $('Normalize Consents').item.json.instruction }}",
                                                                                      "type":  "string"
                                                                                  },
                                                                                  {
                                                                                      "name":  "channels",
-                                                                                     "value":  "={{ $(\u0027Normalize Consents\u0027).item.json.channels }}",
+                                                                                     "value":  "={{ $('Normalize Consents').item.json.channels }}",
                                                                                      "type":  "array"
                                                                                  },
                                                                                  {
                                                                                      "name":  "assets",
-                                                                                     "value":  "={{ $(\u0027Normalize Consents\u0027).item.json.assets }}",
+                                                                                     "value":  "={{ $('Normalize Consents').item.json.assets }}",
                                                                                      "type":  "array"
                                                                                  },
                                                                                  {
                                                                                      "name":  "campaignId",
-                                                                                     "value":  "={{ $(\u0027Normalize Consents\u0027).item.json.campaignId }}",
+                                                                                     "value":  "={{ $json.campaignId }}",
                                                                                      "type":  "string"
                                                                                  },
                                                                                  {
                                                                                      "name":  "requiresApproval",
-                                                                                     "value":  "={{ $(\u0027Normalize Consents\u0027).item.json.requiresApproval }}",
+                                                                                     "value":  "={{ $('Normalize Consents').item.json.requiresApproval }}",
                                                                                      "type":  "boolean"
                                                                                  }
                                                                              ]
@@ -460,7 +527,7 @@
                   {
                       "parameters":  {
                                          "method":  "GET",
-                                         "url":  "={{ ($env.BACKEND_URL \u0026\u0026 $env.BACKEND_URL !== \u0027http://localhost:5000\u0027) ? $env.BACKEND_URL : \u0027https://autonomousmarketingplatform.onrender.com\u0027 }}/api/memory/context",
+                                         "url":  "https://autonomousmarketingplatform.onrender.com/api/MemoryApi/context",
                                          "sendQuery":  true,
                                          "queryParameters":  {
                                                                  "parameters":  [
@@ -490,7 +557,7 @@
                   {
                       "parameters":  {
                                          "method":  "GET",
-                                         "url":  "={{ ($env.BACKEND_URL \u0026\u0026 $env.BACKEND_URL !== \u0027http://localhost:5000\u0027) ? $env.BACKEND_URL : \u0027https://autonomousmarketingplatform.onrender.com\u0027 }}/api/memory/context",
+                                         "url":  "https://autonomousmarketingplatform.onrender.com/api/MemoryApi/context",
                                          "sendQuery":  true,
                                          "queryParameters":  {
                                                                  "parameters":  [
@@ -520,7 +587,7 @@
                   {
                       "parameters":  {
                                          "method":  "GET",
-                                         "url":  "={{ ($env.BACKEND_URL \u0026\u0026 $env.BACKEND_URL !== \u0027http://localhost:5000\u0027) ? $env.BACKEND_URL : \u0027https://autonomousmarketingplatform.onrender.com\u0027 }}/api/memory/context",
+                                         "url":  "https://autonomousmarketingplatform.onrender.com/api/MemoryApi/context",
                                          "sendQuery":  true,
                                          "queryParameters":  {
                                                                  "parameters":  [
@@ -550,7 +617,7 @@
                   {
                       "parameters":  {
                                          "method":  "GET",
-                                         "url":  "={{ ($env.BACKEND_URL \u0026\u0026 $env.BACKEND_URL !== \u0027http://localhost:5000\u0027) ? $env.BACKEND_URL : \u0027https://autonomousmarketingplatform.onrender.com\u0027 }}/api/memory/context",
+                                         "url":  "https://autonomousmarketingplatform.onrender.com/api/MemoryApi/context",
                                          "sendQuery":  true,
                                          "queryParameters":  {
                                                                  "parameters":  [
@@ -580,7 +647,7 @@
                   {
                       "parameters":  {
                                          "method":  "GET",
-                                         "url":  "={{ ($env.BACKEND_URL \u0026\u0026 $env.BACKEND_URL !== \u0027http://localhost:5000\u0027) ? $env.BACKEND_URL : \u0027https://autonomousmarketingplatform.onrender.com\u0027 }}/api/marketing-packs",
+                                         "url":  "https://autonomousmarketingplatform.onrender.com/api/marketing-packs",
                                          "sendQuery":  true,
                                          "queryParameters":  {
                                                                  "parameters":  [
@@ -903,10 +970,10 @@
                   {
                       "parameters":  {
                                          "method":  "POST",
-                                         "url":  "={{ ($env.BACKEND_URL \u0026\u0026 $env.BACKEND_URL !== \u0027http://localhost:5000\u0027) ? $env.BACKEND_URL : \u0027https://autonomousmarketingplatform.onrender.com\u0027 }}/api/memory/save",
+                                         "url":  "https://autonomousmarketingplatform.onrender.com/api/MemoryApi/save",
                                          "sendBody":  true,
                                          "contentType":  "json",
-                                         "body":  "={{ $json.humanOverride ? { \"tenantId\": $json.tenantId, \"campaignId\": $json.campaignId, \"memoryType\": \u0027Pattern\u0027, \"content\": JSON.stringify($json.humanOverride), \"context\": $json.humanOverride.context, \"tags\": [\u0027override\u0027, \u0027human-decision\u0027, \u0027pattern\u0027], \"relevanceScore\": 9 } : {} }}",
+                                         "body":  "={{ $json.humanOverride ? { \"tenantId\": $json.tenantId, \"campaignId\": $json.campaignId, \"memoryType\": \u0027Pattern\u0027, \"content\": JSON.stringify($json.humanOverride), \"context\": $json.humanOverride.context, \"tags\": [\u0027override\u0027, \u0027human-decision\u0027, \u0027pattern\u0027], \"relevanceScore\": 9, \"cognitiveEngineVersion\": $(\u0027Set Cognitive Engine Version\u0027).item.json.cognitiveEngineVersion } : {} }}",
                                          "options":  {
                                                          "timeout":  10000
                                                      }
@@ -956,10 +1023,10 @@
                   {
                       "parameters":  {
                                          "method":  "POST",
-                                         "url":  "={{ ($env.BACKEND_URL \u0026\u0026 $env.BACKEND_URL !== \u0027http://localhost:5000\u0027) ? $env.BACKEND_URL : \u0027https://autonomousmarketingplatform.onrender.com\u0027 }}/api/marketing-packs",
+                                         "url":  "https://autonomousmarketingplatform.onrender.com/api/marketing-packs",
                                          "sendBody":  true,
                                          "contentType":  "json",
-                                         "body":  "={{ { \"id\": $json.marketingPack.id || null, \"tenantId\": $json.marketingPack.tenantId, \"userId\": $json.marketingPack.userId, \"contentId\": $json.marketingPack.contentId, \"campaignId\": $json.marketingPack.campaignId || null, \"strategy\": $json.marketingPack.strategy, \"status\": \"RequiresApproval\", \"version\": $json.marketingPack.version || 1, \"metadata\": $json.marketingPack.metadata, \"copies\": $json.marketingPack.copies || [], \"assetPrompts\": $json.marketingPack.assetPrompts || [], \"cognitiveVersion\": $json.marketingPack.cognitiveVersion || 1, \"confidenceScore\": $json.marketingPack.confidenceScore || 0.5, \"learningSources\": $json.marketingPack.learningSources || [], \"decisionRationale\": $json.marketingPack.decisionRationale || \u0027\u0027 } }}",
+                                         "body":  "={{ { \"id\": $json.marketingPack.id || null, \"tenantId\": $json.marketingPack.tenantId, \"userId\": $json.marketingPack.userId, \"contentId\": $json.marketingPack.contentId, \"campaignId\": $json.marketingPack.campaignId || null, \"strategy\": $json.marketingPack.strategy, \"status\": \"RequiresApproval\", \"version\": $json.marketingPack.version || 1, \"metadata\": $json.marketingPack.metadata, \"copies\": $json.marketingPack.copies || [], \"assetPrompts\": $json.marketingPack.assetPrompts || [], \"cognitiveVersion\": $json.marketingPack.cognitiveVersion || 1, \"confidenceScore\": $json.marketingPack.confidenceScore || 0.5, \"learningSources\": $json.marketingPack.learningSources || [], \"decisionRationale\": $json.marketingPack.decisionRationale || \u0027\u0027, \"cognitiveEngineVersion\": $(\u0027Set Cognitive Engine Version\u0027).item.json.cognitiveEngineVersion } }}",
                                          "options":  {
                                                          "timeout":  10000
                                                      }
@@ -993,10 +1060,10 @@
                   {
                       "parameters":  {
                                          "method":  "POST",
-                                         "url":  "={{ ($env.BACKEND_URL \u0026\u0026 $env.BACKEND_URL !== \u0027http://localhost:5000\u0027) ? $env.BACKEND_URL : \u0027https://autonomousmarketingplatform.onrender.com\u0027 }}/api/marketing-packs",
+                                         "url":  "https://autonomousmarketingplatform.onrender.com/api/marketing-packs",
                                          "sendBody":  true,
                                          "contentType":  "json",
-                                         "body":  "={{ { \"id\": $json.marketingPack.id || null, \"tenantId\": $json.marketingPack.tenantId, \"userId\": $json.marketingPack.userId, \"contentId\": $json.marketingPack.contentId, \"campaignId\": $json.marketingPack.campaignId || null, \"strategy\": $json.marketingPack.strategy, \"status\": \"Ready\", \"version\": $json.marketingPack.version || 1, \"metadata\": $json.marketingPack.metadata, \"copies\": $json.marketingPack.copies || [], \"assetPrompts\": $json.marketingPack.assetPrompts || [], \"cognitiveVersion\": $json.marketingPack.cognitiveVersion || 1, \"confidenceScore\": $json.marketingPack.confidenceScore || 0.5, \"learningSources\": $json.marketingPack.learningSources || [], \"decisionRationale\": $json.marketingPack.decisionRationale || \u0027\u0027 } }}",
+                                         "body":  "={{ { \"id\": $json.marketingPack.id || null, \"tenantId\": $json.marketingPack.tenantId, \"userId\": $json.marketingPack.userId, \"contentId\": $json.marketingPack.contentId, \"campaignId\": $json.marketingPack.campaignId || null, \"strategy\": $json.marketingPack.strategy, \"status\": \"Ready\", \"version\": $json.marketingPack.version || 1, \"metadata\": $json.marketingPack.metadata, \"copies\": $json.marketingPack.copies || [], \"assetPrompts\": $json.marketingPack.assetPrompts || [], \"cognitiveVersion\": $json.marketingPack.cognitiveVersion || 1, \"confidenceScore\": $json.marketingPack.confidenceScore || 0.5, \"learningSources\": $json.marketingPack.learningSources || [], \"decisionRationale\": $json.marketingPack.decisionRationale || \u0027\u0027, \"cognitiveEngineVersion\": $(\u0027Set Cognitive Engine Version\u0027).item.json.cognitiveEngineVersion } }}",
                                          "options":  {
                                                          "timeout":  10000
                                                      }
@@ -1225,10 +1292,10 @@
                   {
                       "parameters":  {
                                          "method":  "POST",
-                                         "url":  "={{ ($env.BACKEND_URL \u0026\u0026 $env.BACKEND_URL !== \u0027http://localhost:5000\u0027) ? $env.BACKEND_URL : \u0027https://autonomousmarketingplatform.onrender.com\u0027 }}/api/publishing-jobs",
+                                         "url":  "https://autonomousmarketingplatform.onrender.com/api/publishing-jobs",
                                          "sendBody":  true,
                                          "contentType":  "json",
-                                         "body":  "={{ { \"tenantId\": $json.tenantId, \"campaignId\": $json.campaignId, \"marketingPackId\": $json.marketingPackId || null, \"generatedCopyId\": $json.generatedCopyId || null, \"channel\": $json.channel, \"status\": $json.success ? \u0027Success\u0027 : \u0027Failed\u0027, \"publishedDate\": $json.publishedAt || new Date().toISOString(), \"publishedUrl\": $json.publishedUrl || null, \"externalPostId\": $json.postId || null, \"content\": $json.content, \"hashtags\": $json.hashtags, \"mediaUrl\": $json.mediaUrl || null, \"errorMessage\": $json.success ? null : ($json.error || $json.message || \u0027Unknown error\u0027), \"metadata\": JSON.stringify({ \"simulated\": $json.simulated || false, \"channel\": $json.channel, \"publishedAt\": $json.publishedAt }), \"scheduledDate\": null } }}",
+                                         "body":  "={{ { \"tenantId\": $json.tenantId, \"campaignId\": $json.campaignId, \"marketingPackId\": $json.marketingPackId || null, \"generatedCopyId\": $json.generatedCopyId || null, \"channel\": $json.channel, \"status\": $json.success ? \u0027Success\u0027 : \u0027Failed\u0027, \"publishedDate\": $json.publishedAt || new Date().toISOString(), \"publishedUrl\": $json.publishedUrl || null, \"externalPostId\": $json.postId || null, \"content\": $json.content, \"hashtags\": $json.hashtags, \"mediaUrl\": $json.mediaUrl || null, \"errorMessage\": $json.success ? null : ($json.error || $json.message || \u0027Unknown error\u0027), \"metadata\": JSON.stringify({ \"simulated\": $json.simulated || false, \"channel\": $json.channel, \"publishedAt\": $json.publishedAt }), \"scheduledDate\": null, \"cognitiveEngineVersion\": $(\u0027Set Cognitive Engine Version\u0027).item.json.cognitiveEngineVersion } }}",
                                          "options":  {
                                                          "timeout":  10000
                                                      }
@@ -1258,10 +1325,10 @@
                   {
                       "parameters":  {
                                          "method":  "POST",
-                                         "url":  "={{ ($env.BACKEND_URL \u0026\u0026 $env.BACKEND_URL !== \u0027http://localhost:5000\u0027) ? $env.BACKEND_URL : \u0027https://autonomousmarketingplatform.onrender.com\u0027 }}/api/metrics/campaign",
+                                         "url":  "https://autonomousmarketingplatform.onrender.com/api/metrics/campaign",
                                          "sendBody":  true,
                                          "contentType":  "json",
-                                         "body":  "={{ { \"tenantId\": $json.tenantId, \"campaignId\": $json.campaignId, \"metricDate\": new Date().toISOString().split(\u0027T\u0027)[0], \"impressions\": 0, \"clicks\": 0, \"likes\": 0, \"comments\": 0, \"shares\": 0, \"source\": \u0027n8n\u0027, \"notes\": \u0027Initial metrics from automated publishing\u0027 } }}",
+                                         "body":  "={{ { \"tenantId\": $json.tenantId, \"campaignId\": $json.campaignId, \"metricDate\": new Date().toISOString().split(\u0027T\u0027)[0], \"impressions\": 0, \"clicks\": 0, \"likes\": 0, \"comments\": 0, \"shares\": 0, \"source\": \u0027n8n\u0027, \"notes\": \u0027Initial metrics from automated publishing\u0027, \"cognitiveEngineVersion\": $(\u0027Set Cognitive Engine Version\u0027).item.json.cognitiveEngineVersion } }}",
                                          "options":  {
                                                          "timeout":  10000
                                                      }
@@ -1278,10 +1345,10 @@
                   {
                       "parameters":  {
                                          "method":  "POST",
-                                         "url":  "={{ ($env.BACKEND_URL \u0026\u0026 $env.BACKEND_URL !== \u0027http://localhost:5000\u0027) ? $env.BACKEND_URL : \u0027https://autonomousmarketingplatform.onrender.com\u0027 }}/api/metrics/publishing-job",
+                                         "url":  "https://autonomousmarketingplatform.onrender.com/api/metrics/publishing-job",
                                          "sendBody":  true,
                                          "contentType":  "json",
-                                         "body":  "={{ { \"tenantId\": $json.tenantId, \"publishingJobId\": $json.publishingJobIds[0] || \u0027\u0027, \"metricDate\": new Date().toISOString().split(\u0027T\u0027)[0], \"impressions\": 0, \"clicks\": 0, \"likes\": 0, \"comments\": 0, \"shares\": 0, \"source\": \u0027n8n\u0027, \"notes\": \u0027Initial metrics from automated publishing\u0027 } }}",
+                                         "body":  "={{ { \"tenantId\": $json.tenantId, \"publishingJobId\": $json.publishingJobIds[0] || \u0027\u0027, \"metricDate\": new Date().toISOString().split(\u0027T\u0027)[0], \"impressions\": 0, \"clicks\": 0, \"likes\": 0, \"comments\": 0, \"shares\": 0, \"source\": \u0027n8n\u0027, \"notes\": \u0027Initial metrics from automated publishing\u0027, \"cognitiveEngineVersion\": $(\u0027Set Cognitive Engine Version\u0027).item.json.cognitiveEngineVersion } }}",
                                          "options":  {
                                                          "timeout":  10000
                                                      }
@@ -1371,13 +1438,24 @@
                                                    "main":  [
                                                                 [
                                                                     {
-                                                                        "node":  "HTTP Request - Check Consents",
+                                                                        "node":  "Set Cognitive Engine Version",
                                                                         "type":  "main",
                                                                         "index":  0
                                                                     }
                                                                 ]
                                                             ]
-                                               },
+                                                       },
+                        "Set Cognitive Engine Version":  {
+                                                              "main":  [
+                                                                           [
+                                                                               {
+                                                                                   "node":  "HTTP Request - Check Consents",
+                                                                                   "type":  "main",
+                                                                                   "index":  0
+                                                                               }
+                                                                           ]
+                                                                       ]
+                                                          },
                         "HTTP Request - Check Consents":  {
                                                               "main":  [
                                                                            [
