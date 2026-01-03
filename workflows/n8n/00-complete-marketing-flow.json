@@ -438,20 +438,20 @@
                                          "sendQuery":  true,
                                          "queryParameters":  {
                                                                  "parameters":  [
-                                                                                    {
+            {
                                                                                         "name":  "tenantId",
-                                                                                        "value":  "={{ $json.body?.body?.tenantId ?? $json.body?.tenantId ?? $json.tenantId ?? $('Normalize Consents').item.json.tenantId ?? $('Set Cognitive Engine Version').item.json.tenantId }}"
-                                                                                    },
-                                                                                    {
+                                                                                        "value":  "={{ $json.tenantId ?? $('Normalize Consents').item.json.tenantId }}"
+            },
+            {
                                                                                         "name":  "userId",
-                                                                                        "value":  "={{ $json.body?.body?.userId ?? $json.body?.userId ?? $json.userId ?? $('Normalize Consents').item.json.userId ?? $('Set Cognitive Engine Version').item.json.userId }}"
-                                                                                    },
-                                                                                    {
+                                                                                        "value":  "={{ $json.userId ?? $('Normalize Consents').item.json.userId }}"
+            },
+            {
                                                                                         "name":  "campaignId",
-                                                                                        "value":  "={{ $json.body?.body?.campaignId ?? $json.body?.campaignId ?? $json.campaignId ?? $('Normalize Consents').item.json.campaignId ?? $('Set Cognitive Engine Version').item.json.campaignId }}"
-                                                                                    }
-                                                                                ]
-                                                             },
+                                                                                        "value":  "={{ $json.campaignId ?? $('Normalize Consents').item.json.campaignId }}"
+            }
+          ]
+        },
                                          "options":  {
                                                          "timeout":  10000
         }
