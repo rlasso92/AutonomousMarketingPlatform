@@ -324,6 +324,29 @@ catch (Exception ex)
     throw;
 }
 
+// Aplicar migraciones automáticamente (siempre, en desarrollo y producción)
+Console.WriteLine("[INFO] Aplicando migraciones de base de datos...");
+using (var scope = app.Services.CreateScope())
+{
+    try
+    {
+        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        Console.WriteLine("[INFO] Ejecutando migraciones pendientes...");
+        await dbContext.Database.MigrateAsync();
+        Console.WriteLine("[INFO] Migraciones aplicadas exitosamente");
+    }
+    catch (Exception ex)
+    {
+        var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "Error al aplicar migraciones");
+        Console.WriteLine($"[ERROR] Error al aplicar migraciones: {ex.GetType().Name}");
+        Console.WriteLine($"[ERROR] Mensaje: {ex.Message}");
+        Console.WriteLine($"[ERROR] StackTrace: {ex.StackTrace}");
+        // NO lanzar excepción aquí, permitir que la app inicie aunque falle la migración
+        // (puede que las migraciones ya estén aplicadas)
+    }
+}
+
 // Seed roles (siempre, en desarrollo y producción)
 Console.WriteLine("[INFO] Iniciando seeding de datos del sistema...");
 using (var scope = app.Services.CreateScope())
