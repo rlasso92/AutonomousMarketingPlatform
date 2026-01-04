@@ -6,10 +6,13 @@ using AutonomousMarketingPlatform.Infrastructure.Data;
 using AutonomousMarketingPlatform.Infrastructure.Repositories;
 using AutonomousMarketingPlatform.Infrastructure.Services;
 using AutonomousMarketingPlatform.Web.Middleware;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 using System.Linq;
 
@@ -211,13 +214,14 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.AccessDeniedPath = "/Account/AccessDenied";
 });
 
-// NOTA: DataProtection Keys
-// ASP.NET Core Identity usa DataProtection automáticamente para proteger cookies y tokens.
-// En Render, los contenedores son efímeros, por lo que las keys se regeneran en cada reinicio.
-// Esto es aceptable para MVP. Para producción multi-instancia, se debe implementar:
-// - Persistencia en Redis o base de datos
-// - O usar un servicio de DataProtection compartido
-// Por ahora, NO se configura persistencia para evitar dependencias adicionales.
+// Configurar DataProtection para persistir keys en la base de datos
+// Esto evita errores de Antiforgery cuando los contenedores se reinician
+var dataProtectionBuilder = builder.Services.AddDataProtection()
+    .SetApplicationName("AutonomousMarketingPlatform")
+    .SetDefaultKeyLifetime(TimeSpan.FromDays(90));
+    
+// Persistir keys en la base de datos usando el método de extensión
+dataProtectionBuilder.PersistKeysToDbContext<ApplicationDbContext>();
 
 // Registrar TenantResolverService
 builder.Services.AddScoped<ITenantResolverService, TenantResolverService>();

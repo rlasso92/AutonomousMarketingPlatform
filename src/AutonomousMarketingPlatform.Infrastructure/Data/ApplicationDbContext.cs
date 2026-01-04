@@ -1,5 +1,6 @@
 using AutonomousMarketingPlatform.Domain.Entities;
 using AutonomousMarketingPlatform.Domain.Interfaces;
+using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -15,7 +16,7 @@ namespace AutonomousMarketingPlatform.Infrastructure.Data;
 /// Implementa filtrado automático por tenant para garantizar aislamiento de datos.
 /// Extiende IdentityDbContext para soportar ASP.NET Core Identity.
 /// </summary>
-public class ApplicationDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, Guid>
+public class ApplicationDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, Guid>, IDataProtectionKeyContext
 {
     private readonly IHttpContextAccessor? _httpContextAccessor;
     private readonly IServiceProvider? _serviceProvider;
@@ -49,6 +50,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
     public DbSet<PublishingJob> PublishingJobs { get; set; }
     public DbSet<CampaignMetrics> CampaignMetrics { get; set; }
     public DbSet<PublishingJobMetrics> PublishingJobMetrics { get; set; }
+    
+    // DataProtection Keys para persistir keys de cifrado en la base de datos
+    public DbSet<DataProtectionKey> DataProtectionKeys { get; set; } = null!;
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
