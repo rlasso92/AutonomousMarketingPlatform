@@ -1,4 +1,5 @@
 using AutonomousMarketingPlatform.Application.DTOs;
+using AutonomousMarketingPlatform.Application.Services;
 using AutonomousMarketingPlatform.Application.UseCases.Users;
 using AutonomousMarketingPlatform.Application.UseCases.Tenants;
 using AutonomousMarketingPlatform.Web.Attributes;
@@ -6,6 +7,7 @@ using AutonomousMarketingPlatform.Web.Helpers;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 
 namespace AutonomousMarketingPlatform.Web.Controllers;
 
@@ -18,11 +20,16 @@ public class UsersController : Controller
 {
     private readonly IMediator _mediator;
     private readonly ILogger<UsersController> _logger;
+    private readonly ILoggingService _loggingService;
 
-    public UsersController(IMediator mediator, ILogger<UsersController> logger)
+    public UsersController(
+        IMediator mediator, 
+        ILogger<UsersController> logger,
+        ILoggingService loggingService)
     {
         _mediator = mediator;
         _logger = logger;
+        _loggingService = loggingService;
     }
 
     /// <summary>
@@ -195,8 +202,15 @@ public class UsersController : Controller
         // Si hay errores de validación, retornar la vista
         if (!ModelState.IsValid)
         {
-            _logger.LogWarning("[UsersController.Create] Validación fallida. Errores: {Errors}", 
-                string.Join(", ", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage)));
+            var validationErrors = string.Join(", ", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
+            _logger.LogWarning("[UsersController.Create] Validación fallida. Errores: {Errors}", validationErrors);
+            
+            // Guardar error en base de datos
+            await SaveErrorToDatabase(
+                "HTTP 400 - Validación fallida al crear usuario",
+                validationErrors,
+                null,
+                model);
             
             // Recargar tenants si es SuperAdmin
             if (isSuperAdmin)
@@ -230,6 +244,13 @@ public class UsersController : Controller
         catch (InvalidOperationException ex)
         {
             _logger.LogError(ex, "[UsersController.Create] Error al crear usuario: {Message}", ex.Message);
+            
+            // Guardar error en base de datos
+            await SaveErrorToDatabase(
+                "HTTP 400 - InvalidOperationException al crear usuario",
+                ex.Message,
+                ex,
+                model);
             
             // Detectar si es error de usuario existente
             if (ex.Message.Contains("ya existe") || ex.Message.Contains("already exists"))
@@ -275,6 +296,14 @@ public class UsersController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "[UsersController.Create] Error inesperado al crear usuario. StackTrace: {StackTrace}", ex.StackTrace);
+            
+            // Guardar error en base de datos
+            await SaveErrorToDatabase(
+                "HTTP 400 - Error inesperado al crear usuario",
+                ex.Message,
+                ex,
+                model);
+            
             ModelState.AddModelError("", "Ocurrió un error inesperado al crear el usuario. Por favor, intente nuevamente.");
             
             // Recargar tenants si es SuperAdmin
@@ -465,6 +494,70 @@ public class UsersController : Controller
             _logger.LogError(ex, "Error al actualizar usuario");
             TempData["ErrorMessage"] = ex.Message;
             return RedirectToAction(nameof(Index));
+        }
+    }
+
+    /// <summary>
+    /// Guarda un error en la base de datos ApplicationLogs.
+    /// </summary>
+    private async Task SaveErrorToDatabase(
+        string errorTitle,
+        string errorMessage,
+        Exception? exception,
+        CreateUserDto? model = null)
+    {
+        try
+        {
+            var tenantId = UserHelper.GetTenantId(User);
+            var userId = UserHelper.GetUserId(User);
+            var requestId = HttpContext.TraceIdentifier;
+            var path = HttpContext.Request.Path.ToString();
+            var httpMethod = HttpContext.Request.Method;
+            var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
+            var userAgent = HttpContext.Request.Headers["User-Agent"].ToString();
+
+            // Preparar datos adicionales del modelo (sin contraseña por seguridad)
+            string? additionalData = null;
+            if (model != null)
+            {
+                var modelData = new
+                {
+                    Email = model.Email,
+                    FullName = model.FullName,
+                    Role = model.Role,
+                    TenantId = model.TenantId,
+                    IsActive = model.IsActive,
+                    HasPassword = !string.IsNullOrEmpty(model.Password),
+                    PasswordLength = model.Password?.Length ?? 0,
+                    HasConfirmPassword = !string.IsNullOrEmpty(model.ConfirmPassword),
+                    PasswordsMatch = model.Password == model.ConfirmPassword
+                };
+                additionalData = JsonSerializer.Serialize(modelData);
+            }
+
+            var fullMessage = $"{errorTitle}: {errorMessage}";
+            if (model != null)
+            {
+                fullMessage += $" | Email: {model.Email ?? "NULL"} | TenantId: {model.TenantId}";
+            }
+
+            await _loggingService.LogErrorAsync(
+                message: fullMessage,
+                source: "UsersController.Create",
+                exception: exception,
+                tenantId: tenantId,
+                userId: userId,
+                requestId: requestId,
+                path: path,
+                httpMethod: httpMethod,
+                additionalData: additionalData,
+                ipAddress: ipAddress,
+                userAgent: userAgent);
+        }
+        catch (Exception ex)
+        {
+            // Si falla al guardar el log, al menos registrarlo en el logger estándar
+            _logger.LogError(ex, "[UsersController.SaveErrorToDatabase] Error al guardar log en base de datos. Error original: {OriginalError}", errorMessage);
         }
     }
 }
