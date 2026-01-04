@@ -341,20 +341,49 @@ public class AccountController : Controller
     }
 
     /// <summary>
-    /// Procesa el logout.
+    /// Procesa el logout (POST con antiforgery token).
     /// </summary>
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Logout()
     {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        var tenantId = User.FindFirstValue("TenantId");
+        return await PerformLogout();
+    }
 
-        await _signInManager.SignOutAsync();
+    /// <summary>
+    /// Logout GET (para compatibilidad con navegadores y enlaces directos).
+    /// </summary>
+    [HttpGet]
+    [ActionName("Logout")]
+    public async Task<IActionResult> LogoutGet()
+    {
+        return await PerformLogout();
+    }
 
-        _logger.LogInformation("Logout: UserId={UserId}, TenantId={TenantId}", userId, tenantId);
+    private async Task<IActionResult> PerformLogout()
+    {
+        try
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var tenantId = User.FindFirstValue("TenantId");
 
-        return RedirectToAction("Login", "Account");
+            _logger.LogInformation("Iniciando logout: UserId={UserId}, TenantId={TenantId}", userId, tenantId);
+
+            await _signInManager.SignOutAsync();
+
+            _logger.LogInformation("Logout completado exitosamente: UserId={UserId}, TenantId={TenantId}", userId, tenantId);
+
+            // Limpiar cookies de sesión
+            Response.Cookies.Delete("AutonomousMarketingPlatform.Auth");
+            
+            return RedirectToAction("Login", "Account");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error al hacer logout");
+            // Aun así redirigir al login
+            return RedirectToAction("Login", "Account");
+        }
     }
 
     /// <summary>
