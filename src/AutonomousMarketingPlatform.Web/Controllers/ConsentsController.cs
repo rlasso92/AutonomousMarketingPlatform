@@ -46,6 +46,9 @@ public class ConsentsController : Controller
             return RedirectToAction("Login", "Account");
         }
 
+        // Siempre setear IsSuperAdmin en ViewBag para que la vista lo pueda usar
+        ViewBag.IsSuperAdmin = isSuperAdmin;
+        
         try
         {
             var query = new GetUserConsentsQuery
@@ -59,10 +62,22 @@ public class ConsentsController : Controller
             // Si es super admin, cargar lista de usuarios para poder otorgar consentimientos
             if (isSuperAdmin)
             {
-                var usersQuery = new ListUsersQuery { TenantId = Guid.Empty };
-                var users = await _mediator.Send(usersQuery);
-                ViewBag.Users = users;
-                ViewBag.IsSuperAdmin = true;
+                try
+                {
+                    var usersQuery = new ListUsersQuery { TenantId = Guid.Empty };
+                    var users = await _mediator.Send(usersQuery);
+                    ViewBag.Users = users;
+                    _logger.LogInformation("Cargados {Count} usuarios para super admin", users?.Count ?? 0);
+                }
+                catch (Exception exUsers)
+                {
+                    _logger.LogError(exUsers, "Error al cargar lista de usuarios para super admin");
+                    ViewBag.Users = new List<UserListDto>();
+                }
+            }
+            else
+            {
+                ViewBag.Users = new List<UserListDto>();
             }
             
             return View(result);
@@ -71,6 +86,22 @@ public class ConsentsController : Controller
         {
             _logger.LogError(ex, "Error al obtener consentimientos del usuario {UserId}", userId.Value);
             TempData["ErrorMessage"] = "Error al cargar los consentimientos. Por favor, intente nuevamente.";
+            
+            // Aún en caso de error, intentar cargar usuarios si es super admin
+            if (isSuperAdmin)
+            {
+                try
+                {
+                    var usersQuery = new ListUsersQuery { TenantId = Guid.Empty };
+                    var users = await _mediator.Send(usersQuery);
+                    ViewBag.Users = users;
+                }
+                catch
+                {
+                    ViewBag.Users = new List<UserListDto>();
+                }
+            }
+            
             return RedirectToAction("Index", "Home");
         }
     }

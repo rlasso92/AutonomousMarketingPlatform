@@ -4,11 +4,13 @@ using AutonomousMarketingPlatform.Application.UseCases.Campaigns;
 using AutonomousMarketingPlatform.Application.UseCases.Tenants;
 using AutonomousMarketingPlatform.Web.Attributes;
 using AutonomousMarketingPlatform.Web.Helpers;
+using AutonomousMarketingPlatform.Domain.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using AutonomousMarketingPlatform.Infrastructure.Data;
+using Microsoft.Extensions.DependencyInjection;
 using System.Text.Json;
 
 namespace AutonomousMarketingPlatform.Web.Controllers;
@@ -644,23 +646,33 @@ public class CampaignsController : Controller
     {
         try
         {
-            var tenantId = UserHelper.GetTenantId(User);
-            if (!tenantId.HasValue)
+            var currentTenantId = UserHelper.GetTenantId(User);
+            var isSuperAdmin = User.HasClaim("IsSuperAdmin", "true");
+            
+            // Para SuperAdmins, usar Guid.Empty para permitir editar campañas de cualquier tenant
+            // Para usuarios normales, usar su TenantId
+            var effectiveTenantId = isSuperAdmin ? Guid.Empty : (currentTenantId ?? Guid.Empty);
+            
+            if (!isSuperAdmin && !currentTenantId.HasValue)
             {
                 return RedirectToAction("Login", "Account");
             }
 
             var query = new GetCampaignQuery
             {
-                TenantId = tenantId.Value,
-                CampaignId = id
+                TenantId = effectiveTenantId,
+                CampaignId = id,
+                IsSuperAdmin = isSuperAdmin
             };
 
             var campaign = await _mediator.Send(query);
 
             if (campaign == null)
             {
-                return NotFound();
+                _logger.LogWarning("Campaña {CampaignId} no encontrada para editar. TenantId: {TenantId}, IsSuperAdmin: {IsSuperAdmin}", 
+                    id, effectiveTenantId, isSuperAdmin);
+                TempData["ErrorMessage"] = "La campaña no fue encontrada o no tienes permisos para editarla.";
+                return RedirectToAction("Index");
             }
 
             var updateDto = new UpdateCampaignDto
@@ -682,7 +694,8 @@ public class CampaignsController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error al obtener campaña para editar {CampaignId}", id);
-            return View("Error");
+            TempData["ErrorMessage"] = "Error al cargar la campaña para editar. Por favor, intente nuevamente.";
+            return RedirectToAction("Index");
         }
     }
 
@@ -702,16 +715,43 @@ public class CampaignsController : Controller
         try
         {
             var userId = UserHelper.GetUserId(User);
-            var tenantId = UserHelper.GetTenantId(User);
+            var currentTenantId = UserHelper.GetTenantId(User);
+            var isSuperAdmin = User.HasClaim("IsSuperAdmin", "true");
 
-            if (!userId.HasValue || !tenantId.HasValue)
+            if (!userId.HasValue)
             {
                 return RedirectToAction("Login", "Account");
             }
 
+            // Para SuperAdmins, necesitamos obtener el TenantId real de la campaña
+            // Para usuarios normales, usar su TenantId
+            Guid effectiveTenantId;
+            if (isSuperAdmin)
+            {
+                // Obtener el TenantId real desde la base de datos usando el repositorio
+                var campaignRepository = HttpContext.RequestServices.GetRequiredService<ICampaignRepository>();
+                var campaignEntity = await campaignRepository.GetCampaignWithDetailsAsync(id, Guid.Empty);
+                
+                if (campaignEntity == null)
+                {
+                    TempData["ErrorMessage"] = "La campaña no fue encontrada.";
+                    return RedirectToAction("Index");
+                }
+                
+                effectiveTenantId = campaignEntity.TenantId;
+            }
+            else
+            {
+                if (!currentTenantId.HasValue)
+                {
+                    return RedirectToAction("Login", "Account");
+                }
+                effectiveTenantId = currentTenantId.Value;
+            }
+
             var command = new UpdateCampaignCommand
             {
-                TenantId = tenantId.Value,
+                TenantId = effectiveTenantId,
                 UserId = userId.Value,
                 CampaignId = id,
                 Campaign = model
@@ -724,7 +764,8 @@ public class CampaignsController : Controller
         }
         catch (NotFoundException)
         {
-            return NotFound();
+            TempData["ErrorMessage"] = "La campaña no fue encontrada.";
+            return RedirectToAction("Index");
         }
         catch (FluentValidation.ValidationException ex)
         {

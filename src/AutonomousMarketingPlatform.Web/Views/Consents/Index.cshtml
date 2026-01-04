@@ -50,7 +50,13 @@
             </div>
         }
 
-        @if (ViewBag.IsSuperAdmin == true)
+        @{
+            var isSuperAdmin = ViewBag.IsSuperAdmin == true || User.HasClaim("IsSuperAdmin", "true");
+            var usersList = ViewBag.Users as List<AutonomousMarketingPlatform.Application.DTOs.UserListDto> ?? new List<AutonomousMarketingPlatform.Application.DTOs.UserListDto>();
+            var targetUser = ViewBag.TargetUser as AutonomousMarketingPlatform.Application.DTOs.UserDto;
+        }
+
+        @if (isSuperAdmin)
         {
             <div class="card mb-4">
                 <div class="card-header bg-info">
@@ -65,24 +71,27 @@
                     <form method="get" asp-action="UserConsents" class="form-inline">
                         <div class="form-group mr-2">
                             <label for="userId" class="mr-2">Seleccionar Usuario:</label>
-                            <select name="userId" id="userId" class="form-control" onchange="this.form.submit()">
+                            <select name="userId" id="userId" class="form-control" style="min-width: 300px;" onchange="this.form.submit()">
                                 <option value="">-- Seleccione un usuario --</option>
-                                @if (ViewBag.Users != null)
+                                @if (usersList != null && usersList.Any())
                                 {
-                                    @foreach (var user in (List<AutonomousMarketingPlatform.Application.DTOs.UserListDto>)ViewBag.Users)
+                                    @foreach (var user in usersList)
                                     {
-                                        var isSelected = ViewBag.TargetUser != null && ((AutonomousMarketingPlatform.Application.DTOs.UserDto)ViewBag.TargetUser).Id == user.Id;
+                                        var isSelected = targetUser != null && targetUser.Id == user.Id;
                                         <option value="@user.Id" selected="@isSelected">
                                             @user.FullName (@user.Email) - @user.TenantName
                                         </option>
                                     }
                                 }
+                                else
+                                {
+                                    <option value="" disabled>No hay usuarios disponibles</option>
+                                }
                             </select>
                         </div>
-                        @if (ViewBag.TargetUser != null)
+                        @if (targetUser != null)
                         {
-                            var targetUser = (AutonomousMarketingPlatform.Application.DTOs.UserDto)ViewBag.TargetUser;
-                            <div class="form-group">
+                            <div class="form-group ml-2">
                                 <span class="badge badge-primary">Usuario seleccionado: @targetUser.FullName (@targetUser.Email)</span>
                                 <a href="@Url.Action("Index")" class="btn btn-sm btn-secondary ml-2">Ver mis consentimientos</a>
                             </div>
@@ -96,16 +105,15 @@
             <div class="card-header">
                 <h3 class="card-title">
                     Gestión de Consentimientos
-                    @if (ViewBag.TargetUser != null)
+                    @if (targetUser != null)
                     {
-                        var targetUser = (AutonomousMarketingPlatform.Application.DTOs.UserDto)ViewBag.TargetUser;
                         <small class="text-muted">- Usuario: @targetUser.FullName</small>
                     }
                 </h3>
             </div>
             <div class="card-body">
                 <p class="text-muted">
-                    @if (ViewBag.IsSuperAdmin == true && ViewBag.TargetUser != null)
+                    @if (isSuperAdmin && targetUser != null)
                     {
                         <text>Consentimientos del usuario seleccionado. Puede otorgar o revocar consentimientos en su nombre.</text>
                     }
@@ -178,14 +186,13 @@
                                             @Html.AntiForgeryToken()
                                             <input type="hidden" name="ConsentType" value="@consent.ConsentType" />
                                             <input type="hidden" name="ConsentVersion" value="1.0" />
-                                            @if (ViewBag.IsSuperAdmin == true && ViewBag.TargetUser != null)
+                                            @if (isSuperAdmin && targetUser != null)
                                             {
-                                                var targetUser = (AutonomousMarketingPlatform.Application.DTOs.UserDto)ViewBag.TargetUser;
                                                 <input type="hidden" name="TargetUserId" value="@targetUser.Id" />
                                             }
                                             <button type="submit" class="btn btn-sm btn-primary" id="grantBtn_@consent.ConsentType">
                                                 <i class="fas fa-check"></i> 
-                                                @if (ViewBag.IsSuperAdmin == true && ViewBag.TargetUser != null)
+                                                @if (isSuperAdmin && targetUser != null)
                                                 {
                                                     <text>Otorgar Consentimiento (Super Admin)</text>
                                                 }
