@@ -229,6 +229,7 @@ builder.Services.AddScoped<UserSeeder>();
 // Registrar servicio de logging persistente PRIMERO (Singleton para que el proveedor pueda usarlo)
 // Debe registrarse antes del proveedor para que esté disponible cuando se cree
 builder.Services.AddSingleton<ILoggingService, LoggingService>();
+builder.Services.AddScoped<IApplicationLogRepository, ApplicationLogRepository>();
 
 // Configurar logging estructurado
 builder.Logging.ClearProviders();
