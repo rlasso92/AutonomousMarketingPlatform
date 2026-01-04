@@ -8,13 +8,13 @@
         "responseMode": "responseNode",
         "options": {}
       },
-      "id": "9ccf08d1-2799-4120-a5b9-bff9a58621e8",
+      "id": "66a2c93d-bd58-46b0-a0e5-6d0ee02f48a2",
       "name": "Webhook - Receive Request",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
       "position": [
-        -1008,
-        -624
+        -1408,
+        -32
       ],
       "webhookId": "complete-marketing-flow-webhook"
     },
@@ -74,13 +74,13 @@
         },
         "options": {}
       },
-      "id": "3fab28f7-5ec7-46b4-9db3-e359b86d654d",
+      "id": "e6851c86-d284-4c2c-a0b3-0e7764e66dd2",
       "name": "Normalize Payload",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3,
       "position": [
-        -800,
-        -624
+        -1200,
+        -32
       ]
     },
     {
@@ -118,7 +118,7 @@
               "id": "18e14f1d-edb7-48cc-bbb8-9a7b963eb8c6"
             },
             {
-              "leftValue": "={{ Number($json.channelsNormalized.length) }}",
+              "leftValue": "={{ Number(($json.channelsNormalized ?? $json.channels ?? []).length) }}",
               "rightValue": 0,
               "operator": {
                 "type": "number",
@@ -131,13 +131,13 @@
         },
         "options": {}
       },
-      "id": "b12f078e-852d-4f4f-a68f-45c6cc04ba8e",
+      "id": "4650b95a-16d7-4502-aec2-42f075cc9db3",
       "name": "Validate Required Fields",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
       "position": [
-        -608,
-        -624
+        -1008,
+        -32
       ]
     },
     {
@@ -148,13 +148,13 @@
           "responseCode": 400
         }
       },
-      "id": "4e2c864f-cbee-4ccb-95e5-20aa9bd35124",
+      "id": "fe32ac8f-1882-4c50-881e-edf33407c2e2",
       "name": "Respond - Validation Error",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1,
       "position": [
-        -384,
-        -848
+        -784,
+        -256
       ]
     },
     {
@@ -171,13 +171,13 @@
         },
         "options": {}
       },
-      "id": "20f3a39e-327d-4293-9ea3-3324226c03ce",
+      "id": "433118cd-d8f1-4edd-b9e0-25400622bc70",
       "name": "Set Validated Data",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3,
       "position": [
-        -400,
-        -624
+        -800,
+        -32
       ]
     },
     {
@@ -194,13 +194,13 @@
         },
         "options": {}
       },
-      "id": "647f90c8-ebc6-4124-a4d7-125d72a93ee4",
+      "id": "74742315-708d-4b6a-add8-4d3e5f503d01",
       "name": "Set Cognitive Engine Version",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3,
       "position": [
-        -208,
-        -624
+        -608,
+        -32
       ]
     },
     {
@@ -228,13 +228,13 @@
           "timeout": 30000
         }
       },
-      "id": "6f6b3e6a-d9a8-482e-89a0-9b7bba85d63a",
+      "id": "09cd3071-f069-43ff-b695-97568edc481f",
       "name": "HTTP Request - Check Consents",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        0,
-        -624
+        -400,
+        -32
       ]
     },
     {
@@ -257,13 +257,13 @@
         },
         "options": {}
       },
-      "id": "58e7bffb-7857-43cb-b179-a6d8bdbad38f",
+      "id": "bc5ed422-af73-4491-9e45-2e05c6c11d8e",
       "name": "Normalize Consents",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3,
       "position": [
-        208,
-        -624
+        -192,
+        -32
       ]
     },
     {
@@ -289,13 +289,13 @@
         },
         "options": {}
       },
-      "id": "63b8ccc9-cc10-41cb-ac4f-2b45144e12a8",
+      "id": "2b093b16-0e1a-4af7-8aab-3c5bbd48414e",
       "name": "Validate Consents",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
       "position": [
-        -896,
-        -192
+        -1296,
+        416
       ]
     },
     {
@@ -306,13 +306,13 @@
           "responseCode": 403
         }
       },
-      "id": "f0fd4395-79d4-43c4-b382-9dc74f397b60",
+      "id": "9d8c8720-3dbd-4b5a-8a78-a39a25f17dfc",
       "name": "Respond - Consent Error",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1,
       "position": [
-        -816,
-        192
+        -1216,
+        800
       ]
     },
     {
@@ -339,13 +339,13 @@
           "timeout": 10000
         }
       },
-      "id": "8955ac8a-6dfc-4239-a47f-7556b9442b49",
+      "id": "b94419b3-b956-4aca-afe1-ab38a2e64afd",
       "name": "HTTP Request - Load Marketing Memory",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        -688,
-        -192
+        -1088,
+        416
       ]
     },
     {
@@ -416,13 +416,13 @@
         },
         "options": {}
       },
-      "id": "dfc12b5c-f24b-43b6-91b9-a2ca2b739b3a",
+      "id": "3debb5bc-f40c-4405-8748-b2044da83728",
       "name": "Normalize Memory",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3,
       "position": [
-        -496,
-        -192
+        -896,
+        416
       ]
     },
     {
@@ -445,13 +445,13 @@
           "timeout": 10000
         }
       },
-      "id": "7dfd3fd6-a614-4248-8e4b-0879f13381f3",
+      "id": "305fa9ec-80a2-4b56-939c-086191e9a513",
       "name": "HTTP Request - Load Preference Memory",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        -224,
-        -352
+        -624,
+        256
       ]
     },
     {
@@ -474,13 +474,13 @@
           "timeout": 10000
         }
       },
-      "id": "3efd5c4e-0dfc-4a86-8e0b-4308cffaa5ec",
+      "id": "75d44594-b55f-4a6d-8d45-4e449088e6e0",
       "name": "HTTP Request - Load Performance Memory",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        -144,
-        -80
+        -544,
+        528
       ]
     },
     {
@@ -503,13 +503,13 @@
           "timeout": 10000
         }
       },
-      "id": "bbd5de1b-9898-440e-a690-cd7d8298a7a4",
+      "id": "3f43c3bd-0181-499a-910f-8aa93fdb74b5",
       "name": "HTTP Request - Load Pattern Memory",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        -160,
-        256
+        -560,
+        864
       ]
     },
     {
@@ -536,26 +536,26 @@
           "timeout": 10000
         }
       },
-      "id": "a7c20ec3-c79d-4d95-8f4d-d42710a34631",
+      "id": "615ff253-30db-47e0-a69b-2424231eac39",
       "name": "HTTP Request - Get Last Cognitive Version",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        -192,
-        528
+        -592,
+        1136
       ]
     },
     {
       "parameters": {
         "jsCode": "// Función helper para acceder a nodos de forma segura\nfunction safeGetNodeData(nodeName) {\n  try {\n    const node = $(nodeName);\n    return node?.item?.json || {};\n  } catch (e) {\n    return {};\n  }\n}\n\n// Consolidar las 4 memorias avanzadas\nconst preferenceMemory = safeGetNodeData('HTTP Request - Load Preference Memory');\nconst performanceMemory = safeGetNodeData('HTTP Request - Load Performance Memory');\nconst constraintMemory = safeGetNodeData('HTTP Request - Load Constraint Memory');\nconst patternMemoryData = safeGetNodeData('HTTP Request - Load Pattern Memory');\nconst baseData = safeGetNodeData('Normalize Memory');\n\n// Obtener lastCognitiveVersion de HTTP Request - Get Last Cognitive Version\nconst lastCognitiveVersionResponse = safeGetNodeData('HTTP Request - Get Last Cognitive Version');\nconst lastPack = Array.isArray(lastCognitiveVersionResponse) ? \n  (lastCognitiveVersionResponse[0] || {}) : \n  (lastCognitiveVersionResponse.data?.[0] || lastCognitiveVersionResponse);\nconst lastCognitiveVersion = lastPack?.cognitiveVersion ?? \n  (lastPack?.metadata ? (JSON.parse(lastPack.metadata)?.cognitiveVersion ?? null) : null) ?? 1;\n\n// Extraer patrones fallidos y exitosos de PatternMemory\n// Los patrones vienen como memorias individuales, necesitamos parsearlas\n// Puede venir como array directo, en data, o en learningsList\nconst patternMemories = Array.isArray(patternMemoryData) ? patternMemoryData : \n  (patternMemoryData.data ? patternMemoryData.data : \n   (patternMemoryData.learningsList ? patternMemoryData.learningsList : []));\nconst failedPatterns = [];\nconst successfulPatterns = [];\n\n// BLOQUEO TEMPORAL: Identificar patrones fallidos repetidamente\n// FASE 3: Soporte para severity/blockStatus determinístico\nconst patternFailureCount = {};\nconst blockedPatterns = [];\nconst patternTimestamps = {};\n\n// Función determinística para calcular días desde timestamp\nfunction daysSinceTimestamp(timestamp, referenceTimestamp) {\n  if (!timestamp || !referenceTimestamp) return 999; // Si no hay timestamp, asumir muy antiguo\n  try {\n    const ts = new Date(timestamp).getTime();\n    const ref = new Date(referenceTimestamp).getTime();\n    if (isNaN(ts) || isNaN(ref)) return 999;\n    return Math.round(((ref - ts) / (1000 * 60 * 60 * 24)) * 10000) / 10000; // Redondear a 4 decimales\n  } catch (e) {\n    return 999;\n  }\n}\n\n// Obtener timestamp de referencia determinístico (del validatedData si existe)\nconst validatedDataNode = safeGetNodeData('Set Validated Data');\nconst validatedData = validatedDataNode?.validatedData || {};\nconst referenceTimestamp = validatedData.receivedAt || new Date().toISOString();\n\npatternMemories.forEach(memory => {\n  try {\n    const content = typeof memory.content === 'string' ? JSON.parse(memory.content) : memory.content;\n    const pattern = content.pattern || JSON.stringify(content);\n    \n    if (content.result === 'negative' || (content.penalty && content.penalty < 0) || content.result === 'override_result') {\n      // Contar fallos por patrón\n      patternFailureCount[pattern] = (patternFailureCount[pattern] || 0) + 1;\n      const memoryTimestamp = content.timestamp || content.context?.evaluationTime || referenceTimestamp;\n      patternTimestamps[pattern] = memoryTimestamp;\n      \n      // Extraer severity si existe (de Fase 3)\n      const severity = content.severity || 'moderate'; // Default si no existe\n      const penalty = Math.round((content.penalty || -0.2) * 10000) / 10000; // Redondear a 4 decimales\n      \n      // Calcular días desde fallo (determinístico)\n      const daysSinceFailure = daysSinceTimestamp(memoryTimestamp, referenceTimestamp);\n      \n      // Si un patrón falla 3+ veces, bloquearlo temporalmente (30 días)\n      if (patternFailureCount[pattern] >= 3 && daysSinceFailure < 30) {\n        blockedPatterns.push(pattern);\n      }\n      \n      failedPatterns.push({ \n        pattern: pattern, \n        failureCount: patternFailureCount[pattern], \n        penalty: penalty,\n        severity: severity,\n        timestamp: memoryTimestamp,\n        daysSinceFailure: daysSinceFailure\n      });\n    } else if (content.result === 'positive' || (content.penalty && content.penalty > 0)) {\n      const penalty = Math.round((content.penalty || 0.1) * 10000) / 10000; // Redondear a 4 decimales\n      successfulPatterns.push({ pattern: pattern, penalty: penalty });\n    }\n  } catch (e) {\n    // Ignorar errores de parsing\n  }\n});\n\n// Extraer datos estructurados de cada tipo de memoria\n// Las APIs devuelven: { preferences: {...}, learnings: {...}, restrictions: [...] }\n// baseData viene de HTTP Request - Load Marketing Memory que devuelve la misma estructura\nconst advancedMemory = {\n  preferenceMemory: {\n    preferredTone: preferenceMemory.preferences?.preferredTone || baseData.preferences?.preferredTone || 'profesional',\n    preferredFormats: preferenceMemory.preferences?.preferredFormats || baseData.preferences?.preferredFormats || [],\n    preferredChannels: preferenceMemory.preferences?.preferredChannels || baseData.preferences?.preferredChannels || [],\n    dislikedFormats: preferenceMemory.preferences?.dislikedFormats || baseData.preferences?.dislikedFormats || [],\n    stylePreferences: preferenceMemory.preferences?.stylePreferences || baseData.preferences?.stylePreferences || {}\n  },\n  performanceMemory: {\n    bestPerformingChannels: performanceMemory.learnings?.bestPerformingChannels || baseData.learnings?.bestPerformingChannels || [],\n    channelKPIs: performanceMemory.learnings?.channelKPIs || baseData.learnings?.channelKPIs || {},\n    bestTimes: performanceMemory.learnings?.bestTimes || baseData.learnings?.bestTimes || [],\n    bestDays: performanceMemory.learnings?.bestDays || baseData.learnings?.bestDays || [],\n    avgCTR: performanceMemory.learnings?.avgCTR || baseData.learnings?.avgCTR || 0,\n    avgEngagement: performanceMemory.learnings?.avgEngagement || baseData.learnings?.avgEngagement || 0,\n    topPerformers: performanceMemory.learnings?.topPerformers || baseData.learnings?.topPerformers || []\n  },\n  constraintMemory: {\n    restrictions: constraintMemory.restrictions || baseData.restrictions || [],\n    prohibitedChannels: (constraintMemory.restrictions || baseData.restrictions || []).filter(r => typeof r === 'string' && (r.includes('channel') || r.includes('prohibited'))),\n    legalConstraints: (constraintMemory.restrictions || baseData.restrictions || []).filter(r => typeof r === 'string' && (r.includes('legal') || r.includes('compliance'))),\n    brandConstraints: (constraintMemory.restrictions || baseData.restrictions || []).filter(r => typeof r === 'string' && (r.includes('brand') || r.includes('guidelines')))\n  },\n  patternMemory: {\n    successfulPatterns: successfulPatterns,\n    failedPatterns: failedPatterns,\n    blockedPatterns: blockedPatterns,\n    patternFailureCount: patternFailureCount,\n    patternTimestamps: patternTimestamps,\n    urgencyFormatMapping: patternMemoryData.urgencyFormatMapping || {},\n    channelFormatMapping: patternMemoryData.channelFormatMapping || {},\n    toneChannelMapping: patternMemoryData.toneChannelMapping || {}\n  }\n};\n\n// Calcular confidence weights basados en historial\nconst confidenceWeights = {\n  channel: calculateChannelConfidence(advancedMemory.performanceMemory.bestPerformingChannels, advancedMemory.performanceMemory.channelKPIs),\n  format: calculateFormatConfidence(advancedMemory.patternMemory.urgencyFormatMapping, advancedMemory.performanceMemory.topPerformers),\n  tone: calculateToneConfidence(advancedMemory.performanceMemory.topPerformers, advancedMemory.patternMemory.toneChannelMapping),\n  timing: calculateTimingConfidence(advancedMemory.performanceMemory.bestTimes, advancedMemory.performanceMemory.bestDays)\n};\n\nfunction calculateChannelConfidence(bestChannels, channelKPIs) {\n  const weights = {};\n  if (bestChannels && bestChannels.length > 0) {\n    bestChannels.forEach((channel, index) => {\n      const kpi = channelKPIs[channel] || {};\n      const ctr = kpi.ctr || 0;\n      const engagement = kpi.engagement || 0;\n      \n      // AUTO-AJUSTE: Penaliza canales con bajo rendimiento y refuerza exitosos\n      let baseWeight = 0.5 + (ctr * 10) + (engagement * 5); // CTR y engagement influyen directamente\n      \n      // Penalización fuerte si CTR < 0.5% o engagement < 1%\n      if (ctr < 0.005) baseWeight -= 0.3;\n      if (engagement < 0.01) baseWeight -= 0.2;\n      \n      // Refuerzo si CTR > 2% o engagement > 5%\n      if (ctr > 0.02) baseWeight += 0.2;\n      if (engagement > 0.05) baseWeight += 0.15;\n      \n      // Ajuste por posición (los primeros tienen más peso)\n      baseWeight -= (index * 0.05);\n      \n      weights[channel] = Math.max(0.1, Math.min(0.9, baseWeight));\n    });\n  }\n  return weights;\n}\n\nfunction calculateFormatConfidence(urgencyFormatMapping, topPerformers) {\n  const weights = {};\n  \n  // AUTO-AJUSTE: Refuerza formatos exitosos y penaliza fallidos\n  if (urgencyFormatMapping && Object.keys(urgencyFormatMapping).length > 0) {\n    Object.entries(urgencyFormatMapping).forEach(([urgency, format]) => {\n      // Si está en el mapeo, es porque ha sido exitoso\n      weights[`${urgency}_${format}`] = 0.75; // Aumentado de 0.7 a 0.75\n    });\n  }\n  \n  if (topPerformers && topPerformers.length > 0) {\n    topPerformers.forEach((performer, index) => {\n      if (performer.format) {\n        // Los top performers refuerzan más\n        const boost = 0.15 - (index * 0.02); // Más boost para los primeros\n        weights[performer.format] = (weights[performer.format] || 0.5) + boost;\n      }\n    });\n  }\n  \n  // Normalizar todos los pesos\n  Object.keys(weights).forEach(key => {\n    weights[key] = Math.max(0.1, Math.min(0.9, weights[key]));\n  });\n  \n  return weights;\n}\n\nfunction calculateToneConfidence(topPerformers, toneChannelMapping) {\n  const weights = {};\n  \n  // AUTO-AJUSTE: Refuerza tonos con alto engagement y penaliza los de bajo rendimiento\n  if (topPerformers && topPerformers.length > 0) {\n    topPerformers.forEach((performer, index) => {\n      if (performer.tone) {\n        // Más refuerzo para los primeros (mejores performers)\n        const boost = 0.12 - (index * 0.015);\n        weights[performer.tone] = (weights[performer.tone] || 0.5) + boost;\n      }\n    });\n  }\n  \n  if (toneChannelMapping && Object.keys(toneChannelMapping).length > 0) {\n    Object.entries(toneChannelMapping).forEach(([tone, channels]) => {\n      if (Array.isArray(channels) && channels.length > 0) {\n        // Más canales = más refuerzo\n        const boost = 0.15 + (channels.length * 0.02);\n        weights[tone] = (weights[tone] || 0.5) + boost;\n      }\n    });\n  }\n  \n  // Normalizar todos los pesos\n  Object.keys(weights).forEach(key => {\n    weights[key] = Math.max(0.1, Math.min(0.9, weights[key]));\n  });\n  \n  return weights;\n}\n\nfunction calculateTimingConfidence(bestTimes, bestDays) {\n  const weights = { times: {}, days: {} };\n  if (bestTimes && bestTimes.length > 0) {\n    bestTimes.forEach(time => {\n      weights.times[time] = 0.7;\n    });\n  }\n  if (bestDays && bestDays.length > 0) {\n    bestDays.forEach(day => {\n      weights.days[day] = 0.7;\n    });\n  }\n  return weights;\n}\n\n// AUTO-AJUSTE: Aplicar penalizaciones automáticas a patrones fallidos\n// BLOQUEO TEMPORAL: Excluir patrones bloqueados\nconst avoidPatterns = failedPatterns\n  .filter(pattern => {\n    const patternStr = typeof pattern === 'object' ? pattern.pattern : pattern;\n    return !blockedPatterns.includes(patternStr);\n  })\n  .map(pattern => {\n    // Si el patrón tiene penalización negativa, se evita más\n    if (typeof pattern === 'object' && pattern.penalty && pattern.penalty < 0) {\n      return pattern.pattern || JSON.stringify(pattern);\n    }\n    return typeof pattern === 'string' ? pattern : (pattern.pattern || JSON.stringify(pattern));\n  });\r\n\r\nreturn {\n  ...baseData,\n  advancedMemory: advancedMemory,\n  confidenceWeights: confidenceWeights,\n  learnedBestChannels: advancedMemory.performanceMemory.bestPerformingChannels || [],\n  avoidPatterns: avoidPatterns,\n  preferredFormats: advancedMemory.preferenceMemory.preferredFormats || [],\n  successfulPatterns: successfulPatterns,\n  lastCognitiveVersion: lastCognitiveVersion\n};"
       },
-      "id": "27ac1640-d1d5-4393-9c40-8aa132a33a59",
+      "id": "3e4d1f10-46ca-489c-a59e-064759e69dd5",
       "name": "Consolidate Advanced Memory",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        48,
-        16
+        -352,
+        624
       ]
     },
     {
@@ -581,13 +581,13 @@
         },
         "requestOptions": {}
       },
-      "id": "b4cd286f-7531-44cf-ad3b-d19248c708a9",
+      "id": "9d7047f4-d12d-4efb-8b27-073138323cc0",
       "name": "OpenAI - Analyze Instruction (Cognitive)",
       "type": "n8n-nodes-base.openAi",
       "typeVersion": 1,
       "position": [
-        512,
-        528
+        128,
+        1136
       ],
       "credentials": {
         "openAiApi": {
@@ -600,13 +600,13 @@
       "parameters": {
         "jsCode": "// Parsear la respuesta de OpenAI\nconst response = $input.item.json;\nlet analysis = {};\n\ntry {\n  let content = response.choices?.[0]?.message?.content || response.message?.content || '';\n  content = content.trim();\n  if (content.startsWith('```json')) {\n    content = content.replace(/```json\\s*/g, '').replace(/```\\s*/g, '');\n  } else if (content.startsWith('```')) {\n    content = content.replace(/```\\s*/g, '');\n  }\n  analysis = JSON.parse(content);\n} catch (error) {\n  try {\n    const jsonMatch = response.choices?.[0]?.message?.content?.match(/\\{[\\s\\S]*\\}/);\n    if (jsonMatch) {\n      analysis = JSON.parse(jsonMatch[0]);\n    } else {\n      analysis = {\n        objective: 'No se pudo determinar',\n        tone: 'profesional',\n        urgency: 'medium',\n        contentType: 'post',\n        targetAudience: '',\n        keyMessages: [],\n        hashtags: [],\n        channels: []\n      };\n    }\n  } catch (parseError) {\n    analysis = {\n      objective: 'Error al analizar',\n      tone: 'profesional',\n      urgency: 'medium',\n      contentType: 'post',\n      targetAudience: '',\n      keyMessages: [],\n      hashtags: [],\n      channels: []\n    };\n  }\n}\n\nconst memory = $('Normalize Memory').item.json.memory || {};\nconst result = {\n  objective: analysis.objective || 'No especificado',\n  tone: analysis.tone || memory.preferredTone || 'profesional',\n  urgency: analysis.urgency || 'medium',\n  contentType: analysis.contentType || 'post',\n  targetAudience: analysis.targetAudience || '',\n  keyMessages: Array.isArray(analysis.keyMessages) ? analysis.keyMessages : [],\n  hashtags: Array.isArray(analysis.hashtags) ? analysis.hashtags : [],\n  channels: Array.isArray(analysis.channels) ? analysis.channels : ($('Normalize Memory').item.json.channels || []),\n  originalInstruction: $('Normalize Memory').item.json.instruction,\n  analyzedAt: new Date().toISOString(),\n  tenantId: $('Normalize Memory').item.json.tenantId || '',\n  userId: $('Normalize Memory').item.json.userId || ''\n};\n\nreturn {\n  ...$('Normalize Memory').item.json,\n  analysis: result\n};"
       },
-      "id": "a8b4b6c1-554b-490b-a6ed-31dd0913783b",
+      "id": "65afbd0b-12da-45ea-a302-8a3e2939522d",
       "name": "Parse Analysis",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1472,
-        592
+        1088,
+        1200
       ]
     },
     {
@@ -622,7 +622,7 @@
             },
             {
               "role": "user",
-              "content": "={{ 'Genera una estrategia de marketing basada en el siguiente análisis:\\n\\n## Análisis:\\n' + JSON.stringify($json.analysis || {}, null, 2) + '\\n\\n## Memoria:\\n' + JSON.stringify($json.memory || {}, null, 2) + '\\n\\n## Canales Solicitados:\\n' + (Array.isArray($json.channels) ? $json.channels.join(', ') : 'No especificados') + '\\n\\nResponde SOLO con el JSON de la estrategia, sin texto adicional.' }}"
+              "content": "={{ 'Genera una estrategia de marketing basada en el siguiente análisis:\\n\\n## Análisis:\\n' + JSON.stringify($json.analysis || {}, null, 2) + '\\n\\n## Memoria Avanzada:\\n' + JSON.stringify($json.advancedMemory || {}, null, 2) + '\\n\\n## Canales Solicitados:\\n' + (Array.isArray($json.channels) ? $json.channels.join(', ') : 'No especificados') + '\\n\\nResponde SOLO con el JSON de la estrategia, sin texto adicional.' }}"
             }
           ]
         },
@@ -632,13 +632,13 @@
         },
         "requestOptions": {}
       },
-      "id": "1cdb8635-43dc-4b2f-9232-60ab30a0cab3",
+      "id": "41c01cb3-c6e8-4627-ac7a-49efb69bca45",
       "name": "OpenAI - Generate Strategy",
       "type": "n8n-nodes-base.openAi",
       "typeVersion": 1,
       "position": [
-        128,
-        -400
+        -272,
+        208
       ],
       "credentials": {
         "openAiApi": {
@@ -651,13 +651,13 @@
       "parameters": {
         "jsCode": "// Parsear la respuesta de OpenAI\nconst response = $input.item.json;\nlet strategy = {};\n\ntry {\n  let content = response.choices?.[0]?.message?.content || response.message?.content || '';\n  content = content.trim();\n  if (content.startsWith('```json')) {\n    content = content.replace(/```json\\s*/g, '').replace(/```\\s*/g, '');\n  } else if (content.startsWith('```')) {\n    content = content.replace(/```\\s*/g, '');\n  }\n  strategy = JSON.parse(content);\n} catch (error) {\n  try {\n    const jsonMatch = response.choices?.[0]?.message?.content?.match(/\\{[\\s\\S]*\\}/);\n    if (jsonMatch) {\n      strategy = JSON.parse(jsonMatch[0]);\n    } else {\n      const analysis = $('Parse Analysis').item.json.analysis || {};\n      strategy = {\n        mainMessage: analysis.objective || 'Mensaje principal de la campaña',\n        cta: 'Descubre más',\n        recommendedFormat: analysis.contentType || 'post',\n        suggestedSchedule: { bestDays: ['lunes', 'miércoles', 'viernes'], bestTimes: ['09:00', '13:00', '18:00'], timezone: 'UTC' },\n        contentStructure: { headline: analysis.objective || '', body: '', hashtags: analysis.hashtags || [], mentions: [] },\n        channels: analysis.channels || [],\n        tone: analysis.tone || 'profesional',\n        targetAudience: analysis.targetAudience || '',\n        keyPoints: analysis.keyMessages || []\n      };\n    }\n  } catch (parseError) {\n    const analysis = $('Parse Analysis').item.json.analysis || {};\n    strategy = {\n      mainMessage: 'Estrategia de marketing',\n      cta: 'Descubre más',\n      recommendedFormat: 'post',\n      suggestedSchedule: { bestDays: ['lunes', 'miércoles', 'viernes'], bestTimes: ['09:00', '13:00', '18:00'], timezone: 'UTC' },\n      contentStructure: { headline: '', body: '', hashtags: [], mentions: [] },\n      channels: [],\n      tone: 'profesional',\n      targetAudience: '',\n      keyPoints: []\n    };\n  }\n}\n\nconst finalStrategy = {\n  mainMessage: strategy.mainMessage || 'Mensaje principal de la campaña',\n  cta: strategy.cta || 'Descubre más',\n  recommendedFormat: strategy.recommendedFormat || 'post',\n  suggestedSchedule: {\n    bestDays: Array.isArray(strategy.suggestedSchedule?.bestDays) ? strategy.suggestedSchedule.bestDays : ['lunes', 'miércoles', 'viernes'],\n    bestTimes: Array.isArray(strategy.suggestedSchedule?.bestTimes) ? strategy.suggestedSchedule.bestTimes : ['09:00', '13:00', '18:00'],\n    timezone: strategy.suggestedSchedule?.timezone || 'UTC'\n  },\n  contentStructure: {\n    headline: strategy.contentStructure?.headline || '',\n    body: strategy.contentStructure?.body || '',\n    hashtags: Array.isArray(strategy.contentStructure?.hashtags) ? strategy.contentStructure.hashtags : [],\n    mentions: Array.isArray(strategy.contentStructure?.mentions) ? strategy.contentStructure.mentions : []\n  },\n  channels: Array.isArray(strategy.channels) ? strategy.channels : ($('Parse Analysis').item.json.channels || []),\n  tone: strategy.tone || 'profesional',\n  targetAudience: strategy.targetAudience || '',\n  keyPoints: Array.isArray(strategy.keyPoints) ? strategy.keyPoints : []\n};\n\nconst metadata = {\n  tenantId: $('Parse Analysis').item.json.tenantId || '',\n  generatedAt: new Date().toISOString(),\n  basedOnAnalysis: $('Parse Analysis').item.json.analysis || {},\n  basedOnMemory: $('Parse Analysis').item.json.memory || {}\n};\n\nreturn {\n  ...$('Parse Analysis').item.json,\n  strategy: { ...finalStrategy, metadata }\n};"
       },
-      "id": "dc84da5f-7bba-44e5-8941-1f6341a0a7de",
+      "id": "fd30907c-9608-414c-97b1-ff23710c3ea7",
       "name": "Parse Strategy",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        304,
-        -384
+        -96,
+        224
       ]
     },
     {
@@ -673,7 +673,7 @@
             },
             {
               "role": "user",
-              "content": "={{ 'Genera copy de marketing basado en la siguiente estrategia:\\n\\n## Estrategia:\\n' + JSON.stringify($json.strategy || {}, null, 2) + '\\n\\n## Análisis Original:\\n' + JSON.stringify($json.analysis || {}, null, 2) + '\\n\\nResponde SOLO con el JSON del copy, sin texto adicional.' }}"
+              "content": "={{ 'Genera copy de marketing basado en la siguiente estrategia:\\n\\n## Estrategia:\\n' + JSON.stringify($json.strategy || {}, null, 2) + '\\n\\n## Análisis Original:\\n' + JSON.stringify($json.analysis || {}, null, 2) + '\\n\\n## Memoria Avanzada:\\n' + JSON.stringify($json.advancedMemory || {}, null, 2) + '\\n\\nResponde SOLO con el JSON del copy, sin texto adicional.' }}"
             }
           ]
         },
@@ -683,13 +683,13 @@
         },
         "requestOptions": {}
       },
-      "id": "ace17e61-ebbe-4903-8392-ae3b4e1e0edc",
+      "id": "7ed55794-0933-4a0e-a155-a36e83bd0f0a",
       "name": "OpenAI - Generate Copy",
       "type": "n8n-nodes-base.openAi",
       "typeVersion": 1,
       "position": [
-        512,
-        -384
+        128,
+        224
       ],
       "credentials": {
         "openAiApi": {
@@ -702,13 +702,13 @@
       "parameters": {
         "jsCode": "// Parsear la respuesta de OpenAI\nconst response = $input.item.json;\nlet copyData = {};\n\ntry {\n  let content = response.choices?.[0]?.message?.content || response.message?.content || '';\n  content = content.trim();\n  if (content.startsWith('```json')) {\n    content = content.replace(/```json\\s*/g, '').replace(/```\\s*/g, '');\n  } else if (content.startsWith('```')) {\n    content = content.replace(/```\\s*/g, '');\n  }\n  copyData = JSON.parse(content);\n} catch (error) {\n  try {\n    const jsonMatch = response.choices?.[0]?.message?.content?.match(/\\{[\\s\\S]*\\}/);\n    if (jsonMatch) {\n      copyData = JSON.parse(jsonMatch[0]);\n    } else {\n      const strategy = $('Parse Strategy').item.json.strategy || {};\n      copyData = {\n        shortCopy: strategy.mainMessage || 'Descubre más',\n        longCopy: (strategy.contentStructure?.body || strategy.mainMessage || '') + '\\n\\n' + (strategy.cta || ''),\n        hashtags: strategy.contentStructure?.hashtags || strategy.keyPoints || [],\n        variants: {\n          variantA: { shortCopy: strategy.mainMessage || 'Descubre más', longCopy: (strategy.contentStructure?.body || strategy.mainMessage || '') + '\\n\\n' + (strategy.cta || ''), hashtags: strategy.contentStructure?.hashtags || [] },\n          variantB: { shortCopy: strategy.mainMessage || 'Explora ahora', longCopy: (strategy.contentStructure?.body || strategy.mainMessage || '') + '\\n\\n' + (strategy.cta || ''), hashtags: strategy.contentStructure?.hashtags || [] }\n        },\n        headline: strategy.contentStructure?.headline || strategy.mainMessage || '',\n        cta: strategy.cta || 'Descubre más',\n        emojiSuggestions: [],\n        mentions: strategy.contentStructure?.mentions || []\n      };\n    }\n  } catch (parseError) {\n    const strategy = $('Parse Strategy').item.json.strategy || {};\n    copyData = {\n      shortCopy: 'Copy corto',\n      longCopy: 'Copy largo',\n      hashtags: [],\n      variants: { variantA: { shortCopy: '', longCopy: '', hashtags: [] }, variantB: { shortCopy: '', longCopy: '', hashtags: [] } },\n      headline: '',\n      cta: '',\n      emojiSuggestions: [],\n      mentions: []\n    };\n  }\n}\n\nconst finalCopy = {\n  shortCopy: copyData.shortCopy || 'Copy corto',\n  longCopy: copyData.longCopy || 'Copy largo',\n  hashtags: Array.isArray(copyData.hashtags) ? copyData.hashtags : [],\n  variants: {\n    variantA: {\n      shortCopy: copyData.variants?.variantA?.shortCopy || copyData.shortCopy || 'Variante A - Copy corto',\n      longCopy: copyData.variants?.variantA?.longCopy || copyData.longCopy || 'Variante A - Copy largo',\n      hashtags: Array.isArray(copyData.variants?.variantA?.hashtags) ? copyData.variants.variantA.hashtags : (copyData.hashtags || [])\n    },\n    variantB: {\n      shortCopy: copyData.variants?.variantB?.shortCopy || copyData.shortCopy || 'Variante B - Copy corto',\n      longCopy: copyData.variants?.variantB?.longCopy || copyData.longCopy || 'Variante B - Copy largo',\n      hashtags: Array.isArray(copyData.variants?.variantB?.hashtags) ? copyData.variants.variantB.hashtags : (copyData.hashtags || [])\n    }\n  },\n  headline: copyData.headline || '',\n  cta: copyData.cta || 'Descubre más',\n  emojiSuggestions: Array.isArray(copyData.emojiSuggestions) ? copyData.emojiSuggestions : [],\n  mentions: Array.isArray(copyData.mentions) ? copyData.mentions : []\n};\n\nconst strategy = $('Parse Strategy').item.json.strategy || {};\nconst publishReady = {\n  ...finalCopy,\n  publishFormat: {\n    instagram: {\n      caption: finalCopy.longCopy + '\\n\\n' + finalCopy.hashtags.map(h => '#' + h.replace(/^#/, '')).join(' '),\n      storyText: finalCopy.shortCopy,\n      hashtags: finalCopy.hashtags\n    },\n    facebook: {\n      post: finalCopy.longCopy,\n      hashtags: finalCopy.hashtags\n    },\n    twitter: {\n      tweet: finalCopy.shortCopy,\n      thread: finalCopy.longCopy,\n      hashtags: finalCopy.hashtags\n    }\n  },\n  metadata: {\n    tenantId: $('Parse Strategy').item.json.tenantId || '',\n    generatedAt: new Date().toISOString(),\n    format: strategy.recommendedFormat || 'post',\n    channels: strategy.channels || [],\n    tone: strategy.tone || 'profesional'\n  }\n};\n\nreturn {\n  ...$('Parse Strategy').item.json,\n  copy: publishReady\n};"
       },
-      "id": "031e255a-42e1-4efa-bbf6-deb5f14c86ae",
+      "id": "b1719189-fe77-4808-b33f-19da2097c3c9",
       "name": "Parse Copy",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        704,
-        -384
+        320,
+        224
       ]
     },
     {
@@ -724,7 +724,7 @@
             },
             {
               "role": "user",
-              "content": "={{ 'Genera prompts visuales basados en la siguiente estrategia y copy:\\n\\n## Estrategia:\\n' + JSON.stringify($json.strategy || {}, null, 2) + '\\n\\n## Copy:\\n' + JSON.stringify($json.copy || {}, null, 2) + '\\n\\nResponde SOLO con el JSON de los prompts visuales, sin texto adicional.' }}"
+              "content": "={{ 'Genera prompts visuales basados en la siguiente estrategia y copy:\\n\\n## Estrategia:\\n' + JSON.stringify($json.strategy || {}, null, 2) + '\\n\\n## Copy:\\n' + JSON.stringify($json.copy || {}, null, 2) + '\\n\\n## Memoria Avanzada:\\n' + JSON.stringify($json.advancedMemory || {}, null, 2) + '\\n\\nResponde SOLO con el JSON de los prompts visuales, sin texto adicional.' }}"
             }
           ]
         },
@@ -734,13 +734,13 @@
         },
         "requestOptions": {}
       },
-      "id": "8b928041-987f-4865-a4e4-55dba941e47c",
+      "id": "b628d22c-13d1-4a41-9a2b-93fcb0a5af63",
       "name": "OpenAI - Generate Visual Prompts",
       "type": "n8n-nodes-base.openAi",
       "typeVersion": 1,
       "position": [
-        912,
-        -384
+        528,
+        224
       ],
       "credentials": {
         "openAiApi": {
@@ -753,39 +753,39 @@
       "parameters": {
         "jsCode": "// Parsear la respuesta de OpenAI\nconst response = $input.item.json;\nlet visualPrompts = {};\n\ntry {\n  let content = response.choices?.[0]?.message?.content || response.message?.content || '';\n  content = content.trim();\n  if (content.startsWith('```json')) {\n    content = content.replace(/```json\\s*/g, '').replace(/```\\s*/g, '');\n  } else if (content.startsWith('```')) {\n    content = content.replace(/```\\s*/g, '');\n  }\n  visualPrompts = JSON.parse(content);\n} catch (error) {\n  try {\n    const jsonMatch = response.choices?.[0]?.message?.content?.match(/\\{[\\s\\S]*\\}/);\n    if (jsonMatch) {\n      visualPrompts = JSON.parse(jsonMatch[0]);\n    } else {\n      const strategy = $('Parse Copy').item.json.strategy || {};\n      const copy = $('Parse Copy').item.json.copy || {};\n      const mainMessage = strategy.mainMessage || copy.longCopy || 'Producto de marketing';\n      visualPrompts = {\n        imagePrompt: `High-quality marketing image: ${mainMessage}. Professional photography style, vibrant colors, modern composition, natural lighting, engaging and attractive visual, optimized for social media, ${strategy.tone || 'professional'} tone`,\n        videoPrompt: `Marketing video: ${mainMessage}. Smooth camera movements, dynamic transitions, professional cinematography, vibrant colors, engaging visual storytelling, ${strategy.tone || 'professional'} aesthetic, optimized for social media`,\n        imageStyle: strategy.tone === 'casual' ? 'vibrant' : 'professional',\n        colorPalette: ['vibrant', 'modern'],\n        mood: strategy.tone || 'professional',\n        aspectRatio: strategy.recommendedFormat === 'story' ? '9:16' : strategy.recommendedFormat === 'reel' ? '9:16' : '1:1',\n        technicalSpecs: { resolution: 'high', quality: 'professional', lighting: 'natural', composition: 'balanced' }\n      };\n    }\n  } catch (parseError) {\n    const strategy = $('Parse Copy').item.json.strategy || {};\n    visualPrompts = {\n      imagePrompt: 'High-quality marketing image, professional style, vibrant colors',\n      videoPrompt: 'Marketing video, professional cinematography, engaging visuals',\n      imageStyle: 'professional',\n      colorPalette: [],\n      mood: 'professional',\n      aspectRatio: '1:1',\n      technicalSpecs: { resolution: 'high', quality: 'professional', lighting: 'natural', composition: 'balanced' }\n    };\n  }\n}\n\nconst finalPrompts = {\n  imagePrompt: visualPrompts.imagePrompt || 'High-quality marketing image, professional style',\n  videoPrompt: visualPrompts.videoPrompt || 'Marketing video, professional cinematography',\n  imageStyle: visualPrompts.imageStyle || 'professional',\n  colorPalette: Array.isArray(visualPrompts.colorPalette) ? visualPrompts.colorPalette : [],\n  mood: visualPrompts.mood || 'professional',\n  aspectRatio: visualPrompts.aspectRatio || '1:1',\n  technicalSpecs: {\n    resolution: visualPrompts.technicalSpecs?.resolution || 'high',\n    quality: visualPrompts.technicalSpecs?.quality || 'professional',\n    lighting: visualPrompts.technicalSpecs?.lighting || 'natural',\n    composition: visualPrompts.technicalSpecs?.composition || 'balanced'\n  }\n};\n\nconst strategy = $('Parse Copy').item.json.strategy || {};\nconst metadata = {\n  tenantId: $('Parse Copy').item.json.tenantId || '',\n  generatedAt: new Date().toISOString(),\n  format: strategy.recommendedFormat || 'post',\n  channels: strategy.channels || [],\n  tone: strategy.tone || 'professional'\n};\n\nreturn {\n  ...$('Parse Copy').item.json,\n  visualPrompts: { ...finalPrompts, metadata }\n};"
       },
-      "id": "3f69ee51-ceea-4909-831e-c494d087ecd2",
+      "id": "2d0b7b5a-34bc-4fa5-9f45-7fb88d652a54",
       "name": "Parse Visual Prompts",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1104,
-        -384
+        720,
+        224
       ]
     },
     {
       "parameters": {
         "jsCode": "// Motor de Decisiones Cognitivo - Calcula confidenceScore y ajusta decisiones\nconst components = $input.item.json;\nconst strategy = components.strategy || {};\nconst copy = components.copy || {};\nconst visualPrompts = components.visualPrompts || {};\nconst advancedMemory = components.advancedMemory || {};\nconst confidenceWeights = components.confidenceWeights || {};\nconst analysis = components.analysis || {};\n\n// Calcular confidenceScore base (0-1)\nlet confidenceScore = 0.5; // Base\nlet decisionRationale = [];\nlet learningSources = [];\n\n// Factor 1: Canales con mejor performance (30%)\n// AUTO-AJUSTE: Penaliza canales con bajo rendimiento histórico y refuerza los exitosos\nconst selectedChannels = Array.isArray(strategy.channels) ? strategy.channels : [];\nconst performanceMemory = advancedMemory.performanceMemory || {};\nconst channelKPIs = performanceMemory.channelKPIs || {};\n\n// Ajustar confidenceWeights basado en resultados históricos\nconst adjustedChannelWeights = {};\nselectedChannels.forEach(channel => {\n  const baseWeight = confidenceWeights.channel?.[channel.toLowerCase()] || 0.5;\n  const kpi = channelKPIs[channel.toLowerCase()] || {};\n  const ctr = kpi.ctr || 0;\n  const engagement = kpi.engagement || 0;\n  \n  // Ajuste automático: refuerza si tiene buen CTR/engagement, penaliza si no\n  let adjustment = 0;\n  if (ctr > 0.02) adjustment += 0.1; // CTR > 2% es bueno\n  if (ctr < 0.005) adjustment -= 0.15; // CTR < 0.5% es malo\n  if (engagement > 0.05) adjustment += 0.1; // Engagement > 5% es bueno\n  if (engagement < 0.01) adjustment -= 0.15; // Engagement < 1% es malo\n  \n  adjustedChannelWeights[channel.toLowerCase()] = Math.max(0.1, Math.min(0.9, baseWeight + adjustment));\n});\n\nconst channelConfidence = selectedChannels.reduce((acc, channel) => {\n  const weight = adjustedChannelWeights[channel.toLowerCase()] || 0.5;\n  return acc + weight;\n}, 0) / Math.max(selectedChannels.length, 1);\nconfidenceScore += channelConfidence * 0.3;\nif (channelConfidence > 0.6) {\n  decisionRationale.push(`Canales seleccionados tienen alta performance histórica (${(channelConfidence * 100).toFixed(0)}%)`);\n  learningSources.push('PerformanceMemory');\n}\n\n// Factor 2: Formato apropiado para urgencia (20%)\nconst urgency = analysis.urgency || 'medium';\nconst format = strategy.recommendedFormat || 'post';\nconst formatKey = `${urgency}_${format}`;\nconst formatConfidence = confidenceWeights.format?.[formatKey] || confidenceWeights.format?.[format] || 0.5;\nconfidenceScore += formatConfidence * 0.2;\nif (formatConfidence > 0.6) {\n  decisionRationale.push(`Formato ${format} es exitoso para urgencia ${urgency} (${(formatConfidence * 100).toFixed(0)}%)`);\n  learningSources.push('PatternMemory');\n}\n\n// Factor 3: Tono con mayor engagement (20%)\nconst tone = strategy.tone || 'profesional';\nconst toneConfidence = confidenceWeights.tone?.[tone] || 0.5;\nconfidenceScore += toneConfidence * 0.2;\nif (toneConfidence > 0.6) {\n  decisionRationale.push(`Tono ${tone} tiene alto engagement histórico (${(toneConfidence * 100).toFixed(0)}%)`);\n  learningSources.push('PerformanceMemory');\n}\n\n// Factor 4: Evitar patrones fallidos (15%)\n// AUTO-AJUSTE: Penaliza automáticamente patrones fallidos y refuerza exitosos\nconst avoidPatterns = components.avoidPatterns || [];\nconst patternMemory = advancedMemory.patternMemory || {};\nconst successfulPatterns = patternMemory.successfulPatterns || [];\nconst blockedPatterns = patternMemory.blockedPatterns || [];\nlet patternViolations = 0;\nconst currentPattern = `${urgency}_${format}_${tone}`;\nconst isBlocked = blockedPatterns.some(blocked => currentPattern.includes(blocked) || blocked.includes(currentPattern));\n\nif (isBlocked) {\n  patternViolations = 1;\n  confidenceScore = 0; // Bloqueo total si está en lista de bloqueados\n  decisionRationale.push(`BLOQUEO: Patrón bloqueado temporalmente por fallos repetidos (30 días)`);\n  learningSources.push('PatternMemory');\n} else if (avoidPatterns.some(pattern => currentPattern.includes(pattern) || pattern.includes(currentPattern))) {\n  patternViolations = 1;\n  confidenceScore -= 0.2; // Penalización aumentada para patrones fallidos\n  decisionRationale.push(`ADVERTENCIA: Patrón similar a uno que ha fallado históricamente - PENALIZADO`);\n} else if (successfulPatterns.some(pattern => currentPattern.includes(pattern) || pattern.includes(currentPattern))) {\n  // Refuerzo para patrones exitosos\n  confidenceScore += 0.1;\n  decisionRationale.push(`Patrón identificado como exitoso históricamente - REFORZADO`);\n  learningSources.push('PatternMemory');\n} else {\n  confidenceScore += 0.05; // Patrón neutro\n  decisionRationale.push(`Patrón no está en lista de fallos históricos`);\n  learningSources.push('PatternMemory');\n}\n\n// Factor 5: Preferencias del tenant (10%)\nconst preferredFormats = components.preferredFormats || [];\nif (preferredFormats.includes(format)) {\n  confidenceScore += 0.1;\n  decisionRationale.push(`Formato ${format} está en preferencias del tenant`);\n  learningSources.push('PreferenceMemory');\n}\n\n// Factor 6: Restricciones cumplidas (5%)\nconst constraints = advancedMemory.constraintMemory?.restrictions || [];\nconst hasViolations = constraints.some(constraint => {\n  const channel = selectedChannels.find(c => constraint.toLowerCase().includes(c.toLowerCase()));\n  return channel !== undefined;\n});\nif (!hasViolations) {\n  confidenceScore += 0.05;\n  decisionRationale.push(`No se violan restricciones conocidas`);\n  learningSources.push('ConstraintMemory');\n} else {\n  confidenceScore -= 0.05;\n  decisionRationale.push(`ADVERTENCIA: Posible violación de restricciones`);\n}\n\n// Normalizar confidenceScore a 0-1\nconfidenceScore = Math.max(0, Math.min(1, confidenceScore));\n\n// Ajustar temperatura del modelo según confidence\n// Si confidence es bajo, usar temperatura más alta para más variación\n// Si confidence es alto, usar temperatura más baja para consistencia\nconst adaptiveTemperature = confidenceScore < 0.6 ? 0.8 : (confidenceScore > 0.8 ? 0.5 : 0.7);\n\n// Reducir variantes si confidence es bajo\nconst shouldReduceVariants = confidenceScore < 0.6;\n\n// Obtener cognitiveVersion REAL desde último MarketingPack o memoria\n// Se incrementa automáticamente cuando hay cambios significativos\nconst lastCognitiveVersion = components.lastCognitiveVersion || 1;\nlet cognitiveVersion = lastCognitiveVersion;\n\n// Si hay patrones fallidos recientes o cambios en priorización, incrementar versión\nconst recentFailedPatterns = patternMemory.failedPatterns || [];\nconst hasRecentFailures = recentFailedPatterns.length > 0;\nconst hasChannelPriorityChanges = performanceMemory.bestPerformingChannels && \n  performanceMemory.bestPerformingChannels.length > 0 &&\n  !selectedChannels.every(c => performanceMemory.bestPerformingChannels.includes(c));\n\n// Verificar si hay patrones exitosos nuevos que cambien priorización\nconst hasSuccessfulPatterns = successfulPatterns.length > 0 && \n  !successfulPatterns.every(sp => {\n    const patternStr = typeof sp === 'string' ? sp : (sp.pattern || JSON.stringify(sp));\n    return currentPattern.includes(patternStr) || patternStr.includes(currentPattern);\n  });\r\n\r\n// Incrementar versión cuando hay aprendizaje significativo\nif (hasRecentFailures || hasChannelPriorityChanges || hasSuccessfulPatterns || patternViolations > 0) {\n  cognitiveVersion = lastCognitiveVersion + 1;\n}\n\n// Decision rationale completo\nconst fullRationale = decisionRationale.join('; ');\n\n// Learning sources únicos\nconst uniqueLearningSources = [...new Set(learningSources)];\n\nreturn {\n  ...components,\n  cognitiveDecision: {\n    confidenceScore: confidenceScore,\n    adaptiveTemperature: adaptiveTemperature,\n    shouldReduceVariants: shouldReduceVariants,\n    decisionRationale: fullRationale,\n    learningSources: uniqueLearningSources,\n    cognitiveVersion: cognitiveVersion,\n    channelConfidence: channelConfidence,\n    formatConfidence: formatConfidence,\n    toneConfidence: toneConfidence,\n    patternViolations: patternViolations,\n    calculatedAt: ($('Set Validated Data').item?.json?.validatedData?.receivedAt || new Date().toISOString())\n  }\n};"
       },
-      "id": "3dcc9df7-1b46-4606-a762-a16c8de98b04",
+      "id": "f4eb88cd-331b-4436-8863-5da616fe5145",
       "name": "Cognitive Decision Engine",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1312,
-        -384
+        928,
+        224
       ]
     },
     {
       "parameters": {
-        "jsCode": "// Función helper para generar UUID sin usar módulo crypto\nfunction generateUUID() {\n  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {\n    const r = Math.random() * 16 | 0;\n    const v = c === 'x' ? r : (r & 0x3 | 0x8);\n    return v.toString(16);\n  });\n}\n\n// Ensamblar el MarketingPack completo con campos cognitivos\nconst components = $input.item.json;\nconst strategy = components.strategy || {};\nconst copy = components.copy || {};\nconst visualPrompts = components.visualPrompts || {};\nconst media = Array.isArray(components.assets) ? components.assets : [];\nconst channels = Array.isArray(components.channels) ? components.channels : (strategy.channels || []);\n\n// Obtener tenantId y userId con fallbacks robustos\nfunction safeGetNodeData(nodeName) {\n  try {\n    const node = $(nodeName);\n    return node?.item?.json || {};\n  } catch (e) {\n    return {};\n  }\n}\n\nconst validatedData = safeGetNodeData('Set Validated Data');\nconst cognitiveVersionData = safeGetNodeData('Set Cognitive Engine Version');\n\nconst tenantId = components.tenantId || \n  validatedData.validatedData?.tenantId ||\n  cognitiveVersionData.tenantId ||\n  cognitiveVersionData.body?.body?.tenantId ||\n  '';\n\nconst userId = components.userId || \n  validatedData.validatedData?.userId ||\n  cognitiveVersionData.userId ||\n  cognitiveVersionData.body?.body?.userId ||\n  '';\n\nconst campaignId = components.campaignId || \n  validatedData.validatedData?.campaignId ||\n  cognitiveVersionData.campaignId ||\n  cognitiveVersionData.body?.body?.campaignId ||\n  null;\n\n// Validar que tenantId y userId no estén vacíos\nif (!tenantId || tenantId === '') {\n  throw new Error('tenantId is required but not found in workflow data');\n}\nif (!userId || userId === '') {\n  throw new Error('userId is required but not found in workflow data');\n}\n\n// Generar ID único para el pack\nconst packId = generateUUID();\n\n// Construir la estrategia como texto estructurado\nconst strategyText = JSON.stringify({\n  mainMessage: strategy.mainMessage || '',\n  cta: strategy.cta || '',\n  recommendedFormat: strategy.recommendedFormat || 'post',\n  tone: strategy.tone || 'profesional',\n  targetAudience: strategy.targetAudience || '',\n  keyPoints: strategy.keyPoints || [],\n  suggestedSchedule: strategy.suggestedSchedule || {},\n  contentStructure: strategy.contentStructure || {}\n}, null, 2);\n\n// Generar contentId único (requerido por el API)\nconst contentId = generateUUID();\n\n// Construir metadatos completos\nconst metadata = {\n  tenantId: tenantId,\n  userId: userId,\n  campaignId: campaignId,\n  contentId: contentId,\n  channels: channels,\n  requiresApproval: components.requiresApproval !== undefined ? components.requiresApproval : true,\n  generatedAt: new Date().toISOString(),\n  version: 1,\n  strategy: strategy,\n  copy: copy,\n  visualPrompts: visualPrompts,\n  media: media\n};\n\n// Construir GeneratedCopies desde el copy\nconst generatedCopies = [];\n\nif (copy.longCopy) {\n  generatedCopies.push({\n    id: generateUUID(),\n    copyType: 'long',\n    content: copy.longCopy,\n    hashtags: copy.hashtags ? copy.hashtags.join(', ') : null,\n    suggestedChannel: channels.length > 0 ? channels[0] : null,\n    publicationChecklist: {\n      hasCopy: true,\n      hasHashtags: (copy.hashtags || []).length > 0,\n      hasMedia: media.length > 0,\n      readyForPublication: true\n    }\n  });\n}\n\nif (copy.shortCopy) {\n  generatedCopies.push({\n    id: generateUUID(),\n    copyType: 'short',\n    content: copy.shortCopy,\n    hashtags: copy.hashtags ? copy.hashtags.join(', ') : null,\n    suggestedChannel: channels.length > 0 ? channels[0] : null,\n    publicationChecklist: {\n      hasCopy: true,\n      hasHashtags: (copy.hashtags || []).length > 0,\n      hasMedia: media.length > 0,\n      readyForPublication: true\n    }\n  });\n}\n\nif (copy.variants) {\n  if (copy.variants.variantA) {\n    generatedCopies.push({\n      id: generateUUID(),\n      copyType: 'variant-a',\n      content: copy.variants.variantA.longCopy || copy.variants.variantA.shortCopy || '',\n      hashtags: copy.variants.variantA.hashtags ? copy.variants.variantA.hashtags.join(', ') : null,\n      suggestedChannel: channels.length > 0 ? channels[0] : null,\n      publicationChecklist: {\n        hasCopy: true,\n        hasHashtags: (copy.variants.variantA.hashtags || []).length > 0,\n        isVariant: true,\n        variantType: 'A'\n      }\n    });\n  }\n  \n  if (copy.variants.variantB) {\n    generatedCopies.push({\n      id: generateUUID(),\n      copyType: 'variant-b',\n      content: copy.variants.variantB.longCopy || copy.variants.variantB.shortCopy || '',\n      hashtags: copy.variants.variantB.hashtags ? copy.variants.variantB.hashtags.join(', ') : null,\n      suggestedChannel: channels.length > 0 ? channels[0] : null,\n      publicationChecklist: {\n        hasCopy: true,\n        hasHashtags: (copy.variants.variantB.hashtags || []).length > 0,\n        isVariant: true,\n        variantType: 'B'\n      }\n    });\n  }\n}\n\n// Construir MarketingAssetPrompts desde visualPrompts\nconst assetPrompts = [];\n\nif (visualPrompts.imagePrompt) {\n  assetPrompts.push({\n    id: generateUUID(),\n    assetType: 'image',\n    prompt: visualPrompts.imagePrompt,\n    negativePrompt: null,\n    parameters: {\n      style: visualPrompts.imageStyle || 'professional',\n      aspectRatio: visualPrompts.aspectRatio || '1:1',\n      colorPalette: visualPrompts.colorPalette || [],\n      mood: visualPrompts.mood || 'professional',\n      ...(visualPrompts.technicalSpecs || {})\n    },\n    suggestedChannel: channels.length > 0 ? channels[0] : null\n  });\n}\n\nif (visualPrompts.videoPrompt) {\n  assetPrompts.push({\n    id: generateUUID(),\n    assetType: 'video',\n    prompt: visualPrompts.videoPrompt,\n    negativePrompt: null,\n    parameters: {\n      aspectRatio: visualPrompts.aspectRatio || '16:9',\n      colorPalette: visualPrompts.colorPalette || [],\n      mood: visualPrompts.mood || 'professional',\n      ...(visualPrompts.technicalSpecs || {})\n    },\n    suggestedChannel: channels.length > 0 ? channels[0] : null\n  });\n}\n\n// Obtener datos cognitivos del Decision Engine\nconst cognitiveDecision = components.cognitiveDecision || {};\nconst confidenceScore = cognitiveDecision.confidenceScore || 0.5;\nconst cognitiveVersion = cognitiveDecision.cognitiveVersion || 1;\nconst decisionRationale = cognitiveDecision.decisionRationale || '';\nconst learningSources = cognitiveDecision.learningSources || [];\n\n// Construir el MarketingPack final con campos cognitivos\nconst marketingPack = {\n  id: packId,\n  tenantId: tenantId,\n  userId: userId,\n  contentId: contentId,\n  campaignId: campaignId,\n  strategy: strategyText,\n  status: components.requiresApproval ? 'Generated' : 'Ready',\n  version: 1,\n  metadata: JSON.stringify(metadata),\n  copies: generatedCopies,\n  assetPrompts: assetPrompts,\n  channels: channels,\n  media: media,\n  requiresApproval: components.requiresApproval !== undefined ? components.requiresApproval : true,\n  createdAt: new Date().toISOString(),\n  // Campos cognitivos\n  cognitiveVersion: cognitiveVersion,\n  confidenceScore: confidenceScore,\n  learningSources: learningSources,\n  decisionRationale: decisionRationale\n};\n\nreturn {\n  ...components,\n  marketingPack: marketingPack,\n  cognitiveDecision: cognitiveDecision\n};"
+        "jsCode": "// Función helper para generar UUID sin usar módulo crypto\nfunction generateUUID() {\n  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {\n    const r = Math.random() * 16 | 0;\n    const v = c === 'x' ? r : (r & 0x3 | 0x8);\n    return v.toString(16);\n  });\n}\n\n// Ensamblar el MarketingPack completo con campos cognitivos\nconst components = $input.item.json;\nconst strategy = components.strategy || {};\nconst copy = components.copy || {};\nconst visualPrompts = components.visualPrompts || {};\nconst media = Array.isArray(components.assets) ? components.assets : [];\nconst channels = Array.isArray(components.channels) ? components.channels : (strategy.channels || []);\n\n// Obtener tenantId y userId con fallbacks robustos\nfunction safeGetNodeData(nodeName) {\n  try {\n    const node = $(nodeName);\n    return node?.item?.json || {};\n  } catch (e) {\n    return {};\n  }\n}\n\nconst validatedData = safeGetNodeData('Set Validated Data');\nconst cognitiveVersionData = safeGetNodeData('Set Cognitive Engine Version');\n\nconst tenantId = components.tenantId || \n  validatedData.validatedData?.tenantId ||\n  cognitiveVersionData.tenantId ||\n  cognitiveVersionData.body?.body?.tenantId ||\n  '';\n\nconst userId = components.userId || \n  validatedData.validatedData?.userId ||\n  cognitiveVersionData.userId ||\n  cognitiveVersionData.body?.body?.userId ||\n  '';\n\nconst campaignId = components.campaignId || \n  validatedData.validatedData?.campaignId ||\n  cognitiveVersionData.campaignId ||\n  cognitiveVersionData.body?.body?.campaignId ||\n  null;\n\n// Validar que tenantId y userId no estén vacíos\nif (!tenantId || tenantId === '') {\n  throw new Error('tenantId is required but not found in workflow data');\n}\nif (!userId || userId === '') {\n  throw new Error('userId is required but not found in workflow data');\n}\n\n// Generar ID único para el pack\nconst packId = generateUUID();\n\n// Construir la estrategia como texto estructurado\nconst strategyText = JSON.stringify({\n  mainMessage: strategy.mainMessage || '',\n  cta: strategy.cta || '',\n  recommendedFormat: strategy.recommendedFormat || 'post',\n  tone: strategy.tone || 'profesional',\n  targetAudience: strategy.targetAudience || '',\n  keyPoints: strategy.keyPoints || [],\n  suggestedSchedule: strategy.suggestedSchedule || {},\n  contentStructure: strategy.contentStructure || {}\n}, null, 2);\n\n// Obtener contentId del payload original\n// Si no viene en el payload, generar uno nuevo (el backend lo creará automáticamente)\nconst contentId = components.contentId || \n  validatedData.validatedData?.contentId ||\n  cognitiveVersionData.body?.body?.contentId ||\n  cognitiveVersionData.contentId ||\n  generateUUID(); // Generar nuevo si no viene (el backend lo creará automáticamente)\n\n// Construir metadatos completos\nconst metadata = {\n  tenantId: tenantId,\n  userId: userId,\n  campaignId: campaignId,\n  contentId: contentId,\n  channels: channels,\n  requiresApproval: components.requiresApproval !== undefined ? components.requiresApproval : true,\n  generatedAt: new Date().toISOString(),\n  version: 1,\n  strategy: strategy,\n  copy: copy,\n  visualPrompts: visualPrompts,\n  media: media\n};\n\n// Construir GeneratedCopies desde el copy\nconst generatedCopies = [];\n\nif (copy.longCopy) {\n  generatedCopies.push({\n    id: generateUUID(),\n    copyType: 'long',\n    content: copy.longCopy,\n    hashtags: copy.hashtags ? copy.hashtags.join(', ') : null,\n    suggestedChannel: channels.length > 0 ? channels[0] : null,\n    publicationChecklist: {\n      hasCopy: true,\n      hasHashtags: (copy.hashtags || []).length > 0,\n      hasMedia: media.length > 0,\n      readyForPublication: true\n    }\n  });\n}\n\nif (copy.shortCopy) {\n  generatedCopies.push({\n    id: generateUUID(),\n    copyType: 'short',\n    content: copy.shortCopy,\n    hashtags: copy.hashtags ? copy.hashtags.join(', ') : null,\n    suggestedChannel: channels.length > 0 ? channels[0] : null,\n    publicationChecklist: {\n      hasCopy: true,\n      hasHashtags: (copy.hashtags || []).length > 0,\n      hasMedia: media.length > 0,\n      readyForPublication: true\n    }\n  });\n}\n\nif (copy.variants) {\n  if (copy.variants.variantA) {\n    generatedCopies.push({\n      id: generateUUID(),\n      copyType: 'variant-a',\n      content: copy.variants.variantA.longCopy || copy.variants.variantA.shortCopy || '',\n      hashtags: copy.variants.variantA.hashtags ? copy.variants.variantA.hashtags.join(', ') : null,\n      suggestedChannel: channels.length > 0 ? channels[0] : null,\n      publicationChecklist: {\n        hasCopy: true,\n        hasHashtags: (copy.variants.variantA.hashtags || []).length > 0,\n        isVariant: true,\n        variantType: 'A'\n      }\n    });\n  }\n  \n  if (copy.variants.variantB) {\n    generatedCopies.push({\n      id: generateUUID(),\n      copyType: 'variant-b',\n      content: copy.variants.variantB.longCopy || copy.variants.variantB.shortCopy || '',\n      hashtags: copy.variants.variantB.hashtags ? copy.variants.variantB.hashtags.join(', ') : null,\n      suggestedChannel: channels.length > 0 ? channels[0] : null,\n      publicationChecklist: {\n        hasCopy: true,\n        hasHashtags: (copy.variants.variantB.hashtags || []).length > 0,\n        isVariant: true,\n        variantType: 'B'\n      }\n    });\n  }\n}\n\n// Construir MarketingAssetPrompts desde visualPrompts\nconst assetPrompts = [];\n\nif (visualPrompts.imagePrompt) {\n  assetPrompts.push({\n    id: generateUUID(),\n    assetType: 'image',\n    prompt: visualPrompts.imagePrompt,\n    negativePrompt: null,\n    parameters: {\n      style: visualPrompts.imageStyle || 'professional',\n      aspectRatio: visualPrompts.aspectRatio || '1:1',\n      colorPalette: visualPrompts.colorPalette || [],\n      mood: visualPrompts.mood || 'professional',\n      ...(visualPrompts.technicalSpecs || {})\n    },\n    suggestedChannel: channels.length > 0 ? channels[0] : null\n  });\n}\n\nif (visualPrompts.videoPrompt) {\n  assetPrompts.push({\n    id: generateUUID(),\n    assetType: 'video',\n    prompt: visualPrompts.videoPrompt,\n    negativePrompt: null,\n    parameters: {\n      aspectRatio: visualPrompts.aspectRatio || '16:9',\n      colorPalette: visualPrompts.colorPalette || [],\n      mood: visualPrompts.mood || 'professional',\n      ...(visualPrompts.technicalSpecs || {})\n    },\n    suggestedChannel: channels.length > 0 ? channels[0] : null\n  });\n}\n\n// Obtener datos cognitivos del Decision Engine\nconst cognitiveDecision = components.cognitiveDecision || {};\nconst confidenceScore = cognitiveDecision.confidenceScore || 0.5;\nconst cognitiveVersion = cognitiveDecision.cognitiveVersion || 1;\nconst decisionRationale = cognitiveDecision.decisionRationale || '';\nconst learningSources = cognitiveDecision.learningSources || [];\n\n// Construir el MarketingPack final con campos cognitivos\nconst marketingPack = {\n  id: packId,\n  tenantId: tenantId,\n  userId: userId,\n  contentId: contentId,\n  campaignId: campaignId,\n  strategy: strategyText,\n  status: components.requiresApproval ? 'Generated' : 'Ready',\n  version: 1,\n  metadata: JSON.stringify(metadata),\n  copies: generatedCopies,\n  assetPrompts: assetPrompts,\n  channels: channels,\n  media: media,\n  requiresApproval: components.requiresApproval !== undefined ? components.requiresApproval : true,\n  createdAt: new Date().toISOString(),\n  // Campos cognitivos\n  cognitiveVersion: cognitiveVersion,\n  confidenceScore: confidenceScore,\n  learningSources: learningSources,\n  decisionRationale: decisionRationale\n};\n\nreturn {\n  ...components,\n  marketingPack: marketingPack,\n  cognitiveDecision: cognitiveDecision\n};"
       },
-      "id": "829b4dc5-63c8-4036-9e26-b299bee13795",
+      "id": "8ce8b356-e3d5-49ba-a735-48df46a5712b",
       "name": "Build Marketing Pack",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1312,
-        -384
+        928,
+        224
       ]
     },
     {
@@ -810,26 +810,26 @@
         },
         "options": {}
       },
-      "id": "43458f1e-c021-43a4-800c-0c9323e3e05b",
+      "id": "20bb6c97-ea16-4511-8b58-d306b98326f5",
       "name": "Validate Confidence Score",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
       "position": [
-        1504,
-        -384
+        1120,
+        224
       ]
     },
     {
       "parameters": {
         "jsCode": "// Registrar Override Humano cuando confidenceScore < 0.6 pero requiresApproval = false\nconst components = $input.item.json;\nconst marketingPack = components.marketingPack || {};\nconst cognitiveDecision = components.cognitiveDecision || {};\nconst strategy = components.strategy || {};\nconst validatedData = $('Set Validated Data').item?.json?.validatedData || {};\n\nconst confidenceScore = marketingPack.confidenceScore ?? cognitiveDecision?.confidenceScore ?? 0.5;\nconst requiresApproval = marketingPack.requiresApproval ?? components.requiresApproval ?? true;\n\n// Detectar override: confidenceScore < 0.6 pero requiresApproval = false\nconst isOverride = confidenceScore < 0.6 && requiresApproval === false;\n\nif (isOverride) {\n  // Extraer datos del patrón\n  const urgency = components.analysis?.urgency || 'medium';\n  const format = strategy.recommendedFormat || 'post';\n  const tone = strategy.tone || 'profesional';\n  const channels = Array.isArray(strategy.channels) ? strategy.channels : [];\n  const pattern = `${urgency}_${format}_${tone}`;\n  \n  // Obtener overrideReason del payload si existe\n  const overrideReason = components.overrideReason || components.overrideSource || 'unknown';\n  const overrideSource = components.overrideSource || 'unknown';\n  \n  // Usar timestamp determinístico del validatedData\n  const timestamp = validatedData.receivedAt || new Date().toISOString();\n  const requestId = validatedData.requestId || 'unknown';\n  \n  // Crear overrideData estructurado\n  const overrideData = {\n    pattern: pattern,\n    result: 'override',\n    overrideType: 'human_forced_publication',\n    originalConfidenceScore: Math.round(confidenceScore * 10000) / 10000,\n    humanDecision: 'force_publication',\n    overrideReason: overrideReason,\n    overrideSource: overrideSource,\n    context: {\n      channels: channels,\n      format: format,\n      tone: tone,\n      urgency: urgency,\n      campaignId: components.campaignId || null,\n      marketingPackId: marketingPack.id || null\n    },\n    timestamp: timestamp,\n    requestId: requestId,\n    userId: components.userId || validatedData.userId || 'unknown',\n    decisionRationale: cognitiveDecision.decisionRationale || ''\n  };\n  \n  return {\n    ...components,\n    humanOverride: overrideData,\n    hasOverride: true\n  };\n}\n\n// Sin override, pasar datos sin cambios\nreturn {\n  ...components,\n  hasOverride: false\n};"
       },
-      "id": "5c31144e-0794-4a3c-bc13-83d946bfdf0b",
+      "id": "b87b7ed7-e3c7-4697-8dcd-009d7516b4f1",
       "name": "Register Human Override",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        384,
-        -32
+        -16,
+        576
       ]
     },
     {
@@ -838,18 +838,18 @@
         "url": "https://autonomousmarketingplatform.onrender.com/api/MemoryApi/save",
         "sendBody": true,
         "contentType": "json",
-        "body": "={{ { tenantId: $json.tenantId, userId: $json.userId, campaignId: $json.campaignId, memoryType: 'Pattern', content: JSON.stringify($json.humanOverride || {}), context: $json.humanOverride?.context || {}, tags: ['pattern', 'override', 'human_forced_publication'], relevanceScore: 8 } }}",
+        "body": "={{ (() => { const components = $json; const humanOverride = components.humanOverride || {}; const marketingPack = components.marketingPack || {}; const validatedData = $('Set Validated Data').item?.json?.validatedData || {}; return { tenantId: marketingPack.tenantId || validatedData.tenantId || components.tenantId || '', userId: marketingPack.userId || validatedData.userId || components.userId || '', campaignId: marketingPack.campaignId || validatedData.campaignId || components.campaignId || null, memoryType: 'Pattern', content: JSON.stringify(humanOverride || {}), context: humanOverride.context || {}, tags: humanOverride.tags || ['pattern', 'override', 'human_forced_publication'], relevanceScore: 8 }; })() }}",
         "options": {
           "timeout": 10000
         }
       },
-      "id": "039a26fb-e35a-49da-bfd5-6bbc714bcc8c",
+      "id": "d8349404-8726-44b4-8213-4ac83b82572c",
       "name": "HTTP Request - Save Override Memory",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        576,
-        -32
+        192,
+        576
       ]
     },
     {
@@ -862,11 +862,11 @@
           },
           "conditions": [
             {
-              "leftValue": "={{ $json.marketingPack.confidenceScore ?? $json.cognitiveDecision?.confidenceScore ?? 0.5 }}",
-              "rightValue": 0.6,
+              "leftValue": "={{ $json.marketingPack.requiresApproval ?? $json.requiresApproval ?? true }}",
+              "rightValue": true,
               "operator": {
-                "type": "number",
-                "operation": "smaller"
+                "type": "boolean",
+                "operation": "true"
               }
             }
           ],
@@ -874,13 +874,13 @@
         },
         "options": {}
       },
-      "id": "1a0e1872-5c10-43b0-9439-97a205887a0d",
+      "id": "bcff43fb-d1fa-415e-a69e-cd2807731d95",
       "name": "Check Requires Approval Final",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
       "position": [
-        384,
-        80
+        -208,
+        864
       ]
     },
     {
@@ -889,18 +889,19 @@
         "url": "https://autonomousmarketingplatform.onrender.com/api/marketing-packs",
         "sendBody": true,
         "contentType": "json",
-        "body": "={{ { id: $json.marketingPack.id || null, tenantId: $json.marketingPack.tenantId || $json.tenantId, userId: $json.marketingPack.userId || $json.userId, contentId: $json.marketingPack.contentId, campaignId: $json.marketingPack.campaignId || null, strategy: $json.marketingPack.strategy || '', status: $json.marketingPack.status || 'Generated', version: $json.marketingPack.version || 1, metadata: $json.marketingPack.metadata || null, copies: ($json.marketingPack.copies || []).map(c => ({ id: c.id || null, copyType: c.copyType || '', content: c.content || '', hashtags: c.hashtags || null, suggestedChannel: c.suggestedChannel || null, publicationChecklist: c.publicationChecklist || null })), assetPrompts: ($json.marketingPack.assetPrompts || []).map(a => ({ id: a.id || null, assetType: a.assetType || '', prompt: a.prompt || '', negativePrompt: a.negativePrompt || null, parameters: a.parameters || null, suggestedChannel: a.suggestedChannel || null })) } }}",
+        "specifyBody": "json",
+        "jsonBody": "={{ (() => { function safeGetNodeData(nodeName) { try { const node = $(nodeName); return node?.item?.json || {}; } catch (e) { return {}; } } const mp = $json.marketingPack || {}; if (!mp || Object.keys(mp).length === 0) { throw new Error('marketingPack is required but not found in the workflow data'); } const validatedData = safeGetNodeData('Set Validated Data'); const cognitiveVersionData = safeGetNodeData('Set Cognitive Engine Version'); const tenantId = String(mp.tenantId || validatedData.validatedData?.tenantId || cognitiveVersionData.body?.body?.tenantId || cognitiveVersionData.tenantId || '').trim(); const userId = String(mp.userId || validatedData.validatedData?.userId || cognitiveVersionData.body?.body?.userId || cognitiveVersionData.userId || '').trim(); const contentId = String(mp.contentId || '').trim(); if (!tenantId || tenantId === '' || tenantId === 'undefined' || tenantId === 'null' || tenantId === '00000000-0000-0000-0000-000000000000') { throw new Error('tenantId is required and must be a valid GUID. Found: ' + JSON.stringify(tenantId)); } if (!userId || userId === '' || userId === 'undefined' || userId === 'null' || userId === '00000000-0000-0000-0000-000000000000') { throw new Error('userId is required and must be a valid GUID. Found: ' + JSON.stringify(userId)); } if (!contentId || contentId === '' || contentId === 'undefined' || contentId === 'null' || contentId === '00000000-0000-0000-0000-000000000000') { throw new Error('contentId is required and must be a valid GUID. Found: ' + JSON.stringify(contentId)); } return { id: mp.id || null, tenantId: tenantId, userId: userId, contentId: contentId, campaignId: mp.campaignId || null, strategy: mp.strategy || '', status: mp.status || 'Generated', version: mp.version || 1, metadata: mp.metadata || null, copies: (mp.copies || []).map(c => ({ id: c.id || null, copyType: c.copyType || '', content: c.content || '', hashtags: c.hashtags || null, suggestedChannel: c.suggestedChannel || null, publicationChecklist: c.publicationChecklist || null })), assetPrompts: (mp.assetPrompts || []).map(a => ({ id: a.id || null, assetType: a.assetType || '', prompt: a.prompt || '', negativePrompt: a.negativePrompt || null, parameters: a.parameters || null, suggestedChannel: a.suggestedChannel || null })) }; })() }}",
         "options": {
           "timeout": 10000
         }
       },
-      "id": "8152db71-13a8-4c24-9e98-954d933f052f",
+      "id": "8b645546-c7bc-45ea-b354-5ccbe874974b",
       "name": "HTTP Request - Save Pack (Requires Approval)",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        384,
-        -32
+        288,
+        400
       ]
     },
     {
@@ -911,13 +912,13 @@
           "responseCode": 200
         }
       },
-      "id": "e6d01d6f-900f-4595-8d51-8c711938f505",
+      "id": "16b43a32-1194-4fc3-8c51-13dfe71a8539",
       "name": "Respond - Approval Required",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1,
       "position": [
-        576,
-        -32
+        192,
+        576
       ]
     },
     {
@@ -926,31 +927,32 @@
         "url": "https://autonomousmarketingplatform.onrender.com/api/marketing-packs",
         "sendBody": true,
         "contentType": "json",
-        "body": "={{ (() => { const mp = $json.marketingPack || {}; const tenantId = mp.tenantId || $json.tenantId || $('Build Marketing Pack').item.json.tenantId || $('Build Marketing Pack').item.json.marketingPack?.tenantId || $('Set Cognitive Engine Version').item.json.tenantId || $('Set Cognitive Engine Version').item.json.body?.body?.tenantId || $('Set Validated Data').item.json.validatedData?.tenantId || ''; const userId = mp.userId || $json.userId || $('Build Marketing Pack').item.json.userId || $('Build Marketing Pack').item.json.marketingPack?.userId || $('Set Cognitive Engine Version').item.json.userId || $('Set Cognitive Engine Version').item.json.body?.body?.userId || $('Set Validated Data').item.json.validatedData?.userId || ''; const contentId = mp.contentId || ''; if (!tenantId || tenantId === '') { throw new Error('tenantId is required but not found in the workflow data'); } if (!userId || userId === '') { throw new Error('userId is required but not found in the workflow data'); } if (!contentId || contentId === '') { throw new Error('contentId is required but not found in the workflow data'); } return { id: mp.id || null, tenantId: tenantId, userId: userId, contentId: contentId, campaignId: mp.campaignId || null, strategy: mp.strategy || '', status: mp.status || 'Ready', version: mp.version || 1, metadata: mp.metadata || null, copies: (mp.copies || []).map(c => ({ id: c.id || null, copyType: c.copyType || '', content: c.content || '', hashtags: c.hashtags || null, suggestedChannel: c.suggestedChannel || null, publicationChecklist: c.publicationChecklist || null })), assetPrompts: (mp.assetPrompts || []).map(a => ({ id: a.id || null, assetType: a.assetType || '', prompt: a.prompt || '', negativePrompt: a.negativePrompt || null, parameters: a.parameters || null, suggestedChannel: a.suggestedChannel || null })) }; })() }}",
+        "specifyBody": "json",
+        "jsonBody": "={{ (() => { function safeGetNodeData(nodeName) { try { const node = $(nodeName); return node?.item?.json || {}; } catch (e) { return {}; } } const mp = $json.marketingPack || {}; if (!mp || Object.keys(mp).length === 0) { throw new Error('marketingPack is required but not found. Available keys in $json: ' + Object.keys($json || {}).join(', ')); } const validatedData = safeGetNodeData('Set Validated Data'); const cognitiveVersionData = safeGetNodeData('Set Cognitive Engine Version'); const tenantId = String(mp.tenantId || validatedData.validatedData?.tenantId || cognitiveVersionData.body?.body?.tenantId || cognitiveVersionData.tenantId || '').trim(); const userId = String(mp.userId || validatedData.validatedData?.userId || cognitiveVersionData.body?.body?.userId || cognitiveVersionData.userId || '').trim(); const contentId = String(mp.contentId || '').trim(); if (!tenantId || tenantId === '' || tenantId === 'undefined' || tenantId === 'null' || tenantId === '00000000-0000-0000-0000-000000000000') { throw new Error('tenantId is required and must be a valid GUID. Found: ' + JSON.stringify(tenantId) + ', marketingPack keys: ' + Object.keys(mp).join(', ')); } if (!userId || userId === '' || userId === 'undefined' || userId === 'null' || userId === '00000000-0000-0000-0000-000000000000') { throw new Error('userId is required and must be a valid GUID. Found: ' + JSON.stringify(userId)); } if (!contentId || contentId === '' || contentId === 'undefined' || contentId === 'null' || contentId === '00000000-0000-0000-0000-000000000000') { throw new Error('contentId is required and must be a valid GUID. Found: ' + JSON.stringify(contentId)); } return { id: mp.id || null, tenantId: tenantId, userId: userId, contentId: contentId, campaignId: mp.campaignId || null, strategy: mp.strategy || '', status: mp.status || 'Ready', version: mp.version || 1, metadata: mp.metadata || null, copies: (mp.copies || []).map(c => ({ id: c.id || null, copyType: c.copyType || '', content: c.content || '', hashtags: c.hashtags || null, suggestedChannel: c.suggestedChannel || null, publicationChecklist: c.publicationChecklist || null })), assetPrompts: (mp.assetPrompts || []).map(a => ({ id: a.id || null, assetType: a.assetType || '', prompt: a.prompt || '', negativePrompt: a.negativePrompt || null, parameters: a.parameters || null, suggestedChannel: a.suggestedChannel || null })) }; })() }}",
         "options": {
           "timeout": 10000
         }
       },
-      "id": "0104f8b9-ee66-4b7c-8593-56028c709bdc",
+      "id": "7e4a4a1d-015e-462d-95a2-c532ba6c69a5",
       "name": "HTTP Request - Save Pack (Ready)",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        384,
-        176
+        -144,
+        1088
       ]
     },
     {
       "parameters": {
         "jsCode": "// Preparar datos para publicación en cada canal\nconst marketingPack = $input.item.json.marketingPack;\nconst copy = $input.item.json.copy || {};\nconst channels = Array.isArray(marketingPack.channels) ? marketingPack.channels : [];\nconst publishJobs = [];\n\n// Para cada canal, crear un job de publicación\nchannels.forEach(channel => {\n  const channelCopy = copy.publishFormat?.[channel.toLowerCase()] || copy.longCopy || '';\n  const hashtags = copy.hashtags || [];\n  const hashtagsString = hashtags.map(h => '#' + h.replace(/^#/, '')).join(' ');\n  \n  publishJobs.push({\n    channel: channel.toLowerCase(),\n    content: channelCopy,\n    hashtags: hashtagsString,\n    mediaUrl: marketingPack.media && marketingPack.media.length > 0 ? marketingPack.media[0] : null,\n    tenantId: marketingPack.tenantId,\n    campaignId: marketingPack.campaignId,\n    marketingPackId: marketingPack.id,\n    generatedCopyId: marketingPack.copies && marketingPack.copies.length > 0 ? marketingPack.copies[0].id : null\n  });\n});\n\nreturn publishJobs.map(job => ({ json: { ...$input.item.json, ...job } }));"
       },
-      "id": "b1cffb68-285e-4262-b31d-d0c11806c19e",
+      "id": "750695d6-b9fe-460a-9d38-e5bd4d8c77a2",
       "name": "Prepare Publish Jobs",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        576,
-        176
+        192,
+        784
       ]
     },
     {
@@ -975,13 +977,13 @@
         },
         "options": {}
       },
-      "id": "9855aa94-2400-4d4c-8ca8-a2b8387507ef",
+      "id": "2f204575-249c-443b-85ef-431064b764c4",
       "name": "Check - Instagram",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
       "position": [
-        784,
-        80
+        400,
+        688
       ]
     },
     {
@@ -1006,13 +1008,13 @@
         },
         "options": {}
       },
-      "id": "812f05e0-754a-4f25-8220-4a4c45a4c288",
+      "id": "12f8fd95-6d70-430d-9533-5a420267678b",
       "name": "Check - Facebook",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
       "position": [
-        784,
-        176
+        400,
+        784
       ]
     },
     {
@@ -1037,13 +1039,13 @@
         },
         "options": {}
       },
-      "id": "d654ea51-be5e-49ae-a2cd-1244f493007e",
+      "id": "80f819d1-67ce-4c57-b2b5-f66379996e13",
       "name": "Check - TikTok",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
       "position": [
-        784,
-        288
+        400,
+        896
       ]
     },
     {
@@ -1069,13 +1071,13 @@
           "timeout": 30000
         }
       },
-      "id": "60218504-4edc-4ea0-9f76-90a874595e89",
+      "id": "9bca2336-ccd0-4510-891d-e297f31ccefe",
       "name": "Publish - Instagram",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        976,
-        -32
+        592,
+        576
       ]
     },
     {
@@ -1101,13 +1103,13 @@
           "timeout": 30000
         }
       },
-      "id": "8e991d72-6d73-4537-8588-71fc4ff9ce66",
+      "id": "65432f0e-f487-41ee-8c1e-02b91e414100",
       "name": "Publish - Facebook",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        976,
-        176
+        592,
+        784
       ]
     },
     {
@@ -1133,26 +1135,26 @@
           "timeout": 30000
         }
       },
-      "id": "2072e6db-46f2-41b7-9ee4-32ce4090ad89",
+      "id": "1b24385f-353b-4501-bd3f-360948dff663",
       "name": "Publish - TikTok",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        976,
-        288
+        592,
+        896
       ]
     },
     {
       "parameters": {
         "jsCode": "// Procesar resultado de publicación (real o simulado)\nconst input = $input.item.json;\n// Intentar obtener datos del item anterior usando el contexto de n8n\nlet publishData = {};\ntry {\n  // Intentar obtener del nodo anterior (Prepare Publish Jobs)\n  const previousNode = $('Prepare Publish Jobs');\n  if (previousNode && previousNode.item) {\n    publishData = previousNode.item.json;\n  }\n} catch (e) {\n  // Si falla, usar datos del input actual\n  publishData = input;\n}\n\n// Si el input tiene los datos directamente (viene de Check - Instagram/Facebook/TikTok cuando no coincide)\nconst channel = input.channel || publishData.channel || '';\nconst content = input.content || publishData.content || '';\nconst hashtags = input.hashtags || publishData.hashtags || '';\nconst mediaUrl = input.mediaUrl || publishData.mediaUrl || null;\nconst tenantId = input.tenantId || publishData.tenantId || '';\nconst campaignId = input.campaignId || publishData.campaignId || null;\nconst marketingPackId = input.marketingPackId || publishData.marketingPackId || null;\nconst generatedCopyId = input.generatedCopyId || publishData.generatedCopyId || null;\n\nconst isSimulated = !input.id && !input.post_id && !input.data && !input.success;\nconst hasError = input.error || input.error_code || (input.statusCode && input.statusCode >= 400);\n\nif (hasError || isSimulated) {\n  const simulatedResponse = {\n    success: true,\n    simulated: true,\n    channel: channel.toLowerCase(),\n    postId: `sim_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,\n    publishedUrl: `https://${channel.toLowerCase()}.com/posts/sim_${Date.now()}`,\n    publishedAt: new Date().toISOString(),\n    message: `Publication simulated for ${channel} (no credentials configured)`,\n    content: content,\n    hashtags: hashtags,\n    mediaUrl: mediaUrl,\n    tenantId: tenantId,\n    campaignId: campaignId,\n    marketingPackId: marketingPackId,\n    generatedCopyId: generatedCopyId\n  };\n  \n  return simulatedResponse;\n} else {\n  const realResponse = {\n    success: true,\n    simulated: false,\n    channel: channel.toLowerCase(),\n    postId: input.id || input.post_id || input.data?.id || `real_${Date.now()}`,\n    publishedUrl: input.permalink_url || input.link || input.data?.url || `https://${channel.toLowerCase()}.com/posts/${input.id || input.post_id}`,\n    publishedAt: new Date().toISOString(),\n    message: `Successfully published to ${channel}`,\n    content: content,\n    hashtags: hashtags,\n    mediaUrl: mediaUrl,\n    tenantId: tenantId,\n    campaignId: campaignId,\n    marketingPackId: marketingPackId,\n    generatedCopyId: generatedCopyId\n  };\n  \n  return realResponse;\n}"
       },
-      "id": "8752b284-2c6b-4c2f-9ec3-82856e90662c",
+      "id": "7b3bda07-6379-414b-b8a7-80250b830f8f",
       "name": "Process Publish Result",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1184,
-        80
+        800,
+        688
       ]
     },
     {
@@ -1166,26 +1168,26 @@
           "timeout": 10000
         }
       },
-      "id": "7c413ff3-eef3-47a7-84df-8ac5d06aafdf",
+      "id": "f12a6d0a-4ff9-4fac-ad7c-ae0b35245a0c",
       "name": "HTTP Request - Save Publishing Job",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1376,
-        80
+        992,
+        688
       ]
     },
     {
       "parameters": {
         "jsCode": "// Consolidar todos los resultados de publicación\nconst allResults = $input.all();\nconst firstResult = allResults[0] || {};\n\n// Obtener todos los publishing jobs guardados (vienen del HTTP Request - Save Publishing Job)\nconst publishingJobs = allResults\n  .filter(r => r.json.id && (r.json.channel || r.json.tenantId))\n  .map(r => ({\n    id: r.json.id,\n    channel: r.json.channel || 'unknown',\n    status: r.json.status || 'Success',\n    publishedUrl: r.json.publishedUrl || null\n  }));\n\n// Si no hay jobs, intentar obtener datos del primer resultado\nconst tenantId = firstResult.json.tenantId || '';\nconst campaignId = firstResult.json.campaignId || null;\nconst marketingPackId = firstResult.json.marketingPackId || null;\n\nreturn {\n  tenantId: tenantId,\n  campaignId: campaignId,\n  marketingPackId: marketingPackId,\n  publishingJobIds: publishingJobs.map(j => j.id).filter(id => id),\n  publishingJobs: publishingJobs,\n  channels: publishingJobs.map(j => j.channel).filter(c => c),\n  allPublished: publishingJobs.length > 0 && publishingJobs.every(j => j.status === 'Success'),\n  success: true\n};"
       },
-      "id": "5075a598-59d2-45be-bc95-746a6c792e9f",
+      "id": "cb962668-78a5-4907-93f1-e42270e79c2f",
       "name": "Consolidate Publish Results",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1584,
-        80
+        1200,
+        688
       ]
     },
     {
@@ -1199,13 +1201,13 @@
           "timeout": 10000
         }
       },
-      "id": "46815f5e-9f9b-4191-b7bb-97f671c6edef",
+      "id": "613a879a-7b69-41a0-9fba-20e30960172e",
       "name": "HTTP Request - Save Campaign Metrics",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1776,
-        -32
+        1392,
+        576
       ]
     },
     {
@@ -1219,26 +1221,26 @@
           "timeout": 10000
         }
       },
-      "id": "79726104-354d-4f3e-9165-f8e6aaf46f3f",
+      "id": "7ebac3f8-1172-460b-8274-2fb3bf68370d",
       "name": "HTTP Request - Save Job Metrics",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1776,
-        80
+        1392,
+        688
       ]
     },
     {
       "parameters": {
         "jsCode": "// Consolidar resultados finales\nconst results = $input.all();\nconst consolidateData = $('Consolidate Publish Results').item.json;\n\nconst metricsResult = results.find(r => r.json.id && r.json.campaignId) || null;\nconst jobMetricsResult = results.find(r => r.json.publishingJobId) || null;\n\nreturn {\n  tenantId: consolidateData.tenantId,\n  campaignId: consolidateData.campaignId,\n  marketingPackId: consolidateData.marketingPackId,\n  publishingJobIds: consolidateData.publishingJobIds,\n  publishingJobs: consolidateData.publishingJobs,\n  channels: consolidateData.channels,\n  metricsSaved: metricsResult !== null,\n  jobMetricsSaved: jobMetricsResult !== null,\n  metricsId: metricsResult?.json.id || null,\n  jobMetricsId: jobMetricsResult?.json.id || null,\n  success: true,\n  message: 'Complete marketing flow executed successfully'\n};"
       },
-      "id": "afcd6ba8-833c-43cb-9362-dd0a546fe7c7",
+      "id": "c67ec767-0f57-4508-8d3a-42c366a02d4e",
       "name": "Consolidate Final Results",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1984,
-        80
+        1600,
+        688
       ]
     },
     {
@@ -1249,13 +1251,13 @@
           "responseCode": 200
         }
       },
-      "id": "a048bcf3-535b-43cd-8436-dedeefe720de",
+      "id": "5fb3ddf8-0c2b-4d2a-a519-1773708eb4aa",
       "name": "Respond - Final Success",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1,
       "position": [
-        2176,
-        80
+        1792,
+        688
       ]
     },
     {
@@ -1278,13 +1280,13 @@
           "timeout": 10000
         }
       },
-      "id": "e7577d89-1138-4984-9ddb-4e0a960f2275",
+      "id": "18ac9ef6-b098-4d22-8797-1f5191b006f5",
       "name": "HTTP Request - Load Constraint Memory",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        -192,
-        64
+        -592,
+        672
       ]
     }
   ],
@@ -1874,7 +1876,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "8a82be91-0feb-436b-944e-0f1e1de3c058",
+  "versionId": "4f51d63f-13a9-4974-a6ad-4914c7e8293e",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "4856b50c573e21e6444e6cfbe31d68cbd351a64a6dfd678ed9d49fed40a66d4a"

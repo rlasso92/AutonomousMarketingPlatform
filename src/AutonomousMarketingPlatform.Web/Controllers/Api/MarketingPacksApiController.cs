@@ -1,9 +1,11 @@
 using AutonomousMarketingPlatform.Application.DTOs;
+using AutonomousMarketingPlatform.Application.Services;
 using AutonomousMarketingPlatform.Application.UseCases.AI;
 using AutonomousMarketingPlatform.Domain.Entities;
 using AutonomousMarketingPlatform.Domain.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Text.Json;
 
@@ -26,21 +28,27 @@ public class MarketingPacksApiController : ControllerBase
     private readonly IRepository<MarketingPack> _marketingPackRepository;
     private readonly IRepository<GeneratedCopy> _generatedCopyRepository;
     private readonly IRepository<MarketingAssetPrompt> _assetPromptRepository;
+    private readonly IRepository<Content> _contentRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<MarketingPacksApiController> _logger;
+    private readonly ILoggingService _loggingService;
 
     public MarketingPacksApiController(
         IRepository<MarketingPack> marketingPackRepository,
         IRepository<GeneratedCopy> generatedCopyRepository,
         IRepository<MarketingAssetPrompt> assetPromptRepository,
+        IRepository<Content> contentRepository,
         IUnitOfWork unitOfWork,
-        ILogger<MarketingPacksApiController> logger)
+        ILogger<MarketingPacksApiController> logger,
+        ILoggingService loggingService)
     {
         _marketingPackRepository = marketingPackRepository;
         _generatedCopyRepository = generatedCopyRepository;
         _assetPromptRepository = assetPromptRepository;
+        _contentRepository = contentRepository;
         _unitOfWork = unitOfWork;
         _logger = logger;
+        _loggingService = loggingService;
     }
 
     /// <summary>
@@ -229,6 +237,33 @@ public class MarketingPacksApiController : ControllerBase
                 return BadRequest(new { error = "strategy is required" });
             }
 
+            // Verificar si el Content existe, si no, crearlo automáticamente
+            if (request.ContentId != Guid.Empty)
+            {
+                var existingContents = await _contentRepository.FindAsync(
+                    c => c.Id == request.ContentId,
+                    request.TenantId,
+                    cancellationToken);
+                
+                if (!existingContents.Any())
+                {
+                    // Crear Content automáticamente si no existe
+                    var newContent = new Content
+                    {
+                        Id = request.ContentId,
+                        TenantId = request.TenantId,
+                        CampaignId = request.CampaignId,
+                        ContentType = "Text", // Tipo por defecto para MarketingPack
+                        FileUrl = $"auto-generated://marketing-pack/{request.ContentId}", // URL placeholder para contenido generado por IA
+                        IsAiGenerated = true,
+                        Description = "Content auto-created for MarketingPack"
+                    };
+                    await _contentRepository.AddAsync(newContent, cancellationToken);
+                    await _unitOfWork.SaveChangesAsync(cancellationToken);
+                    _logger.LogInformation("Content {ContentId} auto-created for MarketingPack", request.ContentId);
+                }
+            }
+
             // Verificar si el pack ya existe (si se proporcionó ID)
             MarketingPack? existingPack = null;
             if (request.Id.HasValue && request.Id.Value != Guid.Empty)
@@ -340,17 +375,80 @@ public class MarketingPacksApiController : ControllerBase
         }
         catch (Exception ex)
         {
+            // Loggear en consola/archivo
             _logger.LogError(
                 ex,
-                "Error al guardar MarketingPack para Tenant {TenantId}",
-                request.TenantId);
+                "Error al guardar MarketingPack para Tenant {TenantId}. Tipo: {ExceptionType}, Mensaje: {Message}, InnerException: {InnerException}",
+                request.TenantId,
+                ex.GetType().Name,
+                ex.Message,
+                ex.InnerException?.Message ?? "N/A");
+
+            // Si es DbUpdateException, loggear más detalles
+            string? additionalData = null;
+            if (ex is Microsoft.EntityFrameworkCore.DbUpdateException dbEx)
+            {
+                _logger.LogError("DbUpdateException - Entries: {EntryCount}", dbEx.Entries?.Count ?? 0);
+                var entryDetails = new List<object>();
+                foreach (var entry in dbEx.Entries ?? Enumerable.Empty<Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry>())
+                {
+                    _logger.LogError("  Entry: {EntityType}, State: {State}", entry.Entity.GetType().Name, entry.State);
+                    entryDetails.Add(new
+                    {
+                        EntityType = entry.Entity.GetType().Name,
+                        State = entry.State.ToString(),
+                        Properties = entry.Properties.Select(p => new
+                        {
+                            PropertyName = p.Metadata.Name,
+                            CurrentValue = p.CurrentValue?.ToString(),
+                            OriginalValue = p.OriginalValue?.ToString()
+                        }).ToList()
+                    });
+                }
+                additionalData = JsonSerializer.Serialize(new
+                {
+                    EntryCount = dbEx.Entries?.Count ?? 0,
+                    Entries = entryDetails
+                });
+            }
+
+            // Guardar error en la base de datos para validación posterior
+            try
+            {
+                await _loggingService.LogErrorAsync(
+                    message: $"Error al guardar MarketingPack. TenantId: {request.TenantId}, ContentId: {request.ContentId}",
+                    source: "MarketingPacksApiController.CreateOrUpdateMarketingPack",
+                    exception: ex,
+                    tenantId: request.TenantId,
+                    userId: request.UserId,
+                    requestId: HttpContext.TraceIdentifier,
+                    path: HttpContext.Request.Path,
+                    httpMethod: HttpContext.Request.Method,
+                    additionalData: additionalData ?? JsonSerializer.Serialize(new
+                    {
+                        RequestId = request.Id,
+                        ContentId = request.ContentId,
+                        CampaignId = request.CampaignId,
+                        Status = request.Status,
+                        CopiesCount = request.Copies?.Count ?? 0,
+                        AssetPromptsCount = request.AssetPrompts?.Count ?? 0
+                    }),
+                    ipAddress: HttpContext.Connection.RemoteIpAddress?.ToString(),
+                    userAgent: HttpContext.Request.Headers["User-Agent"].ToString());
+            }
+            catch (Exception logEx)
+            {
+                // Si falla al guardar el log en BD, solo loguear en consola
+                _logger.LogError(logEx, "Error al guardar log en base de datos");
+            }
 
             return StatusCode(
                 StatusCodes.Status500InternalServerError,
                 new
                 {
                     error = "Internal server error",
-                    message = "Failed to save marketing pack"
+                    message = "Failed to save marketing pack",
+                    details = ex.Message // Incluir detalles del error para debugging
                 });
         }
     }
