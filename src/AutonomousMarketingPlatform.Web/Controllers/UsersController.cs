@@ -129,11 +129,66 @@ public class UsersController : Controller
 
         try
         {
+            // Validar que el email no esté vacío
+            if (string.IsNullOrWhiteSpace(model.Email))
+            {
+                ModelState.AddModelError(nameof(model.Email), "El email es requerido");
+            }
+
+            // Validar que la contraseña no esté vacía
+            if (string.IsNullOrWhiteSpace(model.Password))
+            {
+                ModelState.AddModelError(nameof(model.Password), "La contraseña es requerida");
+            }
+            else
+            {
+                // Validar requisitos de contraseña
+                if (model.Password.Length < 8)
+                {
+                    ModelState.AddModelError(nameof(model.Password), "La contraseña debe tener al menos 8 caracteres");
+                }
+                if (!model.Password.Any(char.IsUpper))
+                {
+                    ModelState.AddModelError(nameof(model.Password), "La contraseña debe contener al menos una letra mayúscula");
+                }
+                if (!model.Password.Any(char.IsLower))
+                {
+                    ModelState.AddModelError(nameof(model.Password), "La contraseña debe contener al menos una letra minúscula");
+                }
+                if (!model.Password.Any(char.IsDigit))
+                {
+                    ModelState.AddModelError(nameof(model.Password), "La contraseña debe contener al menos un número");
+                }
+                if (!model.Password.Any(ch => !char.IsLetterOrDigit(ch)))
+                {
+                    ModelState.AddModelError(nameof(model.Password), "La contraseña debe contener al menos un carácter especial");
+                }
+            }
+
+            // Validar que el tenant no sea Guid.Empty
+            if (model.TenantId == Guid.Empty)
+            {
+                ModelState.AddModelError(nameof(model.TenantId), "Debe seleccionar un tenant");
+            }
+
+            // Si hay errores de validación, retornar la vista
+            if (!ModelState.IsValid)
+            {
+                // Recargar tenants si es SuperAdmin
+                if (isSuperAdmin)
+                {
+                    var tenantsQuery = new ListTenantsQuery();
+                    var tenants = await _mediator.Send(tenantsQuery);
+                    ViewBag.Tenants = tenants;
+                }
+                return View(model);
+            }
+
             var command = new CreateUserCommand
             {
-                Email = model.Email,
+                Email = model.Email.Trim(),
                 Password = model.Password,
-                FullName = model.FullName,
+                FullName = model.FullName.Trim(),
                 TenantId = model.TenantId,
                 Role = model.Role,
                 IsActive = model.IsActive
@@ -143,10 +198,55 @@ public class UsersController : Controller
             TempData["SuccessMessage"] = "Usuario creado exitosamente.";
             return RedirectToAction(nameof(Index));
         }
+        catch (InvalidOperationException ex)
+        {
+            _logger.LogError(ex, "Error al crear usuario: {Message}", ex.Message);
+            
+            // Detectar si es error de usuario existente
+            if (ex.Message.Contains("ya existe") || ex.Message.Contains("already exists"))
+            {
+                ModelState.AddModelError(nameof(model.Email), "Ya existe un usuario con este email. Por favor, use otro email.");
+            }
+            else if (ex.Message.Contains("Tenant") && ex.Message.Contains("no encontrado"))
+            {
+                ModelState.AddModelError(nameof(model.TenantId), "El tenant seleccionado no existe");
+            }
+            else if (ex.Message.Contains("Rol") && ex.Message.Contains("no encontrado"))
+            {
+                ModelState.AddModelError(nameof(model.Role), "El rol seleccionado no existe");
+            }
+            else if (ex.Message.Contains("Error al crear usuario"))
+            {
+                // Extraer errores de Identity
+                var errorParts = ex.Message.Split(':');
+                if (errorParts.Length > 1)
+                {
+                    ModelState.AddModelError(nameof(model.Password), errorParts[1].Trim());
+                }
+                else
+                {
+                    ModelState.AddModelError("", ex.Message);
+                }
+            }
+            else
+            {
+                ModelState.AddModelError("", ex.Message);
+            }
+            
+            // Recargar tenants si es SuperAdmin
+            if (isSuperAdmin)
+            {
+                var tenantsQuery = new ListTenantsQuery();
+                var tenants = await _mediator.Send(tenantsQuery);
+                ViewBag.Tenants = tenants;
+            }
+            
+            return View(model);
+        }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error al crear usuario");
-            ModelState.AddModelError("", ex.Message);
+            _logger.LogError(ex, "Error inesperado al crear usuario");
+            ModelState.AddModelError("", "Ocurrió un error inesperado al crear el usuario. Por favor, intente nuevamente.");
             
             // Recargar tenants si es SuperAdmin
             if (isSuperAdmin)

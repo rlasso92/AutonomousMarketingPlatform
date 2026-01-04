@@ -46,7 +46,7 @@
                         <form asp-action="Create" method="post">
                             @Html.AntiForgeryToken()
                             <div class="card-body">
-                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                <div asp-validation-summary="All" class="alert alert-danger" role="alert"></div>
 
                                 <div class="form-group">
                                     <label asp-for="Email">Email <span class="text-danger">*</span></label>
@@ -57,10 +57,16 @@
                                 <div class="form-group">
                                     <label asp-for="Password">Contraseña <span class="text-danger">*</span></label>
                                     <input asp-for="Password" class="form-control" type="password" required 
-                                           minlength="8" />
+                                           minlength="8" id="passwordInput" />
                                     <small class="form-text text-muted">
                                         Mínimo 8 caracteres, debe incluir mayúsculas, minúsculas, números y caracteres especiales
                                     </small>
+                                    <div id="passwordStrength" class="mt-2" style="display: none;">
+                                        <div class="progress" style="height: 5px;">
+                                            <div id="passwordStrengthBar" class="progress-bar" role="progressbar" style="width: 0%"></div>
+                                        </div>
+                                        <small id="passwordStrengthText" class="text-muted"></small>
+                                    </div>
                                     <span asp-validation-for="Password" class="text-danger"></span>
                                 </div>
 
@@ -153,5 +159,107 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        $(document).ready(function() {
+            // Validación de contraseña en tiempo real
+            $('#passwordInput').on('input', function() {
+                var password = $(this).val();
+                var strength = 0;
+                var feedback = [];
+
+                if (password.length >= 8) {
+                    strength += 25;
+                } else {
+                    feedback.push('Mínimo 8 caracteres');
+                }
+
+                if (/[a-z]/.test(password)) {
+                    strength += 25;
+                } else {
+                    feedback.push('Falta minúscula');
+                }
+
+                if (/[A-Z]/.test(password)) {
+                    strength += 25;
+                } else {
+                    feedback.push('Falta mayúscula');
+                }
+
+                if (/\d/.test(password)) {
+                    strength += 12.5;
+                } else {
+                    feedback.push('Falta número');
+                }
+
+                var specialChars = '@@$!%*?&';
+                var hasSpecial = false;
+                for (var i = 0; i < specialChars.length; i++) {
+                    if (password.indexOf(specialChars[i]) !== -1) {
+                        hasSpecial = true;
+                        break;
+                    }
+                }
+                if (hasSpecial) {
+                    strength += 12.5;
+                } else {
+                    feedback.push('Falta carácter especial');
+                }
+
+                var $strengthDiv = $('#passwordStrength');
+                var $strengthBar = $('#passwordStrengthBar');
+                var $strengthText = $('#passwordStrengthText');
+
+                if (password.length > 0) {
+                    $strengthDiv.show();
+                    $strengthBar.css('width', strength + '%');
+
+                    if (strength < 50) {
+                        $strengthBar.removeClass('progress-bar-success progress-bar-warning').addClass('progress-bar-danger');
+                        $strengthText.text('Débil: ' + feedback.join(', ')).removeClass('text-success text-warning').addClass('text-danger');
+                    } else if (strength < 75) {
+                        $strengthBar.removeClass('progress-bar-danger progress-bar-success').addClass('progress-bar-warning');
+                        $strengthText.text('Media: ' + feedback.join(', ')).removeClass('text-danger text-success').addClass('text-warning');
+                    } else {
+                        $strengthBar.removeClass('progress-bar-danger progress-bar-warning').addClass('progress-bar-success');
+                        $strengthText.text('Fuerte').removeClass('text-danger text-warning').addClass('text-success');
+                    }
+                } else {
+                    $strengthDiv.hide();
+                }
+            });
+
+            // Validación antes de enviar
+            $('form').on('submit', function(e) {
+                var password = $('#passwordInput').val();
+                var hasLower = /[a-z]/.test(password);
+                var hasUpper = /[A-Z]/.test(password);
+                var hasDigit = /\d/.test(password);
+                var specialChars = '@@$!%*?&';
+                var hasSpecial = false;
+                for (var i = 0; i < specialChars.length; i++) {
+                    if (password.indexOf(specialChars[i]) !== -1) {
+                        hasSpecial = true;
+                        break;
+                    }
+                }
+                var hasMinLength = password.length >= 8;
+                
+                var isValid = hasLower && hasUpper && hasDigit && hasSpecial && hasMinLength;
+
+                if (!isValid) {
+                    e.preventDefault();
+                    var errors = [];
+                    if (!hasMinLength) errors.push('Mínimo 8 caracteres');
+                    if (!hasUpper) errors.push('Al menos una mayúscula');
+                    if (!hasLower) errors.push('Al menos una minúscula');
+                    if (!hasDigit) errors.push('Al menos un número');
+                    if (!hasSpecial) errors.push('Al menos un carácter especial (@@$!%*?&)');
+                    
+                    alert('La contraseña no cumple con los requisitos:\n' + errors.join('\n'));
+                    return false;
+                }
+            });
+        });
+    </script>
 }
 

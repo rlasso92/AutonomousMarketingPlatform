@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace AutonomousMarketingPlatform.Application.DTOs;
 
 /// <summary>
@@ -24,11 +26,33 @@ public class UserDto
 /// </summary>
 public class CreateUserDto
 {
+    [Required(ErrorMessage = "El email es requerido")]
+    [EmailAddress(ErrorMessage = "El email no tiene un formato válido")]
+    [Display(Name = "Email")]
     public string Email { get; set; } = string.Empty;
+
+    [Required(ErrorMessage = "La contraseña es requerida")]
+    [StringLength(100, MinimumLength = 8, ErrorMessage = "La contraseña debe tener al menos 8 caracteres")]
+    [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$", 
+        ErrorMessage = "La contraseña debe tener al menos 8 caracteres, incluyendo mayúsculas, minúsculas, números y caracteres especiales")]
+    [DataType(DataType.Password)]
+    [Display(Name = "Contraseña")]
     public string Password { get; set; } = string.Empty;
+
+    [Required(ErrorMessage = "El nombre completo es requerido")]
+    [StringLength(200, ErrorMessage = "El nombre completo no puede exceder 200 caracteres")]
+    [Display(Name = "Nombre Completo")]
     public string FullName { get; set; } = string.Empty;
+
+    [Required(ErrorMessage = "El tenant es requerido")]
+    [Display(Name = "Tenant")]
     public Guid TenantId { get; set; }
+
+    [Required(ErrorMessage = "El rol es requerido")]
+    [Display(Name = "Rol")]
     public string Role { get; set; } = "Marketer";
+
+    [Display(Name = "Usuario Activo")]
     public bool IsActive { get; set; } = true;
 }
 
