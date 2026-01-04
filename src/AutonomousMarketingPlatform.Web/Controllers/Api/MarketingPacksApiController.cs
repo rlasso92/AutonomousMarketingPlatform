@@ -30,6 +30,7 @@ public class MarketingPacksApiController : ControllerBase
     private readonly IRepository<MarketingAssetPrompt> _assetPromptRepository;
     private readonly IRepository<Content> _contentRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ApplicationDbContext _dbContext;
     private readonly ILogger<MarketingPacksApiController> _logger;
     private readonly ILoggingService _loggingService;
 
@@ -39,6 +40,7 @@ public class MarketingPacksApiController : ControllerBase
         IRepository<MarketingAssetPrompt> assetPromptRepository,
         IRepository<Content> contentRepository,
         IUnitOfWork unitOfWork,
+        ApplicationDbContext dbContext,
         ILogger<MarketingPacksApiController> logger,
         ILoggingService loggingService)
     {
@@ -47,6 +49,7 @@ public class MarketingPacksApiController : ControllerBase
         _assetPromptRepository = assetPromptRepository;
         _contentRepository = contentRepository;
         _unitOfWork = unitOfWork;
+        _dbContext = dbContext;
         _logger = logger;
         _loggingService = loggingService;
     }
@@ -238,14 +241,13 @@ public class MarketingPacksApiController : ControllerBase
             }
 
             // Verificar si el Content existe, si no, crearlo automáticamente
+            // Usar DbContext directamente para evitar problemas de filtrado por tenant
             if (request.ContentId != Guid.Empty)
             {
-                var existingContents = await _contentRepository.FindAsync(
-                    c => c.Id == request.ContentId,
-                    request.TenantId,
-                    cancellationToken);
+                var existingContent = await _dbContext.Contents
+                    .FirstOrDefaultAsync(c => c.Id == request.ContentId, cancellationToken);
                 
-                if (!existingContents.Any())
+                if (existingContent == null)
                 {
                     // Crear Content automáticamente si no existe
                     var newContent = new Content
@@ -258,8 +260,9 @@ public class MarketingPacksApiController : ControllerBase
                         IsAiGenerated = true,
                         Description = "Content auto-created for MarketingPack"
                     };
-                    await _contentRepository.AddAsync(newContent, cancellationToken);
-                    await _unitOfWork.SaveChangesAsync(cancellationToken);
+                    _dbContext.Contents.Add(newContent);
+                    // Guardar inmediatamente para que esté disponible para la foreign key
+                    await _dbContext.SaveChangesAsync(cancellationToken);
                     _logger.LogInformation("Content {ContentId} auto-created for MarketingPack", request.ContentId);
                 }
             }
