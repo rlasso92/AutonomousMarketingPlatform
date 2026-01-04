@@ -67,6 +67,7 @@
                                                 <th>Usuarios</th>
                                                 <th>Estado</th>
                                                 <th>Creado</th>
+                                                <th>Acciones</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -88,6 +89,11 @@
                                                         }
                                                     </td>
                                                     <td>@tenant.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                                                    <td>
+                                                        <a href="@Url.Action("Edit", new { id = tenant.Id })" class="btn btn-sm btn-warning" title="Editar">
+                                                            <i class="fas fa-edit"></i>
+                                                        </a>
+                                                    </td>
                                                 </tr>
                                             }
                                         </tbody>

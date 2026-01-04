@@ -726,11 +726,13 @@ public class CampaignsController : Controller
             // Para SuperAdmins, necesitamos obtener el TenantId real de la campaña
             // Para usuarios normales, usar su TenantId
             Guid effectiveTenantId;
+            var campaignRepository = HttpContext.RequestServices.GetRequiredService<ICampaignRepository>();
+            Domain.Entities.Campaign? campaignEntity = null;
+            
             if (isSuperAdmin)
             {
                 // Obtener el TenantId real desde la base de datos usando el repositorio
-                var campaignRepository = HttpContext.RequestServices.GetRequiredService<ICampaignRepository>();
-                var campaignEntity = await campaignRepository.GetCampaignWithDetailsAsync(id, Guid.Empty);
+                campaignEntity = await campaignRepository.GetCampaignWithDetailsAsync(id, Guid.Empty);
                 
                 if (campaignEntity == null)
                 {
@@ -747,6 +749,45 @@ public class CampaignsController : Controller
                     return RedirectToAction("Login", "Account");
                 }
                 effectiveTenantId = currentTenantId.Value;
+            }
+
+            // Preservar Objectives y TargetAudience si no vienen en el modelo (no están en la vista Edit)
+            // Obtener la campaña actual para preservar estos campos si no la tenemos ya
+            if (campaignEntity == null)
+            {
+                campaignEntity = await campaignRepository.GetCampaignWithDetailsAsync(id, effectiveTenantId);
+            }
+            
+            if (campaignEntity == null)
+            {
+                TempData["ErrorMessage"] = "La campaña no fue encontrada.";
+                return RedirectToAction("Index");
+            }
+            
+            // Si Objectives o TargetAudience no vienen en el modelo, usar los valores existentes
+            // Deserializar desde JSON si es necesario
+            if (model.Objectives == null && !string.IsNullOrEmpty(campaignEntity.Objectives))
+            {
+                try
+                {
+                    model.Objectives = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, object>>(campaignEntity.Objectives);
+                }
+                catch
+                {
+                    // Si falla la deserialización, dejar null
+                }
+            }
+            
+            if (model.TargetAudience == null && !string.IsNullOrEmpty(campaignEntity.TargetAudience))
+            {
+                try
+                {
+                    model.TargetAudience = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, object>>(campaignEntity.TargetAudience);
+                }
+                catch
+                {
+                    // Si falla la deserialización, dejar null
+                }
             }
 
             var command = new UpdateCampaignCommand

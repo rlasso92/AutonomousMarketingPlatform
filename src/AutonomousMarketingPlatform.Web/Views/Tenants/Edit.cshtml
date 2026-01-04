@@ -1,0 +1,98 @@
+@model AutonomousMarketingPlatform.Application.DTOs.UpdateTenantDto
+@{
+    ViewData["Title"] = "Editar Tenant";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="content-wrapper">
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1><i class="fas fa-building mr-2"></i>Editar Tenant</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="/">Inicio</a></li>
+                        <li class="breadcrumb-item"><a href="@Url.Action("Index")">Tenants</a></li>
+                        <li class="breadcrumb-item active">Editar</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="content">
+        <div class="container-fluid">
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    @TempData["ErrorMessage"]
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            }
+
+            <div class="row">
+                <div class="col-12">
+                    <div class="card card-warning">
+                        <div class="card-header">
+                            <h3 class="card-title">Información del Tenant</h3>
+                        </div>
+                        <form asp-action="Edit" method="post">
+                            <div class="card-body">
+                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                                <div class="form-group">
+                                    <label asp-for="Name">Nombre <span class="text-danger">*</span></label>
+                                    <input asp-for="Name" class="form-control" placeholder="Ej: Empresa ABC" required />
+                                    <span asp-validation-for="Name" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group">
+                                    <label asp-for="Subdomain">Subdomain</label>
+                                    <input asp-for="Subdomain" class="form-control" placeholder="ej: empresa-abc" />
+                                    <small class="form-text text-muted">Subdomain único para acceso al tenant (opcional)</small>
+                                    <span asp-validation-for="Subdomain" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group">
+                                    <label asp-for="ContactEmail">Email de Contacto</label>
+                                    <input asp-for="ContactEmail" class="form-control" type="email" placeholder="contacto@empresa.com" />
+                                    <span asp-validation-for="ContactEmail" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="form-check">
+                                        <input asp-for="IsActive" class="form-check-input" type="checkbox" />
+                                        <label asp-for="IsActive" class="form-check-label">
+                                            Tenant Activo
+                                        </label>
+                                    </div>
+                                    <small class="form-text text-muted">
+                                        Si se desactiva, los usuarios de este tenant no podrán acceder al sistema.
+                                    </small>
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-warning">
+                                    <i class="fas fa-save mr-1"></i>Guardar Cambios
+                                </button>
+                                <a href="@Url.Action("Index")" class="btn btn-secondary">
+                                    <i class="fas fa-times mr-1"></i>Cancelar
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+

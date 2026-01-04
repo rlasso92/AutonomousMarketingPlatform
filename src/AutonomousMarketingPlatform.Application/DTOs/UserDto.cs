@@ -80,3 +80,14 @@ public class CreateTenantDto
     public string? ContactEmail { get; set; }
 }
 
+/// <summary>
+/// DTO para actualizar tenant.
+/// </summary>
+public class UpdateTenantDto
+{
+    public string Name { get; set; } = string.Empty;
+    public string? Subdomain { get; set; }
+    public string? ContactEmail { get; set; }
+    public bool IsActive { get; set; } = true;
+}
+

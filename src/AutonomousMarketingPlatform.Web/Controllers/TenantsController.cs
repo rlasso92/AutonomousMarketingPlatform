@@ -84,5 +84,76 @@ public class TenantsController : Controller
             return View(model);
         }
     }
+
+    /// <summary>
+    /// Muestra el formulario para editar un tenant.
+    /// </summary>
+    [HttpGet]
+    public async Task<IActionResult> Edit(Guid id)
+    {
+        try
+        {
+            var query = new GetTenantQuery
+            {
+                TenantId = id
+            };
+
+            var tenant = await _mediator.Send(query);
+
+            if (tenant == null)
+            {
+                TempData["ErrorMessage"] = "Tenant no encontrado.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            var updateDto = new UpdateTenantDto
+            {
+                Name = tenant.Name,
+                Subdomain = tenant.Subdomain,
+                ContactEmail = tenant.ContactEmail,
+                IsActive = tenant.IsActive
+            };
+
+            return View(updateDto);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error al obtener tenant para editar {TenantId}", id);
+            TempData["ErrorMessage"] = "Error al cargar el tenant para editar.";
+            return RedirectToAction(nameof(Index));
+        }
+    }
+
+    /// <summary>
+    /// Actualiza un tenant existente.
+    /// </summary>
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(Guid id, UpdateTenantDto model)
+    {
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
+
+        try
+        {
+            var command = new UpdateTenantCommand
+            {
+                TenantId = id,
+                Tenant = model
+            };
+
+            await _mediator.Send(command);
+            TempData["SuccessMessage"] = "Tenant actualizado exitosamente.";
+            return RedirectToAction(nameof(Index));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error al actualizar tenant {TenantId}", id);
+            ModelState.AddModelError("", ex.Message);
+            return View(model);
+        }
+    }
 }
 

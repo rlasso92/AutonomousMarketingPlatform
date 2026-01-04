@@ -80,6 +80,28 @@
                         <p>Configuración n8n</p>
                     </a>
                 </li>
+                
+                <!-- Usuarios - Solo Admin, Owner o SuperAdmin -->
+                @if (User.IsInRole("Admin") || User.IsInRole("Owner") || User.HasClaim("IsSuperAdmin", "true"))
+                {
+                    <li class="nav-item">
+                        <a href="/Users" class="nav-link">
+                            <i class="nav-icon fas fa-users"></i>
+                            <p>Usuarios</p>
+                        </a>
+                    </li>
+                }
+                
+                <!-- Tenants - Solo Owner o SuperAdmin -->
+                @if (User.IsInRole("Owner") || User.HasClaim("IsSuperAdmin", "true"))
+                {
+                    <li class="nav-item">
+                        <a href="/Tenants" class="nav-link">
+                            <i class="nav-icon fas fa-building"></i>
+                            <p>Empresas (Tenants)</p>
+                        </a>
+                    </li>
+                }
             </ul>
         </nav>
     </div>

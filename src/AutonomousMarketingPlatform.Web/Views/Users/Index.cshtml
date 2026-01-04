@@ -107,6 +107,9 @@
                                                         <a href="@Url.Action("Details", new { id = user.Id })" class="btn btn-sm btn-info" title="Ver Detalles">
                                                             <i class="fas fa-eye"></i>
                                                         </a>
+                                                        <a href="@Url.Action("Edit", new { id = user.Id })" class="btn btn-sm btn-warning" title="Editar">
+                                                            <i class="fas fa-edit"></i>
+                                                        </a>
                                                         <form asp-action="ToggleActive" method="post" style="display: inline;" 
                                                               onsubmit="return confirm('¿Está seguro de que desea @(user.IsActive ? "desactivar" : "activar") este usuario?');">
                                                             <input type="hidden" name="id" value="@user.Id" />

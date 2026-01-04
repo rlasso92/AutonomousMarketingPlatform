@@ -46,10 +46,10 @@
                                         <div class="form-group">
                                             <label asp-for="Status">Estado</label>
                                             <select asp-for="Status" class="form-control">
-                                                <option value="Draft">Draft</option>
-                                                <option value="Active">Active</option>
-                                                <option value="Paused">Paused</option>
-                                                <option value="Archived">Archived</option>
+                                                <option value="Draft" selected="@(Model?.Status == "Draft")">Draft</option>
+                                                <option value="Active" selected="@(Model?.Status == "Active")">Active</option>
+                                                <option value="Paused" selected="@(Model?.Status == "Paused")">Paused</option>
+                                                <option value="Archived" selected="@(Model?.Status == "Archived")">Archived</option>
                                             </select>
                                             <span asp-validation-for="Status" class="text-danger"></span>
                                         </div>
@@ -89,11 +89,14 @@
                                 <div class="form-group">
                                     <label asp-for="TargetChannels">Canales Objetivo</label>
                                     <select asp-for="TargetChannels" multiple class="form-control">
-                                        <option value="Instagram">Instagram</option>
-                                        <option value="Facebook">Facebook</option>
-                                        <option value="TikTok">TikTok</option>
-                                        <option value="Twitter">Twitter</option>
-                                        <option value="LinkedIn">LinkedIn</option>
+                                        @{
+                                            var channels = new[] { "Instagram", "Facebook", "TikTok", "Twitter", "LinkedIn" };
+                                            var selectedChannels = Model?.TargetChannels ?? new List<string>();
+                                        }
+                                        @foreach (var channel in channels)
+                                        {
+                                            <option value="@channel" selected="@(selectedChannels.Contains(channel))">@channel</option>
+                                        }
                                     </select>
                                     <small class="form-text text-muted">Mantén presionado Ctrl (o Cmd en Mac) para seleccionar múltiples canales.</small>
                                 </div>

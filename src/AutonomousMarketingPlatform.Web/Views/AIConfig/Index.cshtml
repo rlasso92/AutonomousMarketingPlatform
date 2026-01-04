@@ -53,7 +53,7 @@
                                 <div class="form-group">
                                     <label for="Provider">Proveedor de IA</label>
                                     <select class="form-control" id="Provider" name="Provider" required>
-                                        <option value="OpenAI" selected>OpenAI</option>
+                                        <option value="OpenAI" selected="@(Model?.Provider == "OpenAI" || Model?.Provider == null)">OpenAI</option>
                                         <option value="Anthropic" disabled>Anthropic (Próximamente)</option>
                                     </select>
                                 </div>
@@ -61,25 +61,35 @@
                                 <div class="form-group">
                                     <label for="ApiKey">API Key</label>
                                     <input type="password" class="form-control" id="ApiKey" name="ApiKey" 
-                                           placeholder="Ingrese su API key de OpenAI" required>
+                                           placeholder="Ingrese su API key de OpenAI" @(Model?.Id == Guid.Empty ? "required" : "")>
                                     <small class="form-text text-muted">
                                         <i class="fas fa-shield-alt mr-1"></i>
                                         La API key se almacenará encriptada en la base de datos.
+                                        @if (Model?.Id != Guid.Empty)
+                                        {
+                                            <br><span class="text-info"><i class="fas fa-info-circle"></i> Ya hay una API key configurada. Déjala vacía si no deseas cambiarla.</span>
+                                        }
                                     </small>
                                 </div>
 
                                 <div class="form-group">
                                     <label for="Model">Modelo</label>
                                     <select class="form-control" id="Model" name="Model">
-                                        <option value="gpt-4" selected>GPT-4</option>
-                                        <option value="gpt-4-turbo">GPT-4 Turbo</option>
-                                        <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
+                                        @{
+                                            var models = new[] { "gpt-4", "gpt-4-turbo", "gpt-3.5-turbo" };
+                                            var currentModel = Model?.Model ?? "gpt-4";
+                                        }
+                                        @foreach (var modelOption in models)
+                                        {
+                                            <option value="@modelOption" selected="@(currentModel == modelOption)">@modelOption</option>
+                                        }
                                     </select>
                                 </div>
 
                                 <div class="form-group">
                                     <div class="form-check">
-                                        <input type="checkbox" class="form-check-input" id="IsActive" name="IsActive" value="true" checked>
+                                        <input type="checkbox" class="form-check-input" id="IsActive" name="IsActive" value="true" 
+                                               @(Model?.IsActive == true ? "checked" : "")>
                                         <label class="form-check-label" for="IsActive">
                                             Activar esta configuración
                                         </label>

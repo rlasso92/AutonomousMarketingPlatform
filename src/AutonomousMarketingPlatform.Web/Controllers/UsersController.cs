@@ -185,6 +185,125 @@ public class UsersController : Controller
     }
 
     /// <summary>
+    /// Muestra el formulario para editar un usuario.
+    /// </summary>
+    [HttpGet]
+    public async Task<IActionResult> Edit(Guid id)
+    {
+        // Verificar permisos: Admin, Owner o SuperAdmin
+        var isSuperAdmin = User.HasClaim("IsSuperAdmin", "true");
+        var isAdmin = User.IsInRole("Admin");
+        var isOwner = User.IsInRole("Owner");
+        
+        if (!isSuperAdmin && !isAdmin && !isOwner)
+        {
+            return RedirectToAction("AccessDenied", "Account");
+        }
+
+        try
+        {
+            var query = new GetUserQuery
+            {
+                UserId = id
+            };
+
+            var user = await _mediator.Send(query);
+
+            if (user == null)
+            {
+                TempData["ErrorMessage"] = "Usuario no encontrado.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            var updateDto = new UpdateUserDto
+            {
+                FullName = user.FullName,
+                IsActive = user.IsActive,
+                Role = user.Roles.FirstOrDefault()
+            };
+
+            ViewBag.UserId = id;
+            ViewBag.Email = user.Email;
+            ViewBag.TenantName = user.TenantName;
+            
+            return View(updateDto);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error al obtener usuario para editar {UserId}", id);
+            TempData["ErrorMessage"] = "Error al cargar el usuario para editar.";
+            return RedirectToAction(nameof(Index));
+        }
+    }
+
+    /// <summary>
+    /// Actualiza un usuario existente.
+    /// </summary>
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(Guid id, UpdateUserDto model)
+    {
+        // Verificar permisos: Admin, Owner o SuperAdmin
+        var isSuperAdmin = User.HasClaim("IsSuperAdmin", "true");
+        var isAdmin = User.IsInRole("Admin");
+        var isOwner = User.IsInRole("Owner");
+        
+        if (!isSuperAdmin && !isAdmin && !isOwner)
+        {
+            return RedirectToAction("AccessDenied", "Account");
+        }
+
+        if (!ModelState.IsValid)
+        {
+            // Recargar datos del usuario
+            try
+            {
+                var getUserQuery = new GetUserQuery { UserId = id };
+                var user = await _mediator.Send(getUserQuery);
+                ViewBag.UserId = id;
+                ViewBag.Email = user?.Email ?? "";
+                ViewBag.TenantName = user?.TenantName ?? "";
+            }
+            catch { }
+            
+            return View(model);
+        }
+
+        try
+        {
+            var command = new UpdateUserCommand
+            {
+                UserId = id,
+                FullName = model.FullName,
+                IsActive = model.IsActive,
+                Role = model.Role
+            };
+
+            await _mediator.Send(command);
+            TempData["SuccessMessage"] = "Usuario actualizado exitosamente.";
+            return RedirectToAction(nameof(Details), new { id });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error al actualizar usuario {UserId}", id);
+            ModelState.AddModelError("", ex.Message);
+            
+            // Recargar datos del usuario
+            try
+            {
+                var getUserQuery = new GetUserQuery { UserId = id };
+                var user = await _mediator.Send(getUserQuery);
+                ViewBag.UserId = id;
+                ViewBag.Email = user?.Email ?? "";
+                ViewBag.TenantName = user?.TenantName ?? "";
+            }
+            catch { }
+            
+            return View(model);
+        }
+    }
+
+    /// <summary>
     /// Activar/Desactivar usuario.
     /// </summary>
     [HttpPost]

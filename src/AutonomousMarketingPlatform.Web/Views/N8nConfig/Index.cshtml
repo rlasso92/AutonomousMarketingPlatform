@@ -373,7 +373,8 @@
                 };
             }
 
-            $('#testConnectionBtn').prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-2"></i>Probando...');
+            var $btn = $('#testConnectionBtn');
+            showButtonLoading($btn, '<i class="fas fa-spinner fa-spin mr-2"></i>Probando...');
 
             $.ajax({
                 url: '/N8nConfig/TestConnection',
@@ -413,7 +414,7 @@
                     `).show();
                 },
                 complete: function() {
-                    $('#testConnectionBtn').prop('disabled', false).html('<i class="fas fa-network-wired mr-2"></i>Probar Conexión');
+                    hideButtonLoading($btn);
                 }
             });
         }
@@ -424,7 +425,8 @@
         }
 
         function testWebhook() {
-            $('#testWebhookBtn').prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-2"></i>Probando...');
+            var $btn = $('#testWebhookBtn');
+            showButtonLoading($btn, '<i class="fas fa-spinner fa-spin mr-2"></i>Probando...');
 
             // Obtener tenantId seleccionado si es SuperAdmin
             var selectedTenantId = '@(ViewBag.SelectedTenantId != null ? ViewBag.SelectedTenantId.ToString() : "")';
@@ -516,7 +518,7 @@
                     `).show();
                 },
                 complete: function() {
-                    $('#testWebhookBtn').prop('disabled', false).html('<i class="fas fa-paper-plane mr-2"></i>Probar Webhook Marketing Request');
+                    hideButtonLoading($btn);
                 }
             });
         }
