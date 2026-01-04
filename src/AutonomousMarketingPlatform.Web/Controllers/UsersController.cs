@@ -202,10 +202,24 @@ public class UsersController : Controller
         // Si hay errores de validación, retornar la vista
         if (!ModelState.IsValid)
         {
-            var validationErrors = string.Join(", ", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
-            _logger.LogWarning("[UsersController.Create] Validación fallida. Errores: {Errors}", validationErrors);
+            // Loggear TODOS los errores de ModelState con detalles
+            var errors = ModelState
+                .Where(x => x.Value?.Errors != null && x.Value.Errors.Any())
+                .SelectMany(x => x.Value.Errors.Select(e => new { Field = x.Key, Error = e.ErrorMessage }))
+                .ToList();
             
-            // Guardar error en base de datos
+            var validationErrors = string.Join(", ", errors.Select(e => $"{e.Field}: {e.Error}"));
+            _logger.LogWarning("[UsersController.Create] Validación fallida. Errores: {Errors}", validationErrors);
+            _logger.LogWarning("[UsersController.Create] Model recibido - Email: {Email}, TenantId: {TenantId}, Role: {Role}, IsActive: {IsActive}, PasswordLength: {PasswordLength}, ConfirmPasswordLength: {ConfirmPasswordLength}, FullName: {FullName}",
+                model.Email ?? "NULL",
+                model.TenantId,
+                model.Role ?? "NULL",
+                model.IsActive,
+                model.Password?.Length ?? 0,
+                model.ConfirmPassword?.Length ?? 0,
+                model.FullName ?? "NULL");
+            
+            // Guardar error en base de datos con detalles completos
             await SaveErrorToDatabase(
                 "HTTP 400 - Validación fallida al crear usuario",
                 validationErrors,
