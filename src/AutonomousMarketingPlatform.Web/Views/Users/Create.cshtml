@@ -43,19 +43,19 @@
                         <div class="card-header">
                             <h3 class="card-title"><i class="fas fa-info-circle mr-2"></i>Información del Usuario</h3>
                         </div>
-                        <form asp-action="Create" asp-controller="Users" method="post" id="createUserForm" enctype="application/x-www-form-urlencoded">
+                        <form asp-action="Create" asp-controller="Users" method="post" asp-antiforgery="@(!Context.RequestServices.GetRequiredService<IWebHostEnvironment>().IsDevelopment())">
                             <div class="card-body">
-                                <div asp-validation-summary="All" class="alert alert-danger" role="alert"></div>
+                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
                                 <div class="form-group">
                                     <label asp-for="Email">Email <span class="text-danger">*</span></label>
-                                    <input asp-for="Email" name="Email" id="Email" class="form-control" type="email" required />
+                                    <input asp-for="Email" class="form-control" type="email" />
                                     <span asp-validation-for="Email" class="text-danger"></span>
                                 </div>
 
                                 <div class="form-group">
                                     <label asp-for="Password">Contraseña <span class="text-danger">*</span></label>
-                                    <input asp-for="Password" name="Password" id="Password" class="form-control" type="password" required />
+                                    <input asp-for="Password" class="form-control" type="password" />
                                     <small class="form-text text-muted">
                                         Mínimo 8 caracteres, debe incluir mayúsculas, minúsculas, números y caracteres especiales
                                     </small>
@@ -64,13 +64,13 @@
 
                                 <div class="form-group">
                                     <label asp-for="ConfirmPassword">Confirmar Contraseña <span class="text-danger">*</span></label>
-                                    <input asp-for="ConfirmPassword" name="ConfirmPassword" id="ConfirmPassword" class="form-control" type="password" required />
+                                    <input asp-for="ConfirmPassword" class="form-control" type="password" />
                                     <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
                                 </div>
 
                                 <div class="form-group">
                                     <label asp-for="FullName">Nombre Completo <span class="text-danger">*</span></label>
-                                    <input asp-for="FullName" name="FullName" id="FullName" class="form-control" required />
+                                    <input asp-for="FullName" class="form-control" />
                                     <span asp-validation-for="FullName" class="text-danger"></span>
                                 </div>
 
@@ -78,7 +78,7 @@
                                 {
                                     <div class="form-group">
                                         <label asp-for="TenantId">Tenant <span class="text-danger">*</span></label>
-                                        <select asp-for="TenantId" name="TenantId" id="TenantId" class="form-control" required>
+                                        <select asp-for="TenantId" class="form-control">
                                             <option value="">-- Seleccione un Tenant --</option>
                                             @foreach (var tenant in tenants)
                                             {
@@ -99,13 +99,13 @@
                                     }
                                     else
                                     {
-                                        <input type="hidden" asp-for="TenantId" name="TenantId" id="TenantId" value="@Model.TenantId" />
+                                        <input type="hidden" asp-for="TenantId" />
                                     }
                                 }
 
                                 <div class="form-group">
                                     <label asp-for="Role">Rol <span class="text-danger">*</span></label>
-                                    <select asp-for="Role" name="Role" id="Role" class="form-control" required>
+                                    <select asp-for="Role" class="form-control">
                                         <option value="">-- Seleccione un Rol --</option>
                                         @if (Model.Role == "Marketer" || string.IsNullOrEmpty(Model.Role))
                                         {
@@ -145,18 +145,8 @@
 
                                 <div class="form-group">
                                     <div class="form-check">
-                                        @* 
-                                            Patrón estándar para checkboxes en ASP.NET Core:
-                                            - Hidden field con value="false" se envía SIEMPRE
-                                            - Checkbox con value="true" solo se envía si está marcado
-                                            - Si checkbox marcado: Request.Form["IsActive"] = ["false", "true"] → Model Binder toma el último = true
-                                            - Si checkbox NO marcado: Request.Form["IsActive"] = ["false"] → Model Binder toma = false
-                                        *@
                                         <input type="hidden" name="IsActive" value="false" />
-                                        <input asp-for="IsActive" 
-                                               class="form-check-input" 
-                                               type="checkbox" 
-                                               value="true" />
+                                        <input asp-for="IsActive" class="form-check-input" type="checkbox" value="true" />
                                         <label asp-for="IsActive" class="form-check-label">
                                             Usuario Activo
                                         </label>
@@ -207,64 +197,5 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-    <script>
-        jQuery(document).ready(function() {
-            var form = jQuery('#createUserForm');
-            var submitButton = form.find('button[type="submit"]');
-            
-            // Capturar click del botón
-            submitButton.on('click', function(e) {
-                e.preventDefault();
-                
-                // Capturar datos uno a uno del formulario
-                var email = jQuery('#Email').val();
-                var password = jQuery('#Password').val();
-                var confirmPassword = jQuery('#ConfirmPassword').val();
-                var fullName = jQuery('#FullName').val();
-                var tenantId = jQuery('#TenantId').val();
-                var role = jQuery('#Role').val();
-                var isActive = jQuery('#IsActive').is(':checked');
-                
-                // Construir objeto CreateUserDto exactamente como lo espera el controlador
-                var createUserDto = {
-                    Email: email,
-                    Password: password,
-                    ConfirmPassword: confirmPassword,
-                    FullName: fullName,
-                    TenantId: tenantId,
-                    Role: role,
-                    IsActive: isActive
-                };
-                
-                // Enviar el objeto al controlador usando jQuery AJAX POST
-                jQuery.ajax({
-                    url: form.attr('action'),
-                    type: 'POST',
-                    data: createUserDto,
-                    success: function(response, textStatus, xhr) {
-                        // Si la respuesta es HTML (tiene errores de validación), mostrar la página
-                        var contentType = xhr.getResponseHeader('Content-Type') || '';
-                        if (typeof response === 'string' && response.trim().startsWith('<!')) {
-                            // Es HTML con errores de validación, reemplazar el contenido
-                            document.open();
-                            document.write(response);
-                            document.close();
-                        } else {
-                            // Éxito, redirigir
-                            window.location.href = '@Url.Action("Index")';
-                        }
-                    },
-                    error: function(xhr) {
-                        // Si hay errores HTTP, mostrar la respuesta
-                        if (xhr.responseText) {
-                            document.open();
-                            document.write(xhr.responseText);
-                            document.close();
-                        }
-                    }
-                });
-            });
-        });
-    </script>
 }
 

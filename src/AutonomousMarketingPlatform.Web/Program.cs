@@ -40,7 +40,15 @@ else
 }
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+// Configurar AntiForgery globalmente solo en producción
+var mvcBuilder = builder.Services.AddControllersWithViews(options =>
+{
+    // Solo habilitar validación global de Anti-Forgery en producción
+    if (!builder.Environment.IsDevelopment())
+    {
+        options.Filters.Add(new Microsoft.AspNetCore.Mvc.AutoValidateAntiforgeryTokenAttribute());
+    }
+});
 builder.Services.AddRazorPages();
 
 // Configurar AntiForgery explícitamente con cookies compatibles
