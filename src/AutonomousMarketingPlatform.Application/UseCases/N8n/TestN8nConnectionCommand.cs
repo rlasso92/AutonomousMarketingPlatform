@@ -35,15 +35,20 @@ public class TestN8nConnectionCommandHandler : IRequestHandler<TestN8nConnection
     {
         try
         {
-            var httpClient = _httpClientFactory.CreateClient();
-            httpClient.Timeout = TimeSpan.FromSeconds(5);
-
-            // Intentar conectar a la URL base de n8n
-            var baseUrl = request.Request.BaseUrl.TrimEnd('/');
-            var testUrl = $"{baseUrl}/healthz"; // n8n tiene un endpoint de health
+            if (request?.Request == null)
+            {
+                _logger.LogWarning("TestN8nConnectionCommand recibido con Request null");
+                return new TestN8nConnectionResponse
+                {
+                    Success = false,
+                    Message = "Request no puede ser null",
+                    Error = "Request is required"
+                };
+            }
 
             if (string.IsNullOrWhiteSpace(request.Request.BaseUrl))
             {
+                _logger.LogWarning("TestN8nConnectionCommand recibido con BaseUrl vacío");
                 return new TestN8nConnectionResponse
                 {
                     Success = false,
@@ -52,31 +57,73 @@ public class TestN8nConnectionCommandHandler : IRequestHandler<TestN8nConnection
                 };
             }
 
-            _logger.LogInformation("Probando conexión con n8n en: {Url}", testUrl);
+            // Crear HttpClient con configuración apropiada
+            var httpClient = _httpClientFactory.CreateClient();
+            httpClient.Timeout = TimeSpan.FromSeconds(10); // Aumentado de 5 a 10 segundos
+            
+            // Agregar headers
+            httpClient.DefaultRequestHeaders.Add("User-Agent", "AutonomousMarketingPlatform/1.0");
+            httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
+
+            // Intentar conectar a la URL base de n8n
+            // n8n puede tener diferentes endpoints de health, probar varios
+            var baseUrl = request.Request.BaseUrl.TrimEnd('/');
+            var testUrls = new[]
+            {
+                $"{baseUrl}/healthz",  // Endpoint estándar de n8n
+                $"{baseUrl}/health",   // Alternativa
+                $"{baseUrl}/",          // Root (siempre responde)
+                $"{baseUrl}/webhook"    // Webhook base (siempre responde)
+            };
+
+            _logger.LogInformation("Probando conexión con n8n. BaseUrl: {BaseUrl}", baseUrl);
 
             HttpResponseMessage? response = null;
-            try
+            string? successfulUrl = null;
+            Exception? lastException = null;
+
+            // Probar cada URL hasta encontrar una que responda
+            foreach (var testUrl in testUrls)
             {
-                response = await httpClient.GetAsync(testUrl, cancellationToken);
+                try
+                {
+                    _logger.LogInformation("Intentando conectar a: {Url}", testUrl);
+                    response = await httpClient.GetAsync(testUrl, cancellationToken);
+                    
+                    // Si obtenemos cualquier respuesta (incluso 404), significa que n8n está accesible
+                    if (response != null)
+                    {
+                        successfulUrl = testUrl;
+                        _logger.LogInformation("Conexión exitosa a: {Url}, StatusCode: {StatusCode}", testUrl, response.StatusCode);
+                        break;
+                    }
+                }
+                catch (HttpRequestException ex)
+                {
+                    _logger.LogWarning(ex, "Error al conectar con n8n en: {Url}", testUrl);
+                    lastException = ex;
+                    continue; // Intentar siguiente URL
+                }
+                catch (TaskCanceledException ex)
+                {
+                    _logger.LogWarning(ex, "Timeout al conectar con n8n en: {Url}", testUrl);
+                    lastException = ex;
+                    continue; // Intentar siguiente URL
+                }
             }
-            catch (HttpRequestException ex)
+
+            // Si ninguna URL funcionó, retornar error
+            if (response == null)
             {
-                _logger.LogWarning(ex, "Error al conectar con n8n: {Url}", testUrl);
+                var errorMessage = lastException?.Message ?? "No se pudo conectar con ninguna URL de n8n";
+                _logger.LogError("No se pudo conectar con n8n después de probar {Count} URLs. Último error: {Error}", 
+                    testUrls.Length, errorMessage);
                 return new TestN8nConnectionResponse
                 {
                     Success = false,
-                    Message = $"No se pudo conectar con n8n: {ex.Message}",
-                    Error = ex.Message,
+                    Message = $"No se pudo conectar con n8n: {errorMessage}. Verifica que n8n esté corriendo y accesible desde Render.",
+                    Error = errorMessage,
                     StatusCode = null
-                };
-            }
-            catch (TaskCanceledException)
-            {
-                return new TestN8nConnectionResponse
-                {
-                    Success = false,
-                    Message = "Timeout al conectar con n8n. Verifica que n8n esté corriendo.",
-                    Error = "Connection timeout"
                 };
             }
 

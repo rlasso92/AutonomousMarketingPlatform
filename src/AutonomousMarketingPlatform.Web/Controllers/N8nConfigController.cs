@@ -9,6 +9,7 @@ using AutonomousMarketingPlatform.Web.Helpers;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 
 namespace AutonomousMarketingPlatform.Web.Controllers;
 
@@ -169,17 +170,48 @@ public class N8nConfigController : Controller
 
     /// <summary>
     /// Endpoint para probar la conexión con n8n.
+    /// Acepta requests con o sin body JSON.
     /// </summary>
     [HttpPost]
-    public async Task<IActionResult> TestConnection([FromBody] TestN8nConnectionDto? request = null)
+    public async Task<IActionResult> TestConnection()
     {
+        TestN8nConnectionDto? request = null;
+        
         try
         {
+            // Intentar leer el body si existe
+            if (Request.ContentLength > 0 && Request.ContentType?.Contains("application/json") == true)
+            {
+                try
+                {
+                    using var reader = new StreamReader(Request.Body);
+                    var body = await reader.ReadToEndAsync();
+                    if (!string.IsNullOrWhiteSpace(body) && body != "null")
+                    {
+                        request = JsonSerializer.Deserialize<TestN8nConnectionDto>(body, new JsonSerializerOptions
+                        {
+                            PropertyNameCaseInsensitive = true
+                        });
+                        _logger.LogInformation("Request deserializado del body: BaseUrl={BaseUrl}, ApiKey={HasApiKey}", 
+                            request?.BaseUrl ?? "null", !string.IsNullOrEmpty(request?.ApiKey));
+                    }
+                }
+                catch (JsonException ex)
+                {
+                    _logger.LogWarning(ex, "Error al deserializar body JSON, continuando sin body");
+                }
+            }
+
+            _logger.LogInformation("TestConnection llamado. Request: {Request}", 
+                request != null ? $"BaseUrl={request.BaseUrl}, ApiKey={(string.IsNullOrEmpty(request.ApiKey) ? "null" : "***")}" : "null");
+
             var tenantId = UserHelper.GetTenantId(User);
+            _logger.LogInformation("TenantId obtenido: {TenantId}", tenantId);
             
             // Si no se proporciona request, usar la configuración de la BD
             if (request == null && tenantId.HasValue)
             {
+                _logger.LogInformation("Request es null, obteniendo configuración de BD para TenantId: {TenantId}", tenantId.Value);
                 var configQuery = new GetN8nConfigQuery
                 {
                     TenantId = tenantId.Value,
@@ -187,21 +219,44 @@ public class N8nConfigController : Controller
                 };
                 var config = await _mediator.Send(configQuery);
                 
-                request = new TestN8nConnectionDto
+                if (config != null && !string.IsNullOrWhiteSpace(config.BaseUrl))
                 {
-                    BaseUrl = config.BaseUrl,
-                    ApiKey = config.ApiKey
-                };
+                    request = new TestN8nConnectionDto
+                    {
+                        BaseUrl = config.BaseUrl,
+                        ApiKey = config.ApiKey
+                    };
+                    _logger.LogInformation("Configuración obtenida de BD: BaseUrl={BaseUrl}", config.BaseUrl);
+                }
+                else
+                {
+                    _logger.LogWarning("No se encontró configuración de n8n en BD para TenantId: {TenantId}", tenantId.Value);
+                }
             }
             
             // Si aún no hay request, usar valores por defecto
             if (request == null)
             {
+                _logger.LogInformation("Usando valores por defecto para prueba de conexión");
                 request = new TestN8nConnectionDto
                 {
                     BaseUrl = "https://n8n.bashpty.com"
                 };
             }
+
+            // Validar que BaseUrl no esté vacío
+            if (string.IsNullOrWhiteSpace(request.BaseUrl))
+            {
+                _logger.LogWarning("BaseUrl está vacío después de intentar obtener configuración");
+                return BadRequest(new TestN8nConnectionResponse
+                {
+                    Success = false,
+                    Message = "URL base no puede estar vacía",
+                    Error = "BaseUrl is required"
+                });
+            }
+
+            _logger.LogInformation("Enviando comando TestN8nConnectionCommand con BaseUrl: {BaseUrl}", request.BaseUrl);
 
             var command = new TestN8nConnectionCommand
             {
@@ -209,11 +264,16 @@ public class N8nConfigController : Controller
             };
 
             var result = await _mediator.Send(command);
+            
+            _logger.LogInformation("Resultado de TestConnection: Success={Success}, Message={Message}", 
+                result.Success, result.Message);
+            
             return Json(result);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error al probar conexión con n8n");
+            _logger.LogError(ex, "Error al probar conexión con n8n. Exception: {ExceptionType}, Message: {Message}, StackTrace: {StackTrace}", 
+                ex.GetType().Name, ex.Message, ex.StackTrace);
             return Json(new TestN8nConnectionResponse
             {
                 Success = false,
