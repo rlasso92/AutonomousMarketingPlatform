@@ -403,14 +403,58 @@ public class ExternalAutomationService : IExternalAutomationService
             if (!response.IsSuccessStatusCode)
             {
                 var errorContent = await response.Content.ReadAsStringAsync(cancellationToken);
-                var errorMessage = $"Error al llamar a n8n: {response.StatusCode} {response.ReasonPhrase}. URL: {webhookUrl}. Response: {errorContent}";
+                
+                // Detectar errores específicos de configuración de n8n y proporcionar mensajes más claros
+                string errorMessage;
+                string? n8nSpecificError = null;
+                
+                if (!string.IsNullOrWhiteSpace(errorContent))
+                {
+                    try
+                    {
+                        var errorJson = JsonSerializer.Deserialize<Dictionary<string, object>>(errorContent, 
+                            new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                        
+                        if (errorJson != null && errorJson.ContainsKey("message"))
+                        {
+                            var message = errorJson["message"]?.ToString();
+                            
+                            // Detectar error específico de "Unused Respond to Webhook node"
+                            if (message != null && message.Contains("Unused Respond to Webhook node", StringComparison.OrdinalIgnoreCase))
+                            {
+                                n8nSpecificError = "CONFIGURACION_N8N_WEBHOOK_NODE";
+                                errorMessage = $"Error de configuración en n8n: El workflow tiene un nodo 'Respond to Webhook' que no está conectado correctamente. " +
+                                             $"Por favor, revisa el workflow en n8n y asegúrate de que el nodo 'Respond to Webhook' esté conectado al flujo de ejecución. " +
+                                             $"URL: {webhookUrl}. Detalles: {message}";
+                            }
+                            else
+                            {
+                                errorMessage = $"Error al llamar a n8n: {response.StatusCode} {response.ReasonPhrase}. URL: {webhookUrl}. Response: {message}";
+                            }
+                        }
+                        else
+                        {
+                            errorMessage = $"Error al llamar a n8n: {response.StatusCode} {response.ReasonPhrase}. URL: {webhookUrl}. Response: {errorContent}";
+                        }
+                    }
+                    catch
+                    {
+                        // Si no se puede parsear como JSON, usar el contenido tal cual
+                        errorMessage = $"Error al llamar a n8n: {response.StatusCode} {response.ReasonPhrase}. URL: {webhookUrl}. Response: {errorContent}";
+                    }
+                }
+                else
+                {
+                    errorMessage = $"Error al llamar a n8n: {response.StatusCode} {response.ReasonPhrase}. URL: {webhookUrl}";
+                }
                 
                 _logger.LogError(
-                    "Error al llamar a n8n webhook: StatusCode={StatusCode}, ReasonPhrase={ReasonPhrase}, Response={Response}, URL={WebhookUrl}",
+                    "Error al llamar a n8n webhook: StatusCode={StatusCode}, ReasonPhrase={ReasonPhrase}, Response={Response}, URL={WebhookUrl}, N8nErrorType={N8nErrorType}",
                     response.StatusCode,
                     response.ReasonPhrase,
                     errorContent,
-                    webhookUrl);
+                    webhookUrl,
+                    n8nSpecificError ?? "GENERIC");
                 
                 // Guardar error en ApplicationLogs
                 var loggingService = GetLoggingService();
@@ -425,7 +469,8 @@ public class ExternalAutomationService : IExternalAutomationService
                             ReasonPhrase = response.ReasonPhrase,
                             Response = errorContent,
                             EventType = eventType,
-                            TenantId = tenantId.ToString()
+                            TenantId = tenantId.ToString(),
+                            N8nErrorType = n8nSpecificError
                         });
                         
                         await loggingService.LogErrorAsync(

@@ -590,6 +590,25 @@ public class N8nConfigController : Controller
         {
             _logger.LogError(ex, "Error al probar webhook");
             
+            // Detectar errores específicos de configuración de n8n
+            string userFriendlyMessage = ex.Message;
+            string errorType = "GENERIC";
+            
+            if (ex.Message.Contains("Unused Respond to Webhook node", StringComparison.OrdinalIgnoreCase) ||
+                ex.Message.Contains("CONFIGURACION_N8N_WEBHOOK_NODE", StringComparison.OrdinalIgnoreCase))
+            {
+                errorType = "N8N_WEBHOOK_CONFIG";
+                userFriendlyMessage = "Error de configuración en n8n: El workflow tiene un nodo 'Respond to Webhook' que no está conectado correctamente. " +
+                                    "Por favor, accede a n8n y verifica que el nodo 'Respond to Webhook' esté conectado al flujo de ejecución del workflow. " +
+                                    "Todas las ramas del workflow (éxito y error) deben terminar en un nodo 'Respond to Webhook'.";
+            }
+            else if (ex.Message.Contains("Error de configuración en n8n", StringComparison.OrdinalIgnoreCase))
+            {
+                errorType = "N8N_CONFIG";
+                // El mensaje ya es descriptivo, usarlo tal cual
+                userFriendlyMessage = ex.Message;
+            }
+            
             // Guardar error en ApplicationLogs
             var tenantId = UserHelper.GetTenantId(User);
             var userId = UserHelper.GetUserId(User);
@@ -599,7 +618,8 @@ public class N8nConfigController : Controller
                 Instruction = request?.Instruction,
                 Channels = request?.Channels,
                 Assets = request?.Assets,
-                RequiresApproval = request?.RequiresApproval
+                RequiresApproval = request?.RequiresApproval,
+                ErrorType = errorType
             });
             
             await _loggingService.LogErrorAsync(
@@ -618,8 +638,9 @@ public class N8nConfigController : Controller
             return Json(new 
             { 
                 success = false, 
-                message = $"Error: {ex.Message}",
-                error = ex.ToString()
+                message = userFriendlyMessage,
+                error = ex.ToString(),
+                errorType = errorType
             });
         }
     }
