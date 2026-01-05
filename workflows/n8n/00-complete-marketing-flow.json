@@ -205,7 +205,7 @@
     },
     {
       "parameters": {
-        "url": "https://autonomousmarketingplatform.onrender.com/api/ConsentsApi/check",
+        "url": "={{ ($env.BACKEND_URL && $env.BACKEND_URL !== 'http://localhost:5000') ? $env.BACKEND_URL : 'https://autonomousmarketingplatform.onrender.com' }}/api/ConsentsApi/check",
         "sendQuery": true,
         "queryParameters": {
           "parameters": [
@@ -225,13 +225,16 @@
               "responseFormat": "json"
             }
           },
-          "timeout": 30000
+          "timeout": 300000,
+          "continueOnFail": true,
+          "retryOnFail": true,
+          "maxRetries": 3
         }
       },
       "id": "09cd3071-f069-43ff-b695-97568edc481f",
       "name": "HTTP Request - Check Consents",
       "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
+      "typeVersion": 4.1,
       "position": [
         -400,
         -32
@@ -317,7 +320,7 @@
     },
     {
       "parameters": {
-        "url": "https://autonomousmarketingplatform.onrender.com/api/Memory/context",
+        "url": "={{ ($env.BACKEND_URL && $env.BACKEND_URL !== 'http://localhost:5000') ? $env.BACKEND_URL : 'https://autonomousmarketingplatform.onrender.com' }}/api/Memory/context",
         "sendQuery": true,
         "queryParameters": {
           "parameters": [
@@ -336,13 +339,16 @@
           ]
         },
         "options": {
-          "timeout": 10000
+          "timeout": 300000,
+          "continueOnFail": true,
+          "retryOnFail": true,
+          "maxRetries": 3
         }
       },
       "id": "b94419b3-b956-4aca-afe1-ab38a2e64afd",
       "name": "HTTP Request - Load Marketing Memory",
       "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
+      "typeVersion": 4.1,
       "position": [
         -1088,
         416
@@ -427,7 +433,7 @@
     },
     {
       "parameters": {
-        "url": "https://autonomousmarketingplatform.onrender.com/api/Memory/context",
+        "url": "={{ ($env.BACKEND_URL && $env.BACKEND_URL !== 'http://localhost:5000') ? $env.BACKEND_URL : 'https://autonomousmarketingplatform.onrender.com' }}/api/Memory/context",
         "sendQuery": true,
         "queryParameters": {
           "parameters": [
@@ -442,13 +448,16 @@
           ]
         },
         "options": {
-          "timeout": 10000
+          "timeout": 300000,
+          "continueOnFail": true,
+          "retryOnFail": true,
+          "maxRetries": 3
         }
       },
       "id": "305fa9ec-80a2-4b56-939c-086191e9a513",
       "name": "HTTP Request - Load Preference Memory",
       "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
+      "typeVersion": 4.1,
       "position": [
         -624,
         256
@@ -456,7 +465,7 @@
     },
     {
       "parameters": {
-        "url": "https://autonomousmarketingplatform.onrender.com/api/Memory/context",
+        "url": "={{ ($env.BACKEND_URL && $env.BACKEND_URL !== 'http://localhost:5000') ? $env.BACKEND_URL : 'https://autonomousmarketingplatform.onrender.com' }}/api/Memory/context",
         "sendQuery": true,
         "queryParameters": {
           "parameters": [
@@ -471,13 +480,16 @@
           ]
         },
         "options": {
-          "timeout": 10000
+          "timeout": 300000,
+          "continueOnFail": true,
+          "retryOnFail": true,
+          "maxRetries": 3
         }
       },
       "id": "75d44594-b55f-4a6d-8d45-4e449088e6e0",
       "name": "HTTP Request - Load Performance Memory",
       "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
+      "typeVersion": 4.1,
       "position": [
         -544,
         528
@@ -485,7 +497,7 @@
     },
     {
       "parameters": {
-        "url": "https://autonomousmarketingplatform.onrender.com/api/Memory/context",
+        "url": "={{ ($env.BACKEND_URL && $env.BACKEND_URL !== 'http://localhost:5000') ? $env.BACKEND_URL : 'https://autonomousmarketingplatform.onrender.com' }}/api/Memory/context",
         "sendQuery": true,
         "queryParameters": {
           "parameters": [
@@ -500,13 +512,16 @@
           ]
         },
         "options": {
-          "timeout": 10000
+          "timeout": 300000,
+          "continueOnFail": true,
+          "retryOnFail": true,
+          "maxRetries": 3
         }
       },
       "id": "3f43c3bd-0181-499a-910f-8aa93fdb74b5",
       "name": "HTTP Request - Load Pattern Memory",
       "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
+      "typeVersion": 4.1,
       "position": [
         -560,
         864
@@ -514,7 +529,7 @@
     },
     {
       "parameters": {
-        "url": "https://autonomousmarketingplatform.onrender.com/api/marketing-packs",
+        "url": "={{ ($env.BACKEND_URL && $env.BACKEND_URL !== 'http://localhost:5000') ? $env.BACKEND_URL : 'https://autonomousmarketingplatform.onrender.com' }}/api/marketing-packs",
         "sendQuery": true,
         "queryParameters": {
           "parameters": [
@@ -533,13 +548,16 @@
           ]
         },
         "options": {
-          "timeout": 10000
+          "timeout": 300000,
+          "continueOnFail": true,
+          "retryOnFail": true,
+          "maxRetries": 3
         }
       },
       "id": "615ff253-30db-47e0-a69b-2424231eac39",
       "name": "HTTP Request - Get Last Cognitive Version",
       "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
+      "typeVersion": 4.1,
       "position": [
         -592,
         1136
@@ -587,7 +605,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Parsear la respuesta de OpenAI (API Completions - resource: text)\nconst response = $input.item.json;\nlet analysis = {};\nlet errorMessage = '';\nlet rawContent = '';\n\ntry {\n  // API Completions devuelve: response.choices[0].text (no .message.content)\n  // También puede venir en otros formatos según n8n\n  rawContent = response.choices?.[0]?.text || \n               response.choices?.[0]?.message?.content || \n               response.text || \n               response.message?.content || \n               response.content || \n               (typeof response === 'string' ? response : '') ||\n               '';\n  \n  // Si no hay contenido, puede ser un error de OpenAI\n  if (!rawContent || rawContent.trim() === '') {\n    errorMessage = 'OpenAI no devolvió contenido. Estructura de respuesta: ' + JSON.stringify(Object.keys(response || {})).substring(0, 300);\n    throw new Error('Empty response from OpenAI');\n  }\n  \n  let content = rawContent.trim();\n  \n  // Limpiar markdown si existe\n  if (content.startsWith('```json')) {\n    content = content.replace(/^```json\\s*/g, '').replace(/\\s*```$/g, '');\n  } else if (content.startsWith('```')) {\n    content = content.replace(/^```\\s*/g, '').replace(/\\s*```$/g, '');\n  }\n  \n  // Limpiar espacios en blanco al inicio y final\n  content = content.trim();\n  \n  // Intentar parsear JSON directamente\n  analysis = JSON.parse(content);\n} catch (error) {\n  try {\n    // Si falla el parseo directo, intentar extraer JSON del contenido\n    const jsonMatch = rawContent.match(/\\{[\\s\\S]*\\}/);\n    if (jsonMatch && jsonMatch[0]) {\n      analysis = JSON.parse(jsonMatch[0]);\n    } else {\n      errorMessage = 'No se pudo extraer JSON. Error: ' + error.message + '. Primeros 300 chars: ' + rawContent.substring(0, 300);\n      throw new Error('No JSON found in response');\n    }\n  } catch (parseError) {\n    errorMessage = 'Error al parsear respuesta de OpenAI. Error original: ' + error.message + '. Error parseo: ' + parseError.message + '. Respuesta completa (primeros 1000 chars): ' + JSON.stringify(response).substring(0, 1000);\n    analysis = {\n      objective: 'Error al analizar - Ver logs para detalles',\n      tone: 'profesional',\n      urgency: 'medium',\n      contentType: 'post',\n      targetAudience: '',\n      keyMessages: [],\n      hashtags: [],\n      channels: []\n    };\n  }\n}\n\n// Obtener datos del nodo anterior\nconst normalizeMemoryData = $('Normalize Memory').item.json || {};\nconst consolidateMemoryData = $('Consolidate Advanced Memory').item.json || {};\n\nconst memory = normalizeMemoryData.memory || {};\nconst result = {\n  objective: analysis.objective || 'No especificado',\n  tone: analysis.tone || memory.preferredTone || 'profesional',\n  urgency: analysis.urgency || 'medium',\n  contentType: analysis.contentType || 'post',\n  targetAudience: analysis.targetAudience || '',\n  keyMessages: Array.isArray(analysis.keyMessages) ? analysis.keyMessages : [],\n  hashtags: Array.isArray(analysis.hashtags) ? analysis.hashtags : [],\n  channels: Array.isArray(analysis.channels) ? analysis.channels : (normalizeMemoryData.channels || []),\n  originalInstruction: normalizeMemoryData.instruction || consolidateMemoryData.instruction || '',\n  analyzedAt: new Date().toISOString(),\n  tenantId: normalizeMemoryData.tenantId || '',\n  userId: normalizeMemoryData.userId || '',\n  errorMessage: errorMessage || null,\n  debugInfo: errorMessage ? { rawResponseKeys: Object.keys(response || {}), rawContentPreview: rawContent.substring(0, 200) } : null\n};\n\nreturn {\n  ...normalizeMemoryData,\n  ...consolidateMemoryData,\n  analysis: result\n};"
+        "jsCode": "// Parsear la respuesta de OpenAI (API Completions - resource: text)\nconst items = $input.all();\nconst results = [];\n\nfor (const item of items) {\n  try {\n    const response = item.json || {};\n    let analysis = {};\n    let errorMessage = '';\n    let rawContent = '';\n    \n    try {\n      // API Completions devuelve: response.choices[0].text (no .message.content)\n      rawContent = response.choices?.[0]?.text || \n                   response.choices?.[0]?.message?.content || \n                   response.text || \n                   response.message?.content || \n                   response.content || \n                   (typeof response === 'string' ? response : '') ||\n                   '';\n      \n      if (!rawContent || rawContent.trim() === '') {\n        errorMessage = 'OpenAI no devolvió contenido';\n        throw new Error('Empty response from OpenAI');\n      }\n      \n      let content = rawContent.trim();\n      if (content.startsWith('```json')) {\n        content = content.replace(/^```json\\s*/g, '').replace(/\\s*```$/g, '');\n      } else if (content.startsWith('```')) {\n        content = content.replace(/^```\\s*/g, '').replace(/\\s*```$/g, '');\n      }\n      content = content.trim();\n      analysis = JSON.parse(content);\n    } catch (error) {\n      try {\n        const jsonMatch = rawContent.match(/\\{[\\s\\S]*\\}/);\n        if (jsonMatch && jsonMatch[0]) {\n          analysis = JSON.parse(jsonMatch[0]);\n        } else {\n          errorMessage = 'No se pudo extraer JSON: ' + error.message;\n          throw new Error('No JSON found');\n        }\n      } catch (parseError) {\n        errorMessage = 'Error al parsear: ' + error.message;\n        analysis = {\n          objective: 'Error al analizar',\n          tone: 'profesional',\n          urgency: 'medium',\n          contentType: 'post',\n          targetAudience: '',\n          keyMessages: [],\n          hashtags: [],\n          channels: []\n        };\n      }\n    }\n    \n    // Obtener datos del nodo anterior de forma segura\n    let normalizeMemoryData = {};\n    let consolidateMemoryData = {};\n    try {\n      const normalizeNode = $('Normalize Memory');\n      if (normalizeNode && normalizeNode.item) {\n        normalizeMemoryData = normalizeNode.item.json || {};\n      }\n    } catch (e) {}\n    \n    try {\n      const consolidateNode = $('Consolidate Advanced Memory');\n      if (consolidateNode && consolidateNode.item) {\n        consolidateMemoryData = consolidateNode.item.json || {};\n      }\n    } catch (e) {}\n    \n    const memory = normalizeMemoryData.memory || {};\n    const result = {\n      objective: analysis.objective || 'No especificado',\n      tone: analysis.tone || memory.preferredTone || 'profesional',\n      urgency: analysis.urgency || 'medium',\n      contentType: analysis.contentType || 'post',\n      targetAudience: analysis.targetAudience || '',\n      keyMessages: Array.isArray(analysis.keyMessages) ? analysis.keyMessages : [],\n      hashtags: Array.isArray(analysis.hashtags) ? analysis.hashtags : [],\n      channels: Array.isArray(analysis.channels) ? analysis.channels : (normalizeMemoryData.channels || []),\n      originalInstruction: normalizeMemoryData.instruction || consolidateMemoryData.instruction || '',\n      analyzedAt: new Date().toISOString(),\n      tenantId: normalizeMemoryData.tenantId || '',\n      userId: normalizeMemoryData.userId || '',\n      errorMessage: errorMessage || null\n    };\n    \n    results.push({\n      json: {\n        ...normalizeMemoryData,\n        ...consolidateMemoryData,\n        analysis: result\n      }\n    });\n  } catch (e) {\n    results.push({\n      json: {\n        error: e.message,\n        analysis: {\n          objective: 'Error crítico',\n          tone: 'profesional',\n          urgency: 'medium',\n          contentType: 'post',\n          targetAudience: '',\n          keyMessages: [],\n          hashtags: [],\n          channels: []\n        }\n      }\n    });\n  }\n}\n\nreturn results;"
       },
       "id": "65afbd0b-12da-45ea-a302-8a3e2939522d",
       "name": "Parse Analysis",
@@ -720,7 +738,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Motor de Decisiones Cognitivo - Calcula confidenceScore y ajusta decisiones\nconst components = $input.item.json;\nconst strategy = components.strategy || {};\nconst copy = components.copy || {};\nconst visualPrompts = components.visualPrompts || {};\nconst advancedMemory = components.advancedMemory || {};\nconst confidenceWeights = components.confidenceWeights || {};\nconst analysis = components.analysis || {};\n\n// Calcular confidenceScore base (0-1)\nlet confidenceScore = 0.5; // Base\nlet decisionRationale = [];\nlet learningSources = [];\n\n// Factor 1: Canales con mejor performance (30%)\n// AUTO-AJUSTE: Penaliza canales con bajo rendimiento histórico y refuerza los exitosos\nconst selectedChannels = Array.isArray(strategy.channels) ? strategy.channels : [];\nconst performanceMemory = advancedMemory.performanceMemory || {};\nconst channelKPIs = performanceMemory.channelKPIs || {};\n\n// Ajustar confidenceWeights basado en resultados históricos\nconst adjustedChannelWeights = {};\nselectedChannels.forEach(channel => {\n  const baseWeight = confidenceWeights.channel?.[channel.toLowerCase()] || 0.5;\n  const kpi = channelKPIs[channel.toLowerCase()] || {};\n  const ctr = kpi.ctr || 0;\n  const engagement = kpi.engagement || 0;\n  \n  // Ajuste automático: refuerza si tiene buen CTR/engagement, penaliza si no\n  let adjustment = 0;\n  if (ctr > 0.02) adjustment += 0.1; // CTR > 2% es bueno\n  if (ctr < 0.005) adjustment -= 0.15; // CTR < 0.5% es malo\n  if (engagement > 0.05) adjustment += 0.1; // Engagement > 5% es bueno\n  if (engagement < 0.01) adjustment -= 0.15; // Engagement < 1% es malo\n  \n  adjustedChannelWeights[channel.toLowerCase()] = Math.max(0.1, Math.min(0.9, baseWeight + adjustment));\n});\n\nconst channelConfidence = selectedChannels.reduce((acc, channel) => {\n  const weight = adjustedChannelWeights[channel.toLowerCase()] || 0.5;\n  return acc + weight;\n}, 0) / Math.max(selectedChannels.length, 1);\nconfidenceScore += channelConfidence * 0.3;\nif (channelConfidence > 0.6) {\n  decisionRationale.push(`Canales seleccionados tienen alta performance histórica (${(channelConfidence * 100).toFixed(0)}%)`);\n  learningSources.push('PerformanceMemory');\n}\n\n// Factor 2: Formato apropiado para urgencia (20%)\nconst urgency = analysis.urgency || 'medium';\nconst format = strategy.recommendedFormat || 'post';\nconst formatKey = `${urgency}_${format}`;\nconst formatConfidence = confidenceWeights.format?.[formatKey] || confidenceWeights.format?.[format] || 0.5;\nconfidenceScore += formatConfidence * 0.2;\nif (formatConfidence > 0.6) {\n  decisionRationale.push(`Formato ${format} es exitoso para urgencia ${urgency} (${(formatConfidence * 100).toFixed(0)}%)`);\n  learningSources.push('PatternMemory');\n}\n\n// Factor 3: Tono con mayor engagement (20%)\nconst tone = strategy.tone || 'profesional';\nconst toneConfidence = confidenceWeights.tone?.[tone] || 0.5;\nconfidenceScore += toneConfidence * 0.2;\nif (toneConfidence > 0.6) {\n  decisionRationale.push(`Tono ${tone} tiene alto engagement histórico (${(toneConfidence * 100).toFixed(0)}%)`);\n  learningSources.push('PerformanceMemory');\n}\n\n// Factor 4: Evitar patrones fallidos (15%)\n// AUTO-AJUSTE: Penaliza automáticamente patrones fallidos y refuerza exitosos\nconst avoidPatterns = components.avoidPatterns || [];\nconst patternMemory = advancedMemory.patternMemory || {};\nconst successfulPatterns = patternMemory.successfulPatterns || [];\nconst blockedPatterns = patternMemory.blockedPatterns || [];\nlet patternViolations = 0;\nconst currentPattern = `${urgency}_${format}_${tone}`;\nconst isBlocked = blockedPatterns.some(blocked => currentPattern.includes(blocked) || blocked.includes(currentPattern));\n\nif (isBlocked) {\n  patternViolations = 1;\n  confidenceScore = 0; // Bloqueo total si está en lista de bloqueados\n  decisionRationale.push(`BLOQUEO: Patrón bloqueado temporalmente por fallos repetidos (30 días)`);\n  learningSources.push('PatternMemory');\n} else if (avoidPatterns.some(pattern => currentPattern.includes(pattern) || pattern.includes(currentPattern))) {\n  patternViolations = 1;\n  confidenceScore -= 0.2; // Penalización aumentada para patrones fallidos\n  decisionRationale.push(`ADVERTENCIA: Patrón similar a uno que ha fallado históricamente - PENALIZADO`);\n} else if (successfulPatterns.some(pattern => currentPattern.includes(pattern) || pattern.includes(currentPattern))) {\n  // Refuerzo para patrones exitosos\n  confidenceScore += 0.1;\n  decisionRationale.push(`Patrón identificado como exitoso históricamente - REFORZADO`);\n  learningSources.push('PatternMemory');\n} else {\n  confidenceScore += 0.05; // Patrón neutro\n  decisionRationale.push(`Patrón no está en lista de fallos históricos`);\n  learningSources.push('PatternMemory');\n}\n\n// Factor 5: Preferencias del tenant (10%)\nconst preferredFormats = components.preferredFormats || [];\nif (preferredFormats.includes(format)) {\n  confidenceScore += 0.1;\n  decisionRationale.push(`Formato ${format} está en preferencias del tenant`);\n  learningSources.push('PreferenceMemory');\n}\n\n// Factor 6: Restricciones cumplidas (5%)\nconst constraints = advancedMemory.constraintMemory?.restrictions || [];\nconst hasViolations = constraints.some(constraint => {\n  const channel = selectedChannels.find(c => constraint.toLowerCase().includes(c.toLowerCase()));\n  return channel !== undefined;\n});\nif (!hasViolations) {\n  confidenceScore += 0.05;\n  decisionRationale.push(`No se violan restricciones conocidas`);\n  learningSources.push('ConstraintMemory');\n} else {\n  confidenceScore -= 0.05;\n  decisionRationale.push(`ADVERTENCIA: Posible violación de restricciones`);\n}\n\n// Normalizar confidenceScore a 0-1\nconfidenceScore = Math.max(0, Math.min(1, confidenceScore));\n\n// Ajustar temperatura del modelo según confidence\n// Si confidence es bajo, usar temperatura más alta para más variación\n// Si confidence es alto, usar temperatura más baja para consistencia\nconst adaptiveTemperature = confidenceScore < 0.6 ? 0.8 : (confidenceScore > 0.8 ? 0.5 : 0.7);\n\n// Reducir variantes si confidence es bajo\nconst shouldReduceVariants = confidenceScore < 0.6;\n\n// Obtener cognitiveVersion REAL desde último MarketingPack o memoria\n// Se incrementa automáticamente cuando hay cambios significativos\nconst lastCognitiveVersion = components.lastCognitiveVersion || 1;\nlet cognitiveVersion = lastCognitiveVersion;\n\n// Si hay patrones fallidos recientes o cambios en priorización, incrementar versión\nconst recentFailedPatterns = patternMemory.failedPatterns || [];\nconst hasRecentFailures = recentFailedPatterns.length > 0;\nconst hasChannelPriorityChanges = performanceMemory.bestPerformingChannels && \n  performanceMemory.bestPerformingChannels.length > 0 &&\n  !selectedChannels.every(c => performanceMemory.bestPerformingChannels.includes(c));\n\n// Verificar si hay patrones exitosos nuevos que cambien priorización\nconst hasSuccessfulPatterns = successfulPatterns.length > 0 && \n  !successfulPatterns.every(sp => {\n    const patternStr = typeof sp === 'string' ? sp : (sp.pattern || JSON.stringify(sp));\n    return currentPattern.includes(patternStr) || patternStr.includes(currentPattern);\n  });\r\n\r\n// Incrementar versión cuando hay aprendizaje significativo\nif (hasRecentFailures || hasChannelPriorityChanges || hasSuccessfulPatterns || patternViolations > 0) {\n  cognitiveVersion = lastCognitiveVersion + 1;\n}\n\n// Decision rationale completo\nconst fullRationale = decisionRationale.join('; ');\n\n// Learning sources únicos\nconst uniqueLearningSources = [...new Set(learningSources)];\n\nreturn {\n  ...components,\n  cognitiveDecision: {\n    confidenceScore: confidenceScore,\n    adaptiveTemperature: adaptiveTemperature,\n    shouldReduceVariants: shouldReduceVariants,\n    decisionRationale: fullRationale,\n    learningSources: uniqueLearningSources,\n    cognitiveVersion: cognitiveVersion,\n    channelConfidence: channelConfidence,\n    formatConfidence: formatConfidence,\n    toneConfidence: toneConfidence,\n    patternViolations: patternViolations,\n    calculatedAt: ($('Set Validated Data').item?.json?.validatedData?.receivedAt || new Date().toISOString())\n  }\n};"
+        "jsCode": "// Motor de Decisiones Cognitivo - Calcula confidenceScore y ajusta decisiones\nconst items = $input.all();\nconst results = [];\n\nfor (const item of items) {\n  try {\n    const components = item.json || {};\nconst strategy = components.strategy || {};\nconst copy = components.copy || {};\nconst visualPrompts = components.visualPrompts || {};\nconst advancedMemory = components.advancedMemory || {};\nconst confidenceWeights = components.confidenceWeights || {};\nconst analysis = components.analysis || {};\n\n// Calcular confidenceScore base (0-1)\nlet confidenceScore = 0.5; // Base\nlet decisionRationale = [];\nlet learningSources = [];\n\n// Factor 1: Canales con mejor performance (30%)\n// AUTO-AJUSTE: Penaliza canales con bajo rendimiento histórico y refuerza los exitosos\nconst selectedChannels = Array.isArray(strategy.channels) ? strategy.channels : [];\nconst performanceMemory = advancedMemory.performanceMemory || {};\nconst channelKPIs = performanceMemory.channelKPIs || {};\n\n// Ajustar confidenceWeights basado en resultados históricos\nconst adjustedChannelWeights = {};\nselectedChannels.forEach(channel => {\n  const baseWeight = confidenceWeights.channel?.[channel.toLowerCase()] || 0.5;\n  const kpi = channelKPIs[channel.toLowerCase()] || {};\n  const ctr = kpi.ctr || 0;\n  const engagement = kpi.engagement || 0;\n  \n  // Ajuste automático: refuerza si tiene buen CTR/engagement, penaliza si no\n  let adjustment = 0;\n  if (ctr > 0.02) adjustment += 0.1; // CTR > 2% es bueno\n  if (ctr < 0.005) adjustment -= 0.15; // CTR < 0.5% es malo\n  if (engagement > 0.05) adjustment += 0.1; // Engagement > 5% es bueno\n  if (engagement < 0.01) adjustment -= 0.15; // Engagement < 1% es malo\n  \n  adjustedChannelWeights[channel.toLowerCase()] = Math.max(0.1, Math.min(0.9, baseWeight + adjustment));\n});\n\nconst channelConfidence = selectedChannels.reduce((acc, channel) => {\n  const weight = adjustedChannelWeights[channel.toLowerCase()] || 0.5;\n  return acc + weight;\n}, 0) / Math.max(selectedChannels.length, 1);\nconfidenceScore += channelConfidence * 0.3;\nif (channelConfidence > 0.6) {\n  decisionRationale.push(`Canales seleccionados tienen alta performance histórica (${(channelConfidence * 100).toFixed(0)}%)`);\n  learningSources.push('PerformanceMemory');\n}\n\n// Factor 2: Formato apropiado para urgencia (20%)\nconst urgency = analysis.urgency || 'medium';\nconst format = strategy.recommendedFormat || 'post';\nconst formatKey = `${urgency}_${format}`;\nconst formatConfidence = confidenceWeights.format?.[formatKey] || confidenceWeights.format?.[format] || 0.5;\nconfidenceScore += formatConfidence * 0.2;\nif (formatConfidence > 0.6) {\n  decisionRationale.push(`Formato ${format} es exitoso para urgencia ${urgency} (${(formatConfidence * 100).toFixed(0)}%)`);\n  learningSources.push('PatternMemory');\n}\n\n// Factor 3: Tono con mayor engagement (20%)\nconst tone = strategy.tone || 'profesional';\nconst toneConfidence = confidenceWeights.tone?.[tone] || 0.5;\nconfidenceScore += toneConfidence * 0.2;\nif (toneConfidence > 0.6) {\n  decisionRationale.push(`Tono ${tone} tiene alto engagement histórico (${(toneConfidence * 100).toFixed(0)}%)`);\n  learningSources.push('PerformanceMemory');\n}\n\n// Factor 4: Evitar patrones fallidos (15%)\n// AUTO-AJUSTE: Penaliza automáticamente patrones fallidos y refuerza exitosos\nconst avoidPatterns = components.avoidPatterns || [];\nconst patternMemory = advancedMemory.patternMemory || {};\nconst successfulPatterns = patternMemory.successfulPatterns || [];\nconst blockedPatterns = patternMemory.blockedPatterns || [];\nlet patternViolations = 0;\nconst currentPattern = `${urgency}_${format}_${tone}`;\nconst isBlocked = blockedPatterns.some(blocked => currentPattern.includes(blocked) || blocked.includes(currentPattern));\n\nif (isBlocked) {\n  patternViolations = 1;\n  confidenceScore = 0; // Bloqueo total si está en lista de bloqueados\n  decisionRationale.push(`BLOQUEO: Patrón bloqueado temporalmente por fallos repetidos (30 días)`);\n  learningSources.push('PatternMemory');\n} else if (avoidPatterns.some(pattern => currentPattern.includes(pattern) || pattern.includes(currentPattern))) {\n  patternViolations = 1;\n  confidenceScore -= 0.2; // Penalización aumentada para patrones fallidos\n  decisionRationale.push(`ADVERTENCIA: Patrón similar a uno que ha fallado históricamente - PENALIZADO`);\n} else if (successfulPatterns.some(pattern => currentPattern.includes(pattern) || pattern.includes(currentPattern))) {\n  // Refuerzo para patrones exitosos\n  confidenceScore += 0.1;\n  decisionRationale.push(`Patrón identificado como exitoso históricamente - REFORZADO`);\n  learningSources.push('PatternMemory');\n} else {\n  confidenceScore += 0.05; // Patrón neutro\n  decisionRationale.push(`Patrón no está en lista de fallos históricos`);\n  learningSources.push('PatternMemory');\n}\n\n// Factor 5: Preferencias del tenant (10%)\nconst preferredFormats = components.preferredFormats || [];\nif (preferredFormats.includes(format)) {\n  confidenceScore += 0.1;\n  decisionRationale.push(`Formato ${format} está en preferencias del tenant`);\n  learningSources.push('PreferenceMemory');\n}\n\n// Factor 6: Restricciones cumplidas (5%)\nconst constraints = advancedMemory.constraintMemory?.restrictions || [];\nconst hasViolations = constraints.some(constraint => {\n  const channel = selectedChannels.find(c => constraint.toLowerCase().includes(c.toLowerCase()));\n  return channel !== undefined;\n});\nif (!hasViolations) {\n  confidenceScore += 0.05;\n  decisionRationale.push(`No se violan restricciones conocidas`);\n  learningSources.push('ConstraintMemory');\n} else {\n  confidenceScore -= 0.05;\n  decisionRationale.push(`ADVERTENCIA: Posible violación de restricciones`);\n}\n\n// Normalizar confidenceScore a 0-1\nconfidenceScore = Math.max(0, Math.min(1, confidenceScore));\n\n// Ajustar temperatura del modelo según confidence\n// Si confidence es bajo, usar temperatura más alta para más variación\n// Si confidence es alto, usar temperatura más baja para consistencia\nconst adaptiveTemperature = confidenceScore < 0.6 ? 0.8 : (confidenceScore > 0.8 ? 0.5 : 0.7);\n\n// Reducir variantes si confidence es bajo\nconst shouldReduceVariants = confidenceScore < 0.6;\n\n// Obtener cognitiveVersion REAL desde último MarketingPack o memoria\n// Se incrementa automáticamente cuando hay cambios significativos\nconst lastCognitiveVersion = components.lastCognitiveVersion || 1;\nlet cognitiveVersion = lastCognitiveVersion;\n\n// Si hay patrones fallidos recientes o cambios en priorización, incrementar versión\nconst recentFailedPatterns = patternMemory.failedPatterns || [];\nconst hasRecentFailures = recentFailedPatterns.length > 0;\nconst hasChannelPriorityChanges = performanceMemory.bestPerformingChannels && \n  performanceMemory.bestPerformingChannels.length > 0 &&\n  !selectedChannels.every(c => performanceMemory.bestPerformingChannels.includes(c));\n\n// Verificar si hay patrones exitosos nuevos que cambien priorización\nconst hasSuccessfulPatterns = successfulPatterns.length > 0 && \n  !successfulPatterns.every(sp => {\n    const patternStr = typeof sp === 'string' ? sp : (sp.pattern || JSON.stringify(sp));\n    return currentPattern.includes(patternStr) || patternStr.includes(currentPattern);\n  });\r\n\r\n// Incrementar versión cuando hay aprendizaje significativo\nif (hasRecentFailures || hasChannelPriorityChanges || hasSuccessfulPatterns || patternViolations > 0) {\n  cognitiveVersion = lastCognitiveVersion + 1;\n}\n\n// Decision rationale completo\nconst fullRationale = decisionRationale.join('; ');\n\n// Learning sources únicos\nconst uniqueLearningSources = [...new Set(learningSources)];\n\n// Obtener timestamp de forma segura\nlet calculatedAt = new Date().toISOString();\ntry {\n  const validatedNode = $('Set Validated Data');\n  if (validatedNode && validatedNode.item && validatedNode.item.json) {\n    calculatedAt = validatedNode.item.json.validatedData?.receivedAt || calculatedAt;\n  }\n} catch (e) {}\n\nresults.push({\n  json: {\n    ...components,\n    cognitiveDecision: {\n      confidenceScore: confidenceScore,\n      adaptiveTemperature: adaptiveTemperature,\n      shouldReduceVariants: shouldReduceVariants,\n      decisionRationale: fullRationale,\n      learningSources: uniqueLearningSources,\n      cognitiveVersion: cognitiveVersion,\n      channelConfidence: channelConfidence,\n      formatConfidence: formatConfidence,\n      toneConfidence: toneConfidence,\n      patternViolations: patternViolations,\n      calculatedAt: calculatedAt\n    }\n  }\n});\n  } catch (e) {\n    results.push({\n      json: {\n        ...item.json,\n        error: e.message,\n        cognitiveDecision: {\n          confidenceScore: 0.5,\n          adaptiveTemperature: 0.7,\n          shouldReduceVariants: false,\n          decisionRationale: 'Error en cálculo: ' + e.message,\n          learningSources: [],\n          cognitiveVersion: 1,\n          channelConfidence: 0.5,\n          formatConfidence: 0.5,\n          toneConfidence: 0.5,\n          patternViolations: 0,\n          calculatedAt: new Date().toISOString()\n        }\n      }\n    });\n  }\n}\n\nreturn results;"
       },
       "id": "f4eb88cd-331b-4436-8863-5da616fe5145",
       "name": "Cognitive Decision Engine",
@@ -733,7 +751,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Función helper para generar UUID sin usar módulo crypto\nfunction generateUUID() {\n  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {\n    const r = Math.random() * 16 | 0;\n    const v = c === 'x' ? r : (r & 0x3 | 0x8);\n    return v.toString(16);\n  });\n}\n\n// Ensamblar el MarketingPack completo con campos cognitivos\nconst components = $input.item.json;\nconst strategy = components.strategy || {};\nconst copy = components.copy || {};\nconst visualPrompts = components.visualPrompts || {};\nconst media = Array.isArray(components.assets) ? components.assets : [];\nconst channels = Array.isArray(components.channels) ? components.channels : (strategy.channels || []);\n\n// Obtener tenantId y userId con fallbacks robustos\nfunction safeGetNodeData(nodeName) {\n  try {\n    const node = $(nodeName);\n    return node?.item?.json || {};\n  } catch (e) {\n    return {};\n  }\n}\n\nconst validatedData = safeGetNodeData('Set Validated Data');\nconst cognitiveVersionData = safeGetNodeData('Set Cognitive Engine Version');\n\nconst tenantId = components.tenantId || \n  validatedData.validatedData?.tenantId ||\n  cognitiveVersionData.tenantId ||\n  cognitiveVersionData.body?.body?.tenantId ||\n  '';\n\nconst userId = components.userId || \n  validatedData.validatedData?.userId ||\n  cognitiveVersionData.userId ||\n  cognitiveVersionData.body?.body?.userId ||\n  '';\n\nconst campaignId = components.campaignId || \n  validatedData.validatedData?.campaignId ||\n  cognitiveVersionData.campaignId ||\n  cognitiveVersionData.body?.body?.campaignId ||\n  null;\n\n// Validar que tenantId y userId no estén vacíos\nif (!tenantId || tenantId === '') {\n  throw new Error('tenantId is required but not found in workflow data');\n}\nif (!userId || userId === '') {\n  throw new Error('userId is required but not found in workflow data');\n}\n\n// Generar ID único para el pack\nconst packId = generateUUID();\n\n// Construir la estrategia como texto estructurado\nconst strategyText = JSON.stringify({\n  mainMessage: strategy.mainMessage || '',\n  cta: strategy.cta || '',\n  recommendedFormat: strategy.recommendedFormat || 'post',\n  tone: strategy.tone || 'profesional',\n  targetAudience: strategy.targetAudience || '',\n  keyPoints: strategy.keyPoints || [],\n  suggestedSchedule: strategy.suggestedSchedule || {},\n  contentStructure: strategy.contentStructure || {}\n}, null, 2);\n\n// Obtener contentId del payload original\n// Si no viene en el payload, generar uno nuevo (el backend lo creará automáticamente)\nconst contentId = components.contentId || \n  validatedData.validatedData?.contentId ||\n  cognitiveVersionData.body?.body?.contentId ||\n  cognitiveVersionData.contentId ||\n  generateUUID(); // Generar nuevo si no viene (el backend lo creará automáticamente)\n\n// Construir metadatos completos\nconst metadata = {\n  tenantId: tenantId,\n  userId: userId,\n  campaignId: campaignId,\n  contentId: contentId,\n  channels: channels,\n  requiresApproval: components.requiresApproval !== undefined ? components.requiresApproval : true,\n  generatedAt: new Date().toISOString(),\n  version: 1,\n  strategy: strategy,\n  copy: copy,\n  visualPrompts: visualPrompts,\n  media: media\n};\n\n// Construir GeneratedCopies desde el copy\nconst generatedCopies = [];\n\nif (copy.longCopy) {\n  generatedCopies.push({\n    id: generateUUID(),\n    copyType: 'long',\n    content: copy.longCopy,\n    hashtags: copy.hashtags ? copy.hashtags.join(', ') : null,\n    suggestedChannel: channels.length > 0 ? channels[0] : null,\n    publicationChecklist: {\n      hasCopy: true,\n      hasHashtags: (copy.hashtags || []).length > 0,\n      hasMedia: media.length > 0,\n      readyForPublication: true\n    }\n  });\n}\n\nif (copy.shortCopy) {\n  generatedCopies.push({\n    id: generateUUID(),\n    copyType: 'short',\n    content: copy.shortCopy,\n    hashtags: copy.hashtags ? copy.hashtags.join(', ') : null,\n    suggestedChannel: channels.length > 0 ? channels[0] : null,\n    publicationChecklist: {\n      hasCopy: true,\n      hasHashtags: (copy.hashtags || []).length > 0,\n      hasMedia: media.length > 0,\n      readyForPublication: true\n    }\n  });\n}\n\nif (copy.variants) {\n  if (copy.variants.variantA) {\n    generatedCopies.push({\n      id: generateUUID(),\n      copyType: 'variant-a',\n      content: copy.variants.variantA.longCopy || copy.variants.variantA.shortCopy || '',\n      hashtags: copy.variants.variantA.hashtags ? copy.variants.variantA.hashtags.join(', ') : null,\n      suggestedChannel: channels.length > 0 ? channels[0] : null,\n      publicationChecklist: {\n        hasCopy: true,\n        hasHashtags: (copy.variants.variantA.hashtags || []).length > 0,\n        isVariant: true,\n        variantType: 'A'\n      }\n    });\n  }\n  \n  if (copy.variants.variantB) {\n    generatedCopies.push({\n      id: generateUUID(),\n      copyType: 'variant-b',\n      content: copy.variants.variantB.longCopy || copy.variants.variantB.shortCopy || '',\n      hashtags: copy.variants.variantB.hashtags ? copy.variants.variantB.hashtags.join(', ') : null,\n      suggestedChannel: channels.length > 0 ? channels[0] : null,\n      publicationChecklist: {\n        hasCopy: true,\n        hasHashtags: (copy.variants.variantB.hashtags || []).length > 0,\n        isVariant: true,\n        variantType: 'B'\n      }\n    });\n  }\n}\n\n// Construir MarketingAssetPrompts desde visualPrompts\nconst assetPrompts = [];\n\nif (visualPrompts.imagePrompt) {\n  assetPrompts.push({\n    id: generateUUID(),\n    assetType: 'image',\n    prompt: visualPrompts.imagePrompt,\n    negativePrompt: null,\n    parameters: {\n      style: visualPrompts.imageStyle || 'professional',\n      aspectRatio: visualPrompts.aspectRatio || '1:1',\n      colorPalette: visualPrompts.colorPalette || [],\n      mood: visualPrompts.mood || 'professional',\n      ...(visualPrompts.technicalSpecs || {})\n    },\n    suggestedChannel: channels.length > 0 ? channels[0] : null\n  });\n}\n\nif (visualPrompts.videoPrompt) {\n  assetPrompts.push({\n    id: generateUUID(),\n    assetType: 'video',\n    prompt: visualPrompts.videoPrompt,\n    negativePrompt: null,\n    parameters: {\n      aspectRatio: visualPrompts.aspectRatio || '16:9',\n      colorPalette: visualPrompts.colorPalette || [],\n      mood: visualPrompts.mood || 'professional',\n      ...(visualPrompts.technicalSpecs || {})\n    },\n    suggestedChannel: channels.length > 0 ? channels[0] : null\n  });\n}\n\n// Obtener datos cognitivos del Decision Engine\nconst cognitiveDecision = components.cognitiveDecision || {};\nconst confidenceScore = cognitiveDecision.confidenceScore || 0.5;\nconst cognitiveVersion = cognitiveDecision.cognitiveVersion || 1;\nconst decisionRationale = cognitiveDecision.decisionRationale || '';\nconst learningSources = cognitiveDecision.learningSources || [];\n\n// Construir el MarketingPack final con campos cognitivos\nconst marketingPack = {\n  id: packId,\n  tenantId: tenantId,\n  userId: userId,\n  contentId: contentId,\n  campaignId: campaignId,\n  strategy: strategyText,\n  status: components.requiresApproval ? 'Generated' : 'Ready',\n  version: 1,\n  metadata: JSON.stringify(metadata),\n  copies: generatedCopies,\n  assetPrompts: assetPrompts,\n  channels: channels,\n  media: media,\n  requiresApproval: components.requiresApproval !== undefined ? components.requiresApproval : true,\n  createdAt: new Date().toISOString(),\n  // Campos cognitivos\n  cognitiveVersion: cognitiveVersion,\n  confidenceScore: confidenceScore,\n  learningSources: learningSources,\n  decisionRationale: decisionRationale\n};\n\nreturn {\n  ...components,\n  marketingPack: marketingPack,\n  cognitiveDecision: cognitiveDecision\n};"
+        "jsCode": "// Función helper para generar UUID sin usar módulo crypto\nfunction generateUUID() {\n  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {\n    const r = Math.random() * 16 | 0;\n    const v = c === 'x' ? r : (r & 0x3 | 0x8);\n    return v.toString(16);\n  });\n}\n\n// Ensamblar el MarketingPack completo con campos cognitivos\nconst items = $input.all();\nconst results = [];\n\nfor (const item of items) {\n  try {\n    const components = item.json || {};\nconst strategy = components.strategy || {};\nconst copy = components.copy || {};\nconst visualPrompts = components.visualPrompts || {};\nconst media = Array.isArray(components.assets) ? components.assets : [];\nconst channels = Array.isArray(components.channels) ? components.channels : (strategy.channels || []);\n\n// Obtener tenantId y userId con fallbacks robustos\nfunction safeGetNodeData(nodeName) {\n  try {\n    const node = $(nodeName);\n    return node?.item?.json || {};\n  } catch (e) {\n    return {};\n  }\n}\n\nconst validatedData = safeGetNodeData('Set Validated Data');\nconst cognitiveVersionData = safeGetNodeData('Set Cognitive Engine Version');\n\nconst tenantId = components.tenantId || \n  validatedData.validatedData?.tenantId ||\n  cognitiveVersionData.tenantId ||\n  cognitiveVersionData.body?.body?.tenantId ||\n  '';\n\nconst userId = components.userId || \n  validatedData.validatedData?.userId ||\n  cognitiveVersionData.userId ||\n  cognitiveVersionData.body?.body?.userId ||\n  '';\n\nconst campaignId = components.campaignId || \n  validatedData.validatedData?.campaignId ||\n  cognitiveVersionData.campaignId ||\n  cognitiveVersionData.body?.body?.campaignId ||\n  null;\n\n// Validar que tenantId y userId no estén vacíos\nif (!tenantId || tenantId === '') {\n  throw new Error('tenantId is required but not found in workflow data');\n}\nif (!userId || userId === '') {\n  throw new Error('userId is required but not found in workflow data');\n}\n\n// Generar ID único para el pack\nconst packId = generateUUID();\n\n// Construir la estrategia como texto estructurado\nconst strategyText = JSON.stringify({\n  mainMessage: strategy.mainMessage || '',\n  cta: strategy.cta || '',\n  recommendedFormat: strategy.recommendedFormat || 'post',\n  tone: strategy.tone || 'profesional',\n  targetAudience: strategy.targetAudience || '',\n  keyPoints: strategy.keyPoints || [],\n  suggestedSchedule: strategy.suggestedSchedule || {},\n  contentStructure: strategy.contentStructure || {}\n}, null, 2);\n\n// Obtener contentId del payload original\n// Si no viene en el payload, generar uno nuevo (el backend lo creará automáticamente)\nconst contentId = components.contentId || \n  validatedData.validatedData?.contentId ||\n  cognitiveVersionData.body?.body?.contentId ||\n  cognitiveVersionData.contentId ||\n  generateUUID(); // Generar nuevo si no viene (el backend lo creará automáticamente)\n\n// Construir metadatos completos\nconst metadata = {\n  tenantId: tenantId,\n  userId: userId,\n  campaignId: campaignId,\n  contentId: contentId,\n  channels: channels,\n  requiresApproval: components.requiresApproval !== undefined ? components.requiresApproval : true,\n  generatedAt: new Date().toISOString(),\n  version: 1,\n  strategy: strategy,\n  copy: copy,\n  visualPrompts: visualPrompts,\n  media: media\n};\n\n// Construir GeneratedCopies desde el copy\nconst generatedCopies = [];\n\nif (copy.longCopy) {\n  generatedCopies.push({\n    id: generateUUID(),\n    copyType: 'long',\n    content: copy.longCopy,\n    hashtags: copy.hashtags ? copy.hashtags.join(', ') : null,\n    suggestedChannel: channels.length > 0 ? channels[0] : null,\n    publicationChecklist: {\n      hasCopy: true,\n      hasHashtags: (copy.hashtags || []).length > 0,\n      hasMedia: media.length > 0,\n      readyForPublication: true\n    }\n  });\n}\n\nif (copy.shortCopy) {\n  generatedCopies.push({\n    id: generateUUID(),\n    copyType: 'short',\n    content: copy.shortCopy,\n    hashtags: copy.hashtags ? copy.hashtags.join(', ') : null,\n    suggestedChannel: channels.length > 0 ? channels[0] : null,\n    publicationChecklist: {\n      hasCopy: true,\n      hasHashtags: (copy.hashtags || []).length > 0,\n      hasMedia: media.length > 0,\n      readyForPublication: true\n    }\n  });\n}\n\nif (copy.variants) {\n  if (copy.variants.variantA) {\n    generatedCopies.push({\n      id: generateUUID(),\n      copyType: 'variant-a',\n      content: copy.variants.variantA.longCopy || copy.variants.variantA.shortCopy || '',\n      hashtags: copy.variants.variantA.hashtags ? copy.variants.variantA.hashtags.join(', ') : null,\n      suggestedChannel: channels.length > 0 ? channels[0] : null,\n      publicationChecklist: {\n        hasCopy: true,\n        hasHashtags: (copy.variants.variantA.hashtags || []).length > 0,\n        isVariant: true,\n        variantType: 'A'\n      }\n    });\n  }\n  \n  if (copy.variants.variantB) {\n    generatedCopies.push({\n      id: generateUUID(),\n      copyType: 'variant-b',\n      content: copy.variants.variantB.longCopy || copy.variants.variantB.shortCopy || '',\n      hashtags: copy.variants.variantB.hashtags ? copy.variants.variantB.hashtags.join(', ') : null,\n      suggestedChannel: channels.length > 0 ? channels[0] : null,\n      publicationChecklist: {\n        hasCopy: true,\n        hasHashtags: (copy.variants.variantB.hashtags || []).length > 0,\n        isVariant: true,\n        variantType: 'B'\n      }\n    });\n  }\n}\n\n// Construir MarketingAssetPrompts desde visualPrompts\nconst assetPrompts = [];\n\nif (visualPrompts.imagePrompt) {\n  assetPrompts.push({\n    id: generateUUID(),\n    assetType: 'image',\n    prompt: visualPrompts.imagePrompt,\n    negativePrompt: null,\n    parameters: {\n      style: visualPrompts.imageStyle || 'professional',\n      aspectRatio: visualPrompts.aspectRatio || '1:1',\n      colorPalette: visualPrompts.colorPalette || [],\n      mood: visualPrompts.mood || 'professional',\n      ...(visualPrompts.technicalSpecs || {})\n    },\n    suggestedChannel: channels.length > 0 ? channels[0] : null\n  });\n}\n\nif (visualPrompts.videoPrompt) {\n  assetPrompts.push({\n    id: generateUUID(),\n    assetType: 'video',\n    prompt: visualPrompts.videoPrompt,\n    negativePrompt: null,\n    parameters: {\n      aspectRatio: visualPrompts.aspectRatio || '16:9',\n      colorPalette: visualPrompts.colorPalette || [],\n      mood: visualPrompts.mood || 'professional',\n      ...(visualPrompts.technicalSpecs || {})\n    },\n    suggestedChannel: channels.length > 0 ? channels[0] : null\n  });\n}\n\n// Obtener datos cognitivos del Decision Engine\nconst cognitiveDecision = components.cognitiveDecision || {};\nconst confidenceScore = cognitiveDecision.confidenceScore || 0.5;\nconst cognitiveVersion = cognitiveDecision.cognitiveVersion || 1;\nconst decisionRationale = cognitiveDecision.decisionRationale || '';\nconst learningSources = cognitiveDecision.learningSources || [];\n\n// Construir el MarketingPack final con campos cognitivos\nconst marketingPack = {\n  id: packId,\n  tenantId: tenantId,\n  userId: userId,\n  contentId: contentId,\n  campaignId: campaignId,\n  strategy: strategyText,\n  status: components.requiresApproval ? 'Generated' : 'Ready',\n  version: 1,\n  metadata: JSON.stringify(metadata),\n  copies: generatedCopies,\n  assetPrompts: assetPrompts,\n  channels: channels,\n  media: media,\n  requiresApproval: components.requiresApproval !== undefined ? components.requiresApproval : true,\n  createdAt: new Date().toISOString(),\n  cognitiveVersion: cognitiveVersion,\n  confidenceScore: confidenceScore,\n  learningSources: learningSources,\n  decisionRationale: decisionRationale\n};\n\nresults.push({\n  json: {\n    ...components,\n    marketingPack: marketingPack,\n    cognitiveDecision: cognitiveDecision\n  }\n});\n  } catch (e) {\n    results.push({\n      json: {\n        ...item.json,\n        error: e.message,\n        marketingPack: null,\n        cognitiveDecision: null\n      }\n    });\n  }\n}\n\nreturn results;"
       },
       "id": "8ce8b356-e3d5-49ba-a735-48df46a5712b",
       "name": "Build Marketing Pack",
@@ -791,18 +809,21 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://autonomousmarketingplatform.onrender.com/api/MemoryApi/save",
+        "url": "={{ ($env.BACKEND_URL && $env.BACKEND_URL !== 'http://localhost:5000') ? $env.BACKEND_URL : 'https://autonomousmarketingplatform.onrender.com' }}/api/MemoryApi/save",
         "sendBody": true,
         "contentType": "json",
         "body": "={{ (() => { const components = $json; const humanOverride = components.humanOverride || {}; const marketingPack = components.marketingPack || {}; const validatedData = $('Set Validated Data').item?.json?.validatedData || {}; return { tenantId: marketingPack.tenantId || validatedData.tenantId || components.tenantId || '', userId: marketingPack.userId || validatedData.userId || components.userId || '', campaignId: marketingPack.campaignId || validatedData.campaignId || components.campaignId || null, memoryType: 'Pattern', content: JSON.stringify(humanOverride || {}), context: humanOverride.context || {}, tags: humanOverride.tags || ['pattern', 'override', 'human_forced_publication'], relevanceScore: 8 }; })() }}",
         "options": {
-          "timeout": 10000
+          "timeout": 300000,
+          "continueOnFail": true,
+          "retryOnFail": true,
+          "maxRetries": 3
         }
       },
       "id": "d8349404-8726-44b4-8213-4ac83b82572c",
       "name": "HTTP Request - Save Override Memory",
       "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
+      "typeVersion": 4.1,
       "position": [
         192,
         576
@@ -842,19 +863,22 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://autonomousmarketingplatform.onrender.com/api/marketing-packs",
+        "url": "={{ ($env.BACKEND_URL && $env.BACKEND_URL !== 'http://localhost:5000') ? $env.BACKEND_URL : 'https://autonomousmarketingplatform.onrender.com' }}/api/marketing-packs",
         "sendBody": true,
         "contentType": "json",
         "specifyBody": "json",
         "jsonBody": "={{ (() => { function safeGetNodeData(nodeName) { try { const node = $(nodeName); return node?.item?.json || {}; } catch (e) { return {}; } } const mp = $json.marketingPack || {}; if (!mp || Object.keys(mp).length === 0) { throw new Error('marketingPack is required but not found in the workflow data'); } const validatedData = safeGetNodeData('Set Validated Data'); const cognitiveVersionData = safeGetNodeData('Set Cognitive Engine Version'); const tenantId = String(mp.tenantId || validatedData.validatedData?.tenantId || cognitiveVersionData.body?.body?.tenantId || cognitiveVersionData.tenantId || '').trim(); const userId = String(mp.userId || validatedData.validatedData?.userId || cognitiveVersionData.body?.body?.userId || cognitiveVersionData.userId || '').trim(); const contentId = String(mp.contentId || '').trim(); if (!tenantId || tenantId === '' || tenantId === 'undefined' || tenantId === 'null' || tenantId === '00000000-0000-0000-0000-000000000000') { throw new Error('tenantId is required and must be a valid GUID. Found: ' + JSON.stringify(tenantId)); } if (!userId || userId === '' || userId === 'undefined' || userId === 'null' || userId === '00000000-0000-0000-0000-000000000000') { throw new Error('userId is required and must be a valid GUID. Found: ' + JSON.stringify(userId)); } if (!contentId || contentId === '' || contentId === 'undefined' || contentId === 'null' || contentId === '00000000-0000-0000-0000-000000000000') { throw new Error('contentId is required and must be a valid GUID. Found: ' + JSON.stringify(contentId)); } return { id: mp.id || null, tenantId: tenantId, userId: userId, contentId: contentId, campaignId: mp.campaignId || null, strategy: mp.strategy || '', status: mp.status || 'Generated', version: mp.version || 1, metadata: mp.metadata || null, copies: (mp.copies || []).map(c => ({ id: c.id || null, copyType: c.copyType || '', content: c.content || '', hashtags: c.hashtags || null, suggestedChannel: c.suggestedChannel || null, publicationChecklist: c.publicationChecklist || null })), assetPrompts: (mp.assetPrompts || []).map(a => ({ id: a.id || null, assetType: a.assetType || '', prompt: a.prompt || '', negativePrompt: a.negativePrompt || null, parameters: a.parameters || null, suggestedChannel: a.suggestedChannel || null })) }; })() }}",
         "options": {
-          "timeout": 10000
+          "timeout": 300000,
+          "continueOnFail": true,
+          "retryOnFail": true,
+          "maxRetries": 3
         }
       },
       "id": "8b645546-c7bc-45ea-b354-5ccbe874974b",
       "name": "HTTP Request - Save Pack (Requires Approval)",
       "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
+      "typeVersion": 4.1,
       "position": [
         288,
         400
@@ -880,19 +904,22 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://autonomousmarketingplatform.onrender.com/api/marketing-packs",
+        "url": "={{ ($env.BACKEND_URL && $env.BACKEND_URL !== 'http://localhost:5000') ? $env.BACKEND_URL : 'https://autonomousmarketingplatform.onrender.com' }}/api/marketing-packs",
         "sendBody": true,
         "contentType": "json",
         "specifyBody": "json",
         "jsonBody": "={{ (() => { function safeGetNodeData(nodeName) { try { const node = $(nodeName); return node?.item?.json || {}; } catch (e) { return {}; } } const mp = $json.marketingPack || {}; if (!mp || Object.keys(mp).length === 0) { throw new Error('marketingPack is required but not found. Available keys in $json: ' + Object.keys($json || {}).join(', ')); } const validatedData = safeGetNodeData('Set Validated Data'); const cognitiveVersionData = safeGetNodeData('Set Cognitive Engine Version'); const tenantId = String(mp.tenantId || validatedData.validatedData?.tenantId || cognitiveVersionData.body?.body?.tenantId || cognitiveVersionData.tenantId || '').trim(); const userId = String(mp.userId || validatedData.validatedData?.userId || cognitiveVersionData.body?.body?.userId || cognitiveVersionData.userId || '').trim(); const contentId = String(mp.contentId || '').trim(); if (!tenantId || tenantId === '' || tenantId === 'undefined' || tenantId === 'null' || tenantId === '00000000-0000-0000-0000-000000000000') { throw new Error('tenantId is required and must be a valid GUID. Found: ' + JSON.stringify(tenantId) + ', marketingPack keys: ' + Object.keys(mp).join(', ')); } if (!userId || userId === '' || userId === 'undefined' || userId === 'null' || userId === '00000000-0000-0000-0000-000000000000') { throw new Error('userId is required and must be a valid GUID. Found: ' + JSON.stringify(userId)); } if (!contentId || contentId === '' || contentId === 'undefined' || contentId === 'null' || contentId === '00000000-0000-0000-0000-000000000000') { throw new Error('contentId is required and must be a valid GUID. Found: ' + JSON.stringify(contentId)); } return { id: mp.id || null, tenantId: tenantId, userId: userId, contentId: contentId, campaignId: mp.campaignId || null, strategy: mp.strategy || '', status: mp.status || 'Ready', version: mp.version || 1, metadata: mp.metadata || null, copies: (mp.copies || []).map(c => ({ id: c.id || null, copyType: c.copyType || '', content: c.content || '', hashtags: c.hashtags || null, suggestedChannel: c.suggestedChannel || null, publicationChecklist: c.publicationChecklist || null })), assetPrompts: (mp.assetPrompts || []).map(a => ({ id: a.id || null, assetType: a.assetType || '', prompt: a.prompt || '', negativePrompt: a.negativePrompt || null, parameters: a.parameters || null, suggestedChannel: a.suggestedChannel || null })) }; })() }}",
         "options": {
-          "timeout": 10000
+          "timeout": 300000,
+          "continueOnFail": true,
+          "retryOnFail": true,
+          "maxRetries": 3
         }
       },
       "id": "7e4a4a1d-015e-462d-95a2-c532ba6c69a5",
       "name": "HTTP Request - Save Pack (Ready)",
       "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
+      "typeVersion": 4.1,
       "position": [
         -144,
         1088
@@ -1024,13 +1051,16 @@
           ]
         },
         "options": {
-          "timeout": 30000
+          "timeout": 300000,
+          "continueOnFail": true,
+          "retryOnFail": true,
+          "maxRetries": 3
         }
       },
       "id": "9bca2336-ccd0-4510-891d-e297f31ccefe",
       "name": "Publish - Instagram",
       "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
+      "typeVersion": 4.1,
       "position": [
         592,
         576
@@ -1056,13 +1086,16 @@
           ]
         },
         "options": {
-          "timeout": 30000
+          "timeout": 300000,
+          "continueOnFail": true,
+          "retryOnFail": true,
+          "maxRetries": 3
         }
       },
       "id": "65432f0e-f487-41ee-8c1e-02b91e414100",
       "name": "Publish - Facebook",
       "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
+      "typeVersion": 4.1,
       "position": [
         592,
         784
@@ -1088,13 +1121,16 @@
           ]
         },
         "options": {
-          "timeout": 30000
+          "timeout": 300000,
+          "continueOnFail": true,
+          "retryOnFail": true,
+          "maxRetries": 3
         }
       },
       "id": "1b24385f-353b-4501-bd3f-360948dff663",
       "name": "Publish - TikTok",
       "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
+      "typeVersion": 4.1,
       "position": [
         592,
         896
@@ -1116,18 +1152,21 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://autonomousmarketingplatform.onrender.com/api/publishing-jobs",
+        "url": "={{ ($env.BACKEND_URL && $env.BACKEND_URL !== 'http://localhost:5000') ? $env.BACKEND_URL : 'https://autonomousmarketingplatform.onrender.com' }}/api/publishing-jobs",
         "sendBody": true,
         "contentType": "json",
         "body": "={{ (() => { const campaignId = $json.campaignId || $('Prepare Publish Jobs').item.json.campaignId || $('Build Marketing Pack').item.json.marketingPack?.campaignId || '00000000-0000-0000-0000-000000000000'; if (!campaignId || campaignId === '00000000-0000-0000-0000-000000000000') { throw new Error('campaignId is required but not found in workflow data'); } return { tenantId: $json.tenantId || $('Prepare Publish Jobs').item.json.tenantId || $('Build Marketing Pack').item.json.marketingPack?.tenantId || '', campaignId: campaignId, marketingPackId: $json.marketingPackId || $('Prepare Publish Jobs').item.json.marketingPackId || null, generatedCopyId: $json.generatedCopyId || $('Prepare Publish Jobs').item.json.generatedCopyId || null, channel: $json.channel || '', status: $json.success === false ? 'Failed' : ($json.simulated === true ? 'Simulated' : 'Success'), publishedDate: $json.publishedAt || new Date().toISOString(), publishedUrl: $json.publishedUrl || null, externalPostId: $json.postId || null, content: $json.content || '', hashtags: $json.hashtags || null, mediaUrl: $json.mediaUrl || null, errorMessage: $json.error || null }; })() }}",
         "options": {
-          "timeout": 10000
+          "timeout": 300000,
+          "continueOnFail": true,
+          "retryOnFail": true,
+          "maxRetries": 3
         }
       },
       "id": "f12a6d0a-4ff9-4fac-ad7c-ae0b35245a0c",
       "name": "HTTP Request - Save Publishing Job",
       "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
+      "typeVersion": 4.1,
       "position": [
         992,
         688
@@ -1149,18 +1188,21 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://autonomousmarketingplatform.onrender.com/api/metrics/campaign",
+        "url": "={{ ($env.BACKEND_URL && $env.BACKEND_URL !== 'http://localhost:5000') ? $env.BACKEND_URL : 'https://autonomousmarketingplatform.onrender.com' }}/api/metrics/campaign",
         "sendBody": true,
         "contentType": "json",
         "body": "={{ (() => { const tenantId = $json.tenantId || $('Consolidate Publish Results').item.json.tenantId || $('Build Marketing Pack').item.json.marketingPack?.tenantId || ''; const campaignId = $json.campaignId || $('Consolidate Publish Results').item.json.campaignId || $('Build Marketing Pack').item.json.marketingPack?.campaignId || '00000000-0000-0000-0000-000000000000'; if (!tenantId || tenantId === '') { throw new Error('tenantId is required but not found in workflow data'); } if (!campaignId || campaignId === '00000000-0000-0000-0000-000000000000') { throw new Error('campaignId is required but not found in workflow data'); } return { tenantId: tenantId, campaignId: campaignId, metricDate: new Date().toISOString().split('T')[0], impressions: 0, clicks: 0, likes: 0, comments: 0, shares: 0, source: 'n8n', notes: 'Initial metrics created after publishing jobs' }; })() }}",
         "options": {
-          "timeout": 10000
+          "timeout": 300000,
+          "continueOnFail": true,
+          "retryOnFail": true,
+          "maxRetries": 3
         }
       },
       "id": "613a879a-7b69-41a0-9fba-20e30960172e",
       "name": "HTTP Request - Save Campaign Metrics",
       "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
+      "typeVersion": 4.1,
       "position": [
         1392,
         576
@@ -1169,18 +1211,21 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://autonomousmarketingplatform.onrender.com/api/metrics/publishing-job",
+        "url": "={{ ($env.BACKEND_URL && $env.BACKEND_URL !== 'http://localhost:5000') ? $env.BACKEND_URL : 'https://autonomousmarketingplatform.onrender.com' }}/api/metrics/publishing-job",
         "sendBody": true,
         "contentType": "json",
         "body": "={{ (() => { const consolidateData = $('Consolidate Publish Results').item.json; const publishingJobIds = consolidateData.publishingJobIds || []; const tenantId = consolidateData.tenantId || $('Build Marketing Pack').item.json.marketingPack?.tenantId || ''; if (!tenantId || tenantId === '') { throw new Error('tenantId is required but not found in workflow data'); } if (publishingJobIds.length === 0) { return { tenantId: tenantId, publishingJobId: '00000000-0000-0000-0000-000000000000', metricDate: new Date().toISOString().split('T')[0], impressions: 0, clicks: 0, likes: 0, comments: 0, shares: 0, source: 'n8n', notes: 'No publishing jobs to track' }; } return { tenantId: tenantId, publishingJobId: publishingJobIds[0], metricDate: new Date().toISOString().split('T')[0], impressions: 0, clicks: 0, likes: 0, comments: 0, shares: 0, source: 'n8n', notes: 'Initial metrics created after publishing' }; })() }}",
         "options": {
-          "timeout": 10000
+          "timeout": 300000,
+          "continueOnFail": true,
+          "retryOnFail": true,
+          "maxRetries": 3
         }
       },
       "id": "7ebac3f8-1172-460b-8274-2fb3bf68370d",
       "name": "HTTP Request - Save Job Metrics",
       "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
+      "typeVersion": 4.1,
       "position": [
         1392,
         688
@@ -1218,7 +1263,7 @@
     },
     {
       "parameters": {
-        "url": "https://autonomousmarketingplatform.onrender.com/api/Memory/context",
+        "url": "={{ ($env.BACKEND_URL && $env.BACKEND_URL !== 'http://localhost:5000') ? $env.BACKEND_URL : 'https://autonomousmarketingplatform.onrender.com' }}/api/Memory/context",
         "sendQuery": true,
         "queryParameters": {
           "parameters": [
@@ -1233,13 +1278,16 @@
           ]
         },
         "options": {
-          "timeout": 10000
+          "timeout": 300000,
+          "continueOnFail": true,
+          "retryOnFail": true,
+          "maxRetries": 3
         }
       },
       "id": "18ac9ef6-b098-4d22-8797-1f5191b006f5",
       "name": "HTTP Request - Load Constraint Memory",
       "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
+      "typeVersion": 4.1,
       "position": [
         -592,
         672
