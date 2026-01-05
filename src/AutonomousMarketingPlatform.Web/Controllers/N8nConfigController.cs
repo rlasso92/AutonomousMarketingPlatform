@@ -23,11 +23,16 @@ public class N8nConfigController : Controller
 {
     private readonly IMediator _mediator;
     private readonly ILogger<N8nConfigController> _logger;
+    private readonly ILoggingService _loggingService;
 
-    public N8nConfigController(IMediator mediator, ILogger<N8nConfigController> logger)
+    public N8nConfigController(
+        IMediator mediator, 
+        ILogger<N8nConfigController> logger,
+        ILoggingService loggingService)
     {
         _mediator = mediator;
         _logger = logger;
+        _loggingService = loggingService;
     }
 
     /// <summary>
@@ -268,12 +273,56 @@ public class N8nConfigController : Controller
             _logger.LogInformation("Resultado de TestConnection: Success={Success}, Message={Message}", 
                 result.Success, result.Message);
             
+            // Si falló la conexión, guardar en ApplicationLogs
+            if (!result.Success)
+            {
+                var tenantId = UserHelper.GetTenantId(User);
+                var userId = UserHelper.GetUserId(User);
+                var additionalData = System.Text.Json.JsonSerializer.Serialize(new
+                {
+                    BaseUrl = request?.BaseUrl,
+                    Error = result.Error,
+                    StatusCode = result.StatusCode,
+                    Message = result.Message
+                });
+                
+                await _loggingService.LogErrorAsync(
+                    message: $"Error al probar conexión con n8n: {result.Message}",
+                    source: "N8nConfig.TestConnection",
+                    exception: null,
+                    tenantId: tenantId,
+                    userId: userId,
+                    requestId: HttpContext.TraceIdentifier,
+                    path: Request.Path,
+                    httpMethod: Request.Method,
+                    additionalData: additionalData,
+                    ipAddress: HttpContext.Connection.RemoteIpAddress?.ToString(),
+                    userAgent: Request.Headers["User-Agent"].ToString());
+            }
+            
             return Json(result);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error al probar conexión con n8n. Exception: {ExceptionType}, Message: {Message}, StackTrace: {StackTrace}", 
                 ex.GetType().Name, ex.Message, ex.StackTrace);
+            
+            // Guardar excepción en ApplicationLogs
+            var tenantId = UserHelper.GetTenantId(User);
+            var userId = UserHelper.GetUserId(User);
+            await _loggingService.LogErrorAsync(
+                message: $"Excepción al probar conexión con n8n: {ex.Message}",
+                source: "N8nConfig.TestConnection",
+                exception: ex,
+                tenantId: tenantId,
+                userId: userId,
+                requestId: HttpContext.TraceIdentifier,
+                path: Request.Path,
+                httpMethod: Request.Method,
+                additionalData: System.Text.Json.JsonSerializer.Serialize(new { ExceptionType = ex.GetType().Name }),
+                ipAddress: HttpContext.Connection.RemoteIpAddress?.ToString(),
+                userAgent: Request.Headers["User-Agent"].ToString());
+            
             return Json(new TestN8nConnectionResponse
             {
                 Success = false,
@@ -540,6 +589,32 @@ public class N8nConfigController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error al probar webhook");
+            
+            // Guardar error en ApplicationLogs
+            var tenantId = UserHelper.GetTenantId(User);
+            var userId = UserHelper.GetUserId(User);
+            var additionalData = System.Text.Json.JsonSerializer.Serialize(new
+            {
+                CampaignId = request?.CampaignId?.ToString(),
+                Instruction = request?.Instruction,
+                Channels = request?.Channels,
+                Assets = request?.Assets,
+                RequiresApproval = request?.RequiresApproval
+            });
+            
+            await _loggingService.LogErrorAsync(
+                message: $"Error al disparar webhook de n8n: {ex.Message}",
+                source: "N8nConfig.TestWebhook",
+                exception: ex,
+                tenantId: tenantId,
+                userId: userId,
+                requestId: HttpContext.TraceIdentifier,
+                path: Request.Path,
+                httpMethod: Request.Method,
+                additionalData: additionalData,
+                ipAddress: HttpContext.Connection.RemoteIpAddress?.ToString(),
+                userAgent: Request.Headers["User-Agent"].ToString());
+            
             return Json(new 
             { 
                 success = false, 

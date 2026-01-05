@@ -194,7 +194,22 @@ builder.Services.AddHttpClient<ExternalAutomationService>(client =>
     };
 });
 
-builder.Services.AddScoped<IExternalAutomationService, ExternalAutomationService>();
+// Registrar ExternalAutomationService con acceso a IServiceProvider para ILoggingService
+builder.Services.AddScoped<IExternalAutomationService>(serviceProvider =>
+{
+    var configuration = serviceProvider.GetRequiredService<IConfiguration>();
+    var configRepository = serviceProvider.GetRequiredService<IRepository<TenantN8nConfig>>();
+    var logger = serviceProvider.GetRequiredService<ILogger<ExternalAutomationService>>();
+    var httpClientFactory = serviceProvider.GetRequiredService<IHttpClientFactory>();
+    var httpClient = httpClientFactory.CreateClient(nameof(ExternalAutomationService));
+    
+    return new ExternalAutomationService(
+        configuration,
+        configRepository,
+        logger,
+        httpClient,
+        serviceProvider);
+});
 
 // Registrar proveedor de IA
 builder.Services.AddHttpClient<IAIProvider, AutonomousMarketingPlatform.Infrastructure.Services.AI.OpenAIProvider>();

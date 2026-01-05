@@ -2,6 +2,7 @@ using AutonomousMarketingPlatform.Application.Services;
 using AutonomousMarketingPlatform.Domain.Entities;
 using AutonomousMarketingPlatform.Domain.Interfaces;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.Net.Http.Json;
 using System.Text.Json;
@@ -18,17 +19,35 @@ public class ExternalAutomationService : IExternalAutomationService
     private readonly IRepository<TenantN8nConfig> _configRepository;
     private readonly ILogger<ExternalAutomationService> _logger;
     private readonly HttpClient _httpClient;
+    private readonly IServiceProvider? _serviceProvider;
 
     public ExternalAutomationService(
         IConfiguration configuration,
         IRepository<TenantN8nConfig> configRepository,
         ILogger<ExternalAutomationService> logger,
-        HttpClient httpClient)
+        HttpClient httpClient,
+        IServiceProvider? serviceProvider = null)
     {
         _configuration = configuration;
         _configRepository = configRepository;
         _logger = logger;
         _httpClient = httpClient;
+        _serviceProvider = serviceProvider;
+    }
+    
+    /// <summary>
+    /// Obtiene ILoggingService de forma segura para evitar dependencias circulares.
+    /// </summary>
+    private ILoggingService? GetLoggingService()
+    {
+        try
+        {
+            return _serviceProvider?.GetService<ILoggingService>();
+        }
+        catch
+        {
+            return null;
+        }
     }
 
     public async Task<string> TriggerAutomationAsync(
@@ -292,14 +311,46 @@ public class ExternalAutomationService : IExternalAutomationService
             }
             catch (TaskCanceledException ex) when (ex.InnerException is TimeoutException)
             {
+                var errorMessage = $"Timeout al llamar a n8n: La solicitud excedió el tiempo límite de {_httpClient.Timeout.TotalSeconds} segundos. URL: {webhookUrl}";
+                
                 _logger.LogError(
                     ex,
                     "Timeout al llamar a n8n webhook después de {Timeout} segundos. URL: {WebhookUrl}",
                     _httpClient.Timeout.TotalSeconds,
                     webhookUrl);
-                throw new HttpRequestException(
-                    $"Timeout al llamar a n8n: La solicitud excedió el tiempo límite de {_httpClient.Timeout.TotalSeconds} segundos. URL: {webhookUrl}",
-                    ex);
+                
+                // Guardar error en ApplicationLogs
+                var loggingService = GetLoggingService();
+                if (loggingService != null)
+                {
+                    try
+                    {
+                        var additionalData = JsonSerializer.Serialize(new
+                        {
+                            WebhookUrl = webhookUrl,
+                            Timeout = _httpClient.Timeout.TotalSeconds,
+                            EventType = eventType,
+                            TenantId = tenantId.ToString()
+                        });
+                        
+                        await loggingService.LogErrorAsync(
+                            message: errorMessage,
+                            source: "ExternalAutomationService.TriggerAutomation",
+                            exception: ex,
+                            tenantId: tenantId,
+                            userId: userId,
+                            requestId: null,
+                            path: webhookUrl,
+                            httpMethod: "POST",
+                            additionalData: additionalData);
+                    }
+                    catch (Exception logEx)
+                    {
+                        _logger.LogWarning(logEx, "Error al guardar log en ApplicationLogs");
+                    }
+                }
+                
+                throw new HttpRequestException(errorMessage, ex);
             }
             catch (HttpRequestException ex)
             {
@@ -308,6 +359,38 @@ public class ExternalAutomationService : IExternalAutomationService
                     "Error de red al llamar a n8n webhook. URL: {WebhookUrl}, Error: {Error}",
                     webhookUrl,
                     ex.Message);
+                
+                // Guardar error en ApplicationLogs
+                var loggingService = GetLoggingService();
+                if (loggingService != null)
+                {
+                    try
+                    {
+                        var additionalData = JsonSerializer.Serialize(new
+                        {
+                            WebhookUrl = webhookUrl,
+                            EventType = eventType,
+                            TenantId = tenantId.ToString(),
+                            Error = ex.Message
+                        });
+                        
+                        await loggingService.LogErrorAsync(
+                            message: $"Error de red al llamar a n8n webhook: {ex.Message}",
+                            source: "ExternalAutomationService.TriggerAutomation",
+                            exception: ex,
+                            tenantId: tenantId,
+                            userId: userId,
+                            requestId: null,
+                            path: webhookUrl,
+                            httpMethod: "POST",
+                            additionalData: additionalData);
+                    }
+                    catch (Exception logEx)
+                    {
+                        _logger.LogWarning(logEx, "Error al guardar log en ApplicationLogs");
+                    }
+                }
+                
                 throw;
             }
             
@@ -320,14 +403,50 @@ public class ExternalAutomationService : IExternalAutomationService
             if (!response.IsSuccessStatusCode)
             {
                 var errorContent = await response.Content.ReadAsStringAsync(cancellationToken);
+                var errorMessage = $"Error al llamar a n8n: {response.StatusCode} {response.ReasonPhrase}. URL: {webhookUrl}. Response: {errorContent}";
+                
                 _logger.LogError(
                     "Error al llamar a n8n webhook: StatusCode={StatusCode}, ReasonPhrase={ReasonPhrase}, Response={Response}, URL={WebhookUrl}",
                     response.StatusCode,
                     response.ReasonPhrase,
                     errorContent,
                     webhookUrl);
-                throw new HttpRequestException(
-                    $"Error al llamar a n8n: {response.StatusCode} {response.ReasonPhrase}. URL: {webhookUrl}. Response: {errorContent}");
+                
+                // Guardar error en ApplicationLogs
+                var loggingService = GetLoggingService();
+                if (loggingService != null)
+                {
+                    try
+                    {
+                        var additionalData = JsonSerializer.Serialize(new
+                        {
+                            WebhookUrl = webhookUrl,
+                            StatusCode = (int)response.StatusCode,
+                            ReasonPhrase = response.ReasonPhrase,
+                            Response = errorContent,
+                            EventType = eventType,
+                            TenantId = tenantId.ToString()
+                        });
+                        
+                        await loggingService.LogErrorAsync(
+                            message: errorMessage,
+                            source: "ExternalAutomationService.TriggerAutomation",
+                            exception: null,
+                            tenantId: tenantId,
+                            userId: userId,
+                            requestId: null,
+                            path: webhookUrl,
+                            httpMethod: "POST",
+                            additionalData: additionalData);
+                    }
+                    catch (Exception logEx)
+                    {
+                        // No fallar si no se puede guardar el log
+                        _logger.LogWarning(logEx, "Error al guardar log en ApplicationLogs");
+                    }
+                }
+                
+                throw new HttpRequestException(errorMessage);
             }
 
             var responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
