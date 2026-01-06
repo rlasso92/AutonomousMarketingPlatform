@@ -5,7 +5,7 @@
       "parameters": {
         "httpMethod": "POST",
         "path": "marketing-request",
-        "responseMode": "responseNode",
+        "responseMode": "immediately",
         "options": {}
       },
       "id": "66a2c93d-bd58-46b0-a0e5-6d0ee02f48a2",
@@ -138,23 +138,6 @@
       "position": [
         -1008,
         -32
-      ]
-    },
-    {
-      "parameters": {
-        "respondWith": "json",
-        "responseBody": "={{ { success: false, error: 'Missing required fields', message: 'The request must include: tenantId, userId, instruction, channels, and requiresApproval' } }}",
-        "options": {
-          "responseCode": 400
-        }
-      },
-      "id": "fe32ac8f-1882-4c50-881e-edf33407c2e2",
-      "name": "Respond - Validation Error",
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1,
-      "position": [
-        -784,
-        -256
       ]
     },
     {
@@ -299,23 +282,6 @@
       "position": [
         -1296,
         416
-      ]
-    },
-    {
-      "parameters": {
-        "respondWith": "json",
-        "responseBody": "={{ { success:false, error:'Missing consents', message:'User does not have required consents to proceed', aiConsent:$json.aiConsent, publishingConsent:$json.publishingConsent } }}",
-        "options": {
-          "responseCode": 403
-        }
-      },
-      "id": "9d8c8720-3dbd-4b5a-8a78-a39a25f17dfc",
-      "name": "Respond - Consent Error",
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1,
-      "position": [
-        -1216,
-        800
       ]
     },
     {
@@ -886,23 +852,6 @@
     },
     {
       "parameters": {
-        "respondWith": "json",
-        "responseBody": "={{ { success: true, message: 'Marketing pack sent for approval', data: { packId: $json.id || $('HTTP Request - Save Pack (Requires Approval)').item.json.id, status: 'RequiresApproval', requiresApproval: true, message: 'Pack has been saved and is waiting for human approval', nextStep: 'approval' } } }}",
-        "options": {
-          "responseCode": 200
-        }
-      },
-      "id": "16b43a32-1194-4fc3-8c51-13dfe71a8539",
-      "name": "Respond - Approval Required",
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1,
-      "position": [
-        192,
-        576
-      ]
-    },
-    {
-      "parameters": {
         "method": "POST",
         "url": "={{ ($env.BACKEND_URL && $env.BACKEND_URL !== 'http://localhost:5000') ? $env.BACKEND_URL : 'https://autonomousmarketingplatform.onrender.com' }}/api/marketing-packs",
         "sendBody": true,
@@ -1246,23 +1195,6 @@
     },
     {
       "parameters": {
-        "respondWith": "json",
-        "responseBody": "={{ { success: true, message: 'Complete marketing flow executed successfully', data: $json } }}",
-        "options": {
-          "responseCode": 200
-        }
-      },
-      "id": "5fb3ddf8-0c2b-4d2a-a519-1773708eb4aa",
-      "name": "Respond - Final Success",
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1,
-      "position": [
-        1792,
-        688
-      ]
-    },
-    {
-      "parameters": {
         "url": "={{ ($env.BACKEND_URL && $env.BACKEND_URL !== 'http://localhost:5000') ? $env.BACKEND_URL : 'https://autonomousmarketingplatform.onrender.com' }}/api/Memory/context",
         "sendQuery": true,
         "queryParameters": {
@@ -1322,13 +1254,6 @@
       "main": [
         [
           {
-            "node": "Respond - Validation Error",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
             "node": "Set Validated Data",
             "type": "main",
             "index": 0
@@ -1385,13 +1310,6 @@
         [
           {
             "node": "HTTP Request - Load Marketing Memory",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Respond - Consent Error",
             "type": "main",
             "index": 0
           }
@@ -1670,13 +1588,7 @@
     },
     "HTTP Request - Save Pack (Requires Approval)": {
       "main": [
-        [
-          {
-            "node": "Respond - Approval Required",
-            "type": "main",
-            "index": 0
-          }
-        ]
+        []
       ]
     },
     "HTTP Request - Save Pack (Ready)": {
@@ -1855,13 +1767,7 @@
     },
     "Consolidate Final Results": {
       "main": [
-        [
-          {
-            "node": "Respond - Final Success",
-            "type": "main",
-            "index": 0
-          }
-        ]
+        []
       ]
     },
     "HTTP Request - Load Constraint Memory": {
