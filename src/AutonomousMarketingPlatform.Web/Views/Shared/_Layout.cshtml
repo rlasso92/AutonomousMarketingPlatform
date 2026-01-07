@@ -1,72 +1,52 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Autonomous Marketing Platform</title>
-    
-    <!-- Google Font: Source Sans Pro -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
-    
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- AdminLTE CSS Base -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
-    
-    <!-- DataTables CSS -->
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap4.min.css">
-    
-    <!-- Custom CSS (sobreescribe AdminLTE) -->
-    <link rel="stylesheet" href="~/css/custom.css" asp-append-version="true">
-    <!-- Dashboard CSS -->
-    <link rel="stylesheet" href="~/css/dashboard.css" asp-append-version="true">
-    
-    @await RenderSectionAsync("Styles", required: false)
+    <title>@ViewData["Title"] - AutonomousMKT</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/theme.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/AutonomousMarketingPlatform.Web.styles.css" asp-append-version="true" />
 </head>
-<body class="hold-transition sidebar-mini layout-fixed">
-    <div class="wrapper">
-        <!-- Navbar -->
-        @await Html.PartialAsync("_Navbar")
-        
-        <!-- Sidebar -->
-        @await Html.PartialAsync("_Sidebar")
-        
-        <!-- Content Wrapper -->
-        <div class="content-wrapper">
-            <!-- Main Content -->
-            <section class="content">
-                @RenderBody()
-            </section>
+<body>
+    
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header d-flex align-items-center justify-content-between px-3 py-3">
+            <div class="brand d-flex align-items-center gap-2 overflow-hidden">
+                <i class="fas fa-rocket text-primary fs-4"></i> 
+                <span class="brand-text fw-bold text-dark fs-5 ms-1">AutonomousMKT</span>
+            </div>
+            <button class="btn btn-outline-secondary border-0 bg-light text-muted p-0 d-flex align-items-center justify-content-center sidebar-toggle-btn shadow-sm" onclick="toggleSidebar()" style="width: 32px; height: 32px; border-radius: 4px;">
+                <i class="fas fa-chevron-left" id="sidebarToggleIcon" style="font-size: 0.8rem;"></i>
+            </button>
         </div>
+
+        <nav class="mt-4 flex-grow-1">
+            <a asp-controller="Home" asp-action="Index" class="nav-link"><i class="fas fa-home"></i> <span>Home</span></a>
+            <a asp-controller="Users" asp-action="Index" class="nav-link"><i class="fas fa-user-shield"></i> <span>Admin</span></a>
+        </nav>
         
-        <!-- Footer -->
-        @await Html.PartialAsync("_Footer")
+        <div class="mt-auto mb-3">
+             <form asp-controller="Account" asp-action="Logout" method="post" id="logoutForm" class="d-none"></form>
+             <a href="#" class="nav-link text-danger" onclick="document.getElementById('logoutForm').submit();">
+                 <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
+             </a>
+        </div>
     </div>
-    
-    <!-- jQuery (debe cargarse primero) -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    
-    <!-- jQuery UI (requerido por AdminLTE) -->
-    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
-    
-    <!-- Bootstrap 4 -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- AdminLTE App (debe cargarse después de jQuery y Bootstrap) -->
-    <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
-    
-    <!-- DataTables -->
-    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap4.min.js"></script>
-    
-    <!-- SweetAlert2 -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    
-    <!-- Custom JavaScript (debe cargarse al final) -->
+
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-    
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
-

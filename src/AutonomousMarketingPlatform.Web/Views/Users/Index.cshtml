@@ -1,155 +1,118 @@
-@model List<AutonomousMarketingPlatform.Application.DTOs.UserListDto>
 @{
-    ViewData["Title"] = "Usuarios";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Admin - Users";
 }
 
-<div class="content-wrapper">
-    <section class="content-header">
-        <div class="container-fluid">
-            <div class="row mb-2">
-                <div class="col-sm-6">
-                    <h1><i class="fas fa-users mr-2"></i>Usuarios</h1>
-                </div>
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="/">Inicio</a></li>
-                        <li class="breadcrumb-item active">Usuarios</li>
-                    </ol>
-                </div>
-            </div>
-        </div>
-    </section>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="text-dark fw-bold mb-1"><i class="fas fa-user-shield me-2 text-primary"></i>Admin</h2>
+        <p class="text-muted">Manage users, roles, offices, countries, and administrative expenses.</p>
+    </div>
+</div>
 
-    <section class="content">
-        <div class="container-fluid">
-            @if (TempData["SuccessMessage"] != null)
-            {
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    @TempData["SuccessMessage"]
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-            }
+<!-- Tabs -->
+<ul class="nav nav-tabs-custom mb-4">
+    <li class="nav-item">
+        <a class="nav-link active" asp-controller="Users" asp-action="Index">Users</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" asp-controller="Roles" asp-action="Index">Roles</a>
+    </li>
+</ul>
 
-            @if (TempData["ErrorMessage"] != null)
-            {
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    @TempData["ErrorMessage"]
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-            }
+<!-- Actions Bar -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="position-relative" style="width: 300px;">
+        <i class="fas fa-search position-absolute text-muted" style="left: 10px; top: 10px;"></i>
+        <input type="text" id="userSearch" class="form-control ps-5" placeholder="Search users...">
+    </div>
+    <div class="d-flex gap-2">
+         <button class="btn btn-white border text-muted shadow-sm"><i class="fas fa-sync-alt"></i></button>
+        <button class="btn btn-warning fw-bold text-white shadow-sm" data-bs-toggle="modal" data-bs-target="#userModal" onclick="resetUserModal()"><i class="fas fa-plus me-1"></i> Add User</button>
+    </div>
+</div>
 
-            <div class="row">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title"><i class="fas fa-list mr-2"></i>Lista de Usuarios</h3>
-                            <div class="card-tools">
-                                <a href="@Url.Action("Create")" class="btn btn-primary btn-sm">
-                                    <i class="fas fa-plus mr-1"></i>Nuevo Usuario
-                                </a>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            @if (Model != null && Model.Any())
-                            {
-                                <div class="table-responsive">
-                                    <table class="table table-bordered table-hover">
-                                        <thead>
-                                            <tr>
-                                                <th>Email</th>
-                                                <th>Nombre Completo</th>
-                                                <th>Tenant</th>
-                                                <th>Roles</th>
-                                                <th>Estado</th>
-                                                <th>Último Acceso</th>
-                                                <th>Acciones</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach (var user in Model)
-                                            {
-                                                <tr>
-                                                    <td>@user.Email</td>
-                                                    <td>@user.FullName</td>
-                                                    <td>@user.TenantName</td>
-                                                    <td>
-                                                        @foreach (var role in user.Roles)
-                                                        {
-                                                            <span class="badge badge-primary mr-1">@role</span>
-                                                        }
-                                                    </td>
-                                                    <td>
-                                                        @if (user.IsActive)
-                                                        {
-                                                            <span class="badge badge-success">Activo</span>
-                                                        }
-                                                        else
-                                                        {
-                                                            <span class="badge badge-danger">Inactivo</span>
-                                                        }
-                                                    </td>
-                                                    <td>
-                                                        @if (user.LastLoginAt.HasValue)
-                                                        {
-                                                            @user.LastLoginAt.Value.ToString("dd/MM/yyyy HH:mm")
-                                                        }
-                                                        else
-                                                        {
-                                                            <span class="text-muted">Nunca</span>
-                                                        }
-                                                    </td>
-                                                    <td>
-                                                        <a href="@Url.Action("Details", new { id = user.Id })" class="btn btn-sm btn-info" title="Ver Detalles">
-                                                            <i class="fas fa-eye"></i>
-                                                        </a>
-                                                        <a href="@Url.Action("Edit", new { id = user.Id })" class="btn btn-sm btn-warning" title="Editar">
-                                                            <i class="fas fa-edit"></i>
-                                                        </a>
-                                                        <form asp-action="ToggleActive" method="post" style="display: inline;" 
-                                                              onsubmit="return confirm('¿Está seguro de que desea @(user.IsActive ? "desactivar" : "activar") este usuario?');">
-                                                            <input type="hidden" name="id" value="@user.Id" />
-                                                            <button type="submit" class="btn btn-sm @(user.IsActive ? "btn-warning" : "btn-success")" title="@(user.IsActive ? "Desactivar" : "Activar")">
-                                                                <i class="fas fa-@(user.IsActive ? "ban" : "check")"></i>
-                                                            </button>
-                                                        </form>
-                                                    </td>
-                                                </tr>
-                                            }
-                                        </tbody>
-                                    </table>
-                                </div>
-                            }
-                            else
-                            {
-                                <div class="alert alert-info">
-                                    <i class="fas fa-info-circle mr-2"></i>No hay usuarios registrados.
-                                    <a href="@Url.Action("Create")" class="btn btn-sm btn-primary ml-2">
-                                        <i class="fas fa-plus mr-1"></i>Crear Primer Usuario
-                                    </a>
-                                </div>
-                            }
-                        </div>
+<!-- Users Table -->
+<div class="card overflow-hidden border-0 shadow-sm">
+    <table class="table table-custom mb-0" id="usersTable">
+        <thead>
+            <tr>
+                <th class="ps-4">Avatar</th>
+                <th>Name</th>
+                <th>Last Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th class="text-end pe-4">Actions</th>
+            </tr>
+        </thead>
+        <tbody id="usersTableBody">
+            <!-- Data will be loaded via jQuery -->
+        </tbody>
+    </table>
+    <!-- Pagination -->
+    <div class="d-flex justify-content-between align-items-center p-3 border-top bg-light">
+         <div class="text-muted small">Showing <span id="startRange">0</span> to <span id="endRange">0</span> of <span id="totalRecords">0</span> results</div>
+         <nav>
+             <ul class="pagination pagination-sm mb-0" id="pagination">
+                 <!-- Pagination links -->
+             </ul>
+         </nav>
+    </div>
+</div>
+
+
+<!-- Add/Edit User Modal -->
+<div class="modal fade" id="userModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-light border-bottom">
+                <div class="d-flex align-items-center">
+                    <div class="bg-primary bg-opacity-10 p-2 rounded me-3 text-primary">
+                        <i class="fas fa-user-plus fa-lg"></i>
+                    </div>
+                    <div>
+                        <h5 class="modal-title fw-bold text-dark" id="userModalTitle">Add User</h5>
+                        <small class="text-muted">Create a new user and assign a role.</small>
                     </div>
                 </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="userForm">
+                    <input type="hidden" id="userId">
+                    <div class="mb-3">
+                        <label class="form-label text-dark small fw-bold border-start border-3 border-warning ps-2">Name *</label>
+                        <input type="text" class="form-control" id="firstName" placeholder="Enter name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-dark small fw-bold border-start border-3 border-info ps-2">Last Name *</label>
+                        <input type="text" class="form-control" id="lastName" placeholder="Enter last name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-dark small fw-bold border-start border-3 border-danger ps-2">Email *</label>
+                        <input type="email" class="form-control" id="email" placeholder="Enter email" required>
+                    </div>
+                     <div class="mb-3" id="passwordGroup">
+                        <label class="form-label text-dark small fw-bold border-start border-3 border-success ps-2">Password *</label>
+                        <input type="password" class="form-control" id="password" placeholder="Enter password">
+                    </div>
+                    
+                    <div class="mb-3">
+                         <label class="form-label text-dark small fw-bold border-start border-3 border-primary ps-2">Role</label>
+                        <select class="form-select" id="roleSelect">
+                            <option value="">Select a role</option>
+                            <!-- Roles loaded via AJAX -->
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer border-top bg-light">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Clear</button>
+                <button type="button" class="btn btn-primary shadow-sm" onclick="saveUser()"><i class="fas fa-plus me-1"></i> <span id="saveBtnText">Add User</span></button>
             </div>
         </div>
-    </section>
+    </div>
 </div>
 
 @section Scripts {
-    <script>
-        $(function () {
-            // Auto-dismiss alerts after 5 seconds
-            setTimeout(function() {
-                $('.alert').fadeOut('slow');
-            }, 5000);
-        });
-    </script>
+    <script src="~/js/users.js"></script>
 }
-
-

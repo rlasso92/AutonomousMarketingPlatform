@@ -33,32 +33,9 @@ bld/
 # Rider
 .idea/
 
-# User-specific files
-*.suo
-*.user
-*.userosscache
-*.sln.docstates
-
-# Build results
-[Dd]ebug/
-[Dd]ebugPublic/
-[Rr]elease/
-[Rr]eleases/
-x64/
-x86/
-[Ww][Ii][Nn]32/
-[Aa][Rr][Mm]/
-[Aa][Rr][Mm]64/
-bld/
-[Bb]in/
-[Oo]bj/
-[Ll]og/
-[Ll]ogs/
-
-# .NET Core
-project.lock.json
-project.fragment.lock.json
-artifacts/
+# MSTest test Results
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
 
 # NuGet Packages
 *.nupkg
@@ -68,45 +45,131 @@ artifacts/
 *.nuget.props
 *.nuget.targets
 
-# Publish
-publish/
-*.publishproj
+# .NET Core
+project.lock.json
+project.fragment.lock.json
+artifacts/
 
-# Node.js
-node_modules/
-npm-debug.log
-yarn-error.log
+# Files built by Visual Studio
+*_i.c
+*_p.c
+*_h.h
+*.ilk
+*.meta
+*.obj
+*.iobj
+*.pch
+*.pdb
+*.ipdb
+*.pgc
+*.pgd
+*.rsp
+*.sbr
+*.tlb
+*.tli
+*.tlh
+*.tmp
+*.tmp_proj
+*_wpftmp.csproj
+*.log
+*.vspscc
+*.vssscc
+.builds
+*.pidb
+*.svclog
+*.scc
 
-# OS
-.DS_Store
-Thumbs.db
+# Secrets and configuration
+appsettings.Production.json
+appsettings.*.json
+!appsettings.json
+!appsettings.Development.json
+*.secrets.json
+*.env
+*.env.local
+*.env.*.local
 
 # Logs
+logs/
 *.log
+*.log.*
 
 # Database
 *.db
 *.sqlite
+*.sqlite3
+*.mdf
+*.ldf
 
-# Environment variables
-.env
-.env.local
-.env.*.local
+# EF Core Migrations (opcional - descomentar si no quieres versionar migraciones)
+# AutonomusCRM.Infrastructure/Migrations/
 
-# IDE
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# JetBrains Rider
 .idea/
-.vscode/
-*.swp
-*.swo
-*~
+*.sln.iml
+
+# User-specific files
+*.user
+*.userosscache
+*.sln.docstates
+
+# ReSharper
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+
+# Visual Studio Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
 
 # Temporary files
 *.tmp
 *.temp
-*.cache
+*.swp
+*.swo
+*~
 
-# App settings with secrets
-**/appsettings.Development.json
-**/appsettings.Production.json
-**/appsettings.*.json
-!**/appsettings.json
+# Coverage reports
+coverage/
+*.coverage
+*.coveragexml
+
+# Test results
+TestResults/
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+
+# Backup files
+*.bak
+*.backup
+
+# Node modules (si hay frontend)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Python (si hay scripts)
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Docker
+.dockerignore
+docker-compose.override.yml
+
+# Azure
+.azure/
+
+# Local development
+local.settings.json
+base

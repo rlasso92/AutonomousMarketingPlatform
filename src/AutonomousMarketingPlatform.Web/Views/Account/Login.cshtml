@@ -1,132 +1,67 @@
-@model AutonomousMarketingPlatform.Application.DTOs.LoginDto
 @{
-    ViewData["Title"] = "Iniciar Sesión";
-    Layout = "_AuthLayout";
+    Layout = "_LoginLayout";
+    ViewData["Title"] = "Login";
 }
 
-<div class="auth-card">
-    <!-- Header -->
-    <div class="auth-header">
-        <h1 class="auth-title">Autonomous Marketing</h1>
-        <p class="auth-subtitle">Inicia sesión en tu cuenta</p>
-    </div>
+<div class="container-fluid vh-100 overflow-hidden">
+    <div class="row h-100">
+        <!-- Left Side - Branding / Graphic -->
+        <div class="col-md-7 d-none d-md-flex flex-column justify-content-center align-items-center position-relative p-0" style="background-color: #F8FAFC;">
+            <!-- Geometric Background Elements -->
+            <div class="position-absolute opacity-10" style="width: 300px; height: 300px; border: 2px solid #334155; border-radius: 40px; transform: rotate(15deg); top: 10%; left: 10%;"></div>
+            <div class="position-absolute opacity-10" style="width: 200px; height: 200px; border: 2px solid #10B981; border-radius: 30px; transform: rotate(-20deg); bottom: 15%; right: 20%;"></div>
+            <div class="position-absolute bg-primary rounded-circle opacity-10" style="width: 400px; height: 400px; filter: blur(100px); top: 20%; left: 20%;"></div>
 
-    <!-- Tenant Badge (discreto) -->
-    @if (!string.IsNullOrEmpty(ViewData["TenantId"]?.ToString()))
-    {
-        <div class="tenant-badge">
-            <span class="badge-text">Tenant: @ViewData["TenantId"]</span>
-        </div>
-    }
-
-    <!-- Alerts -->
-    @if (ViewData["LockoutEnd"] != null)
-    {
-        <div class="alert alert-warning">
-            <strong>Cuenta bloqueada</strong><br>
-            Tu cuenta ha sido bloqueada temporalmente hasta: @(((DateTime?)ViewData["LockoutEnd"])?.ToString("g"))
-        </div>
-    }
-    
-    @if (ViewData["RemainingAttempts"] != null && (int)ViewData["RemainingAttempts"]! < 5)
-    {
-        <div class="alert alert-warning">
-            <strong>Atención</strong><br>
-            Intentos restantes: @ViewData["RemainingAttempts"]
-        </div>
-    }
-    
-    @if (!ViewData.ModelState.IsValid)
-    {
-        <div class="alert alert-danger">
-            <ul class="mb-0">
-                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
-                {
-                    <li>@error.ErrorMessage</li>
-                }
-            </ul>
-        </div>
-    }
-
-    <!-- Login Form -->
-    <form asp-action="Login" asp-controller="Account" method="post" id="loginForm" class="auth-form">
-        
-        @if (ViewData["TenantId"] != null)
-        {
-            <input type="hidden" asp-for="TenantId" name="TenantId" value="@ViewData["TenantId"]" />
-        }
-        else
-        {
-            <input type="hidden" asp-for="TenantId" name="TenantId" value="" />
-        }
-        <input type="hidden" name="returnUrl" value="@ViewData["ReturnUrl"]" />
-        
-        <!-- Email Field -->
-        <div class="form-field">
-            <label for="Email" class="form-label">Correo electrónico</label>
-            <input 
-                asp-for="Email" 
-                name="Email"
-                id="Email"
-                type="email" 
-                class="form-control" 
-                placeholder="tu@email.com" 
-                required 
-                autocomplete="email"
-                autofocus>
-            <span asp-validation-for="Email" class="text-danger"></span>
-        </div>
-        
-        <!-- Password Field -->
-        <div class="form-field">
-            <label for="Password" class="form-label">Contraseña</label>
-            <input 
-                asp-for="Password" 
-                name="Password"
-                id="Password"
-                type="password" 
-                class="form-control" 
-                placeholder="••••••••" 
-                required 
-                autocomplete="current-password">
-            <span asp-validation-for="Password" class="text-danger"></span>
-        </div>
-        
-        <!-- Remember Me -->
-        <div class="form-field">
-            <div class="form-check">
-                <input type="checkbox" asp-for="RememberMe" name="RememberMe" id="remember" value="true" class="form-check-input">
-                <label for="remember" class="form-check-label">Recordarme</label>
+            <div class="z-2 position-relative bg-white bg-opacity-75 p-5 rounded-4 border border-light shadow-sm" style="backdrop-filter: blur(10px); max-width: 600px;">
+                <div class="display-4 fw-bold text-dark mb-0 d-flex align-items-center justify-content-center">
+                   <i class="fas fa-rocket text-primary me-3 fa-2x"></i> 
+                   <span class="text-dark">AUTONOMOUS</span><span class="text-primary ms-2">MKT</span>
+                </div>
+            </div>
+            
+            <div class="position-absolute bottom-0 start-0 p-4 text-muted small">
+                 &copy; 2026 AutonomousMKT. All rights reserved.
             </div>
         </div>
-        
-        <!-- Submit Button -->
-        <div class="form-field">
-            <button type="submit" class="btn btn-primary btn-block" id="loginBtn">
-                Iniciar sesión
-            </button>
+
+        <!-- Right Side - Login Form -->
+        <div class="col-md-5 d-flex align-items-center justify-content-center bg-white">
+            <div class="card bg-white border-0 p-4 p-lg-5 shadow-lg w-100" style="max-width: 450px; border-radius: 1.5rem;">
+                <div class="text-center mb-4">
+                    <div class="mb-3 text-primary">
+                        <i class="fas fa-circle-user fa-3x"></i>
+                    </div>
+                    <h2 class="text-dark fw-bold">Welcome</h2>
+                    <p class="text-muted">Log in with your e-mail and password</p>
+                </div>
+
+                <form id="loginForm">
+                    <div class="mb-4">
+                        <label for="email" class="form-label text-muted small text-uppercase fw-bold">Email address</label>
+                        <input type="email" class="form-control bg-light border-0 py-3 px-4 shadow-none" id="email" placeholder="name@company.com" required style="border-radius: 0.75rem;">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="password" class="form-label text-muted small text-uppercase fw-bold">Password</label>
+                        <div class="input-group">
+                            <input type="password" class="form-control bg-light border-0 py-3 px-4 shadow-none" id="password" placeholder="••••••••" required style="border-top-left-radius: 0.75rem; border-bottom-left-radius: 0.75rem;">
+                            <button class="btn btn-light border-0 py-3 px-3 shadow-none text-muted" type="button" id="togglePassword" style="border-top-right-radius: 0.75rem; border-bottom-right-radius: 0.75rem;">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="d-grid mb-4">
+                        <button type="submit" class="btn btn-primary fw-bold py-3 shadow-sm" id="loginBtn" style="border-radius: 0.75rem;">Sign in</button>
+                    </div>
+
+                    <div id="loginError" class="alert alert-danger d-none text-center py-2 small" role="alert"></div>
+                </form>
+            </div>
         </div>
-    </form>
+    </div>
 </div>
 
 @section Scripts {
-    <script>
-        (function() {
-            'use strict';
-            
-            const form = document.getElementById('loginForm');
-            const submitBtn = document.getElementById('loginBtn');
-            
-            if (form && submitBtn) {
-                form.addEventListener('submit', function(e) {
-                    if (form.checkValidity()) {
-                        submitBtn.disabled = true;
-                        submitBtn.textContent = 'Validando...';
-                    } else {
-                        e.preventDefault();
-                    }
-                });
-            }
-        })();
-    </script>
+    <script src="~/js/login.js"></script>
 }
