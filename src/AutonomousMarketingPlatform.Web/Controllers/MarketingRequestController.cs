@@ -34,7 +34,7 @@ public class MarketingRequestController : Controller
     /// Muestra el formulario para solicitar contenido de marketing.
     /// </summary>
     [HttpGet]
-    public IActionResult Create(Guid? campaignId = null)
+    public async Task<IActionResult> Create(Guid? campaignId = null)
     {
         try
         {
@@ -63,10 +63,71 @@ public class MarketingRequestController : Controller
             
             ViewBag.CampaignId = campaignId;
             
+            // Inicializar canales por defecto
+            var defaultChannels = new List<string> { "instagram" };
+            var channels = defaultChannels;
+            
+            // Si hay un campaignId, cargar los canales de la campaña
+            if (campaignId.HasValue)
+            {
+                try
+                {
+                    var campaignRepository = HttpContext.RequestServices
+                        .GetRequiredService<Domain.Interfaces.ICampaignRepository>();
+                    
+                    // Determinar el tenantId efectivo (para SuperAdmin usar Guid.Empty)
+                    var effectiveTenantId = isSuperAdmin ? Guid.Empty : (tenantId ?? Guid.Empty);
+                    
+                    var campaign = await campaignRepository.GetCampaignWithDetailsAsync(
+                        campaignId.Value,
+                        effectiveTenantId,
+                        CancellationToken.None);
+                    
+                    if (campaign != null && !string.IsNullOrWhiteSpace(campaign.TargetChannels))
+                    {
+                        try
+                        {
+                            channels = System.Text.Json.JsonSerializer.Deserialize<List<string>>(campaign.TargetChannels) 
+                                ?? defaultChannels;
+                            
+                            // Normalizar canales a lowercase para consistencia
+                            channels = channels.Select(c => c.ToLowerInvariant().Trim())
+                                .Where(c => !string.IsNullOrWhiteSpace(c))
+                                .ToList();
+                            
+                            _logger.LogInformation(
+                                "Canales cargados de la campaña {CampaignId}: {Channels}",
+                                campaignId.Value,
+                                string.Join(", ", channels));
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogWarning(ex, 
+                                "Error al deserializar TargetChannels de la campaña {CampaignId}, usando canales por defecto",
+                                campaignId.Value);
+                            channels = defaultChannels;
+                        }
+                    }
+                    else
+                    {
+                        _logger.LogWarning(
+                            "Campaña {CampaignId} no encontrada o sin TargetChannels, usando canales por defecto",
+                            campaignId.Value);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, 
+                        "Error al cargar campaña {CampaignId}, usando canales por defecto",
+                        campaignId.Value);
+                    channels = defaultChannels;
+                }
+            }
+            
             var model = new MarketingRequestDto
             {
                 CampaignId = campaignId,
-                Channels = new List<string> { "instagram" },
+                Channels = channels,
                 RequiresApproval = false
             };
             

@@ -22,15 +22,18 @@ namespace AutonomousMarketingPlatform.Web.Controllers.Api;
 public class PublishingJobsApiController : ControllerBase
 {
     private readonly IRepository<PublishingJob> _publishingJobRepository;
+    private readonly IRepository<Campaign> _campaignRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<PublishingJobsApiController> _logger;
 
     public PublishingJobsApiController(
         IRepository<PublishingJob> publishingJobRepository,
+        IRepository<Campaign> campaignRepository,
         IUnitOfWork unitOfWork,
         ILogger<PublishingJobsApiController> logger)
     {
         _publishingJobRepository = publishingJobRepository;
+        _campaignRepository = campaignRepository;
         _unitOfWork = unitOfWork;
         _logger = logger;
     }
@@ -163,6 +166,34 @@ public class PublishingJobsApiController : ControllerBase
             if (string.IsNullOrWhiteSpace(request.Content))
             {
                 return BadRequest(new { error = "content is required" });
+            }
+
+            // Validar que la campaña existe y pertenece al tenant correcto
+            var campaign = await _campaignRepository.GetByIdAsync(
+                request.CampaignId, request.TenantId, cancellationToken);
+            
+            if (campaign == null)
+            {
+                _logger.LogWarning(
+                    "CreatePublishingJob: Campaña {CampaignId} no encontrada para tenant {TenantId}",
+                    request.CampaignId, request.TenantId);
+                return BadRequest(new { error = $"Campaign {request.CampaignId} not found" });
+            }
+
+            if (campaign.TenantId != request.TenantId)
+            {
+                _logger.LogWarning(
+                    "CreatePublishingJob: La campaña {CampaignId} pertenece al tenant {CampaignTenantId}, pero se intenta usar con tenant {RequestTenantId}",
+                    request.CampaignId, campaign.TenantId, request.TenantId);
+                return BadRequest(new { error = "Campaign does not belong to the specified tenant" });
+            }
+
+            if (!campaign.IsActive)
+            {
+                _logger.LogWarning(
+                    "CreatePublishingJob: La campaña {CampaignId} no está activa",
+                    request.CampaignId);
+                return BadRequest(new { error = "Campaign is not active" });
             }
 
             // Construir payload si no se proporciona

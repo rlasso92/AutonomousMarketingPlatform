@@ -32,6 +32,7 @@ public class GeneratePublishingJobCommandHandler : IRequestHandler<GeneratePubli
     private readonly IRepository<MarketingPack> _marketingPackRepository;
     private readonly IRepository<GeneratedCopy> _copyRepository;
     private readonly IRepository<Domain.Entities.Content> _contentRepository;
+    private readonly IRepository<Campaign> _campaignRepository;
     private readonly ISecurityService _securityService;
     private readonly IAuditService _auditService;
     private readonly IUnitOfWork _unitOfWork;
@@ -42,6 +43,7 @@ public class GeneratePublishingJobCommandHandler : IRequestHandler<GeneratePubli
         IRepository<MarketingPack> marketingPackRepository,
         IRepository<GeneratedCopy> copyRepository,
         IRepository<Domain.Entities.Content> contentRepository,
+        IRepository<Campaign> campaignRepository,
         ISecurityService securityService,
         IAuditService auditService,
         IUnitOfWork unitOfWork,
@@ -51,6 +53,7 @@ public class GeneratePublishingJobCommandHandler : IRequestHandler<GeneratePubli
         _marketingPackRepository = marketingPackRepository;
         _copyRepository = copyRepository;
         _contentRepository = contentRepository;
+        _campaignRepository = campaignRepository;
         _securityService = securityService;
         _auditService = auditService;
         _unitOfWork = unitOfWork;
@@ -68,6 +71,71 @@ public class GeneratePublishingJobCommandHandler : IRequestHandler<GeneratePubli
             throw new UnauthorizedAccessException("Usuario no pertenece a este tenant");
         }
 
+        // Validar que la campaña existe y pertenece al tenant correcto
+        var campaign = await _campaignRepository.GetByIdAsync(
+            request.CampaignId, request.TenantId, cancellationToken);
+        
+        if (campaign == null)
+        {
+            throw new NotFoundException($"Campaña {request.CampaignId} no encontrada");
+        }
+
+        if (campaign.TenantId != request.TenantId)
+        {
+            throw new UnauthorizedAccessException(
+                $"La campaña {request.CampaignId} no pertenece al tenant {request.TenantId}");
+        }
+
+        if (!campaign.IsActive)
+        {
+            throw new InvalidOperationException(
+                $"La campaña {request.CampaignId} no está activa");
+        }
+
+        // Validar que el canal especificado esté en los canales objetivo de la campaña
+        if (!string.IsNullOrWhiteSpace(request.Channel))
+        {
+            var campaignChannels = campaign.TargetChannels != null
+                ? JsonSerializer.Deserialize<List<string>>(campaign.TargetChannels) ?? new List<string>()
+                : new List<string>();
+
+            // Normalizar nombres de canales para comparación (case-insensitive)
+            var normalizedCampaignChannels = campaignChannels
+                .Select(c => c.ToLowerInvariant().Trim())
+                .ToList();
+
+            var normalizedRequestChannel = request.Channel.ToLowerInvariant().Trim();
+
+            // Mapeo de variaciones comunes de nombres de canales
+            var channelMappings = new Dictionary<string, List<string>>
+            {
+                { "instagram", new List<string> { "instagram", "ig" } },
+                { "facebook", new List<string> { "facebook", "fb" } },
+                { "tiktok", new List<string> { "tiktok", "tt" } },
+                { "twitter", new List<string> { "twitter", "x" } },
+                { "linkedin", new List<string> { "linkedin", "li" } }
+            };
+
+            // Verificar si el canal está en la lista o en alguna de sus variaciones
+            var channelFound = normalizedCampaignChannels.Contains(normalizedRequestChannel) ||
+                normalizedCampaignChannels.Any(cc => 
+                    channelMappings.ContainsKey(cc) && channelMappings[cc].Contains(normalizedRequestChannel)) ||
+                channelMappings.Any(kvp => 
+                    kvp.Value.Contains(normalizedRequestChannel) && 
+                    normalizedCampaignChannels.Contains(kvp.Key));
+
+            if (!channelFound && campaignChannels.Count > 0)
+            {
+                _logger.LogWarning(
+                    "Canal '{Channel}' no está en los canales objetivo de la campaña {CampaignId}. Canales permitidos: {AllowedChannels}",
+                    request.Channel, request.CampaignId, string.Join(", ", campaignChannels));
+                
+                throw new InvalidOperationException(
+                    $"El canal '{request.Channel}' no está en los canales objetivo de la campaña. " +
+                    $"Canales permitidos: {string.Join(", ", campaignChannels)}");
+            }
+        }
+
         // Obtener MarketingPack
         var marketingPack = await _marketingPackRepository.GetByIdAsync(
             request.MarketingPackId, request.TenantId, cancellationToken);
@@ -75,6 +143,21 @@ public class GeneratePublishingJobCommandHandler : IRequestHandler<GeneratePubli
         if (marketingPack == null)
         {
             throw new NotFoundException($"MarketingPack {request.MarketingPackId} no encontrado");
+        }
+
+        // Validar que el MarketingPack pertenece al tenant correcto
+        if (marketingPack.TenantId != request.TenantId)
+        {
+            throw new UnauthorizedAccessException(
+                $"El MarketingPack {request.MarketingPackId} no pertenece al tenant {request.TenantId}");
+        }
+
+        // Si el MarketingPack tiene un CampaignId, debe coincidir con el CampaignId del request
+        if (marketingPack.CampaignId.HasValue && marketingPack.CampaignId.Value != request.CampaignId)
+        {
+            throw new InvalidOperationException(
+                $"El MarketingPack {request.MarketingPackId} está asociado a la campaña {marketingPack.CampaignId.Value}, " +
+                $"pero se intenta usar con la campaña {request.CampaignId}");
         }
 
         // Obtener Copy (si se especificó)

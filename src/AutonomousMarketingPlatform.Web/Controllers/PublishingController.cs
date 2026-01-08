@@ -63,10 +63,38 @@ public class PublishingController : Controller
     /// </summary>
     [HttpGet]
     [AuthorizeRole("Owner", "Admin", "Marketer")]
-    public IActionResult Generate(Guid? campaignId = null, Guid? marketingPackId = null)
+    public async Task<IActionResult> Generate(Guid? campaignId = null, Guid? marketingPackId = null)
     {
         ViewBag.CampaignId = campaignId;
         ViewBag.MarketingPackId = marketingPackId;
+        
+        // Cargar canales de la campaña si existe
+        List<string>? campaignChannels = null;
+        if (campaignId.HasValue)
+        {
+            try
+            {
+                var tenantId = UserHelper.GetTenantId(User);
+                if (tenantId.HasValue)
+                {
+                    var getCampaignQuery = new Application.UseCases.Campaigns.GetCampaignQuery
+                    {
+                        TenantId = tenantId.Value,
+                        CampaignId = campaignId.Value,
+                        IsSuperAdmin = User.HasClaim("IsSuperAdmin", "true")
+                    };
+                    var campaign = await _mediator.Send(getCampaignQuery);
+                    campaignChannels = campaign?.TargetChannels;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "No se pudo cargar los canales de la campaña {CampaignId}", campaignId);
+            }
+        }
+        
+        ViewBag.CampaignChannels = campaignChannels ?? new List<string>();
+        
         return View(new GeneratePublishingJobDto
         {
             CampaignId = campaignId ?? Guid.Empty,

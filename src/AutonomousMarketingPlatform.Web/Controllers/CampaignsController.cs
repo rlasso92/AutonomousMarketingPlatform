@@ -787,6 +787,35 @@ public class CampaignsController : Controller
                     // Si falla la deserialización, dejar null
                 }
             }
+            
+            // Binding manual de TargetChannels (igual que en Create)
+            // Esto asegura que los canales seleccionados se capturen correctamente desde el formulario
+            if (Request.Form.TryGetValue("TargetChannels", out var channelsValue))
+            {
+                model.TargetChannels = channelsValue.ToList();
+                _logger.LogInformation("TargetChannels bindeados manualmente desde formulario: {Channels}", string.Join(", ", model.TargetChannels));
+            }
+            else if (model.TargetChannels == null || !model.TargetChannels.Any())
+            {
+                // Si no vienen en el formulario y el modelo está vacío, preservar los valores existentes
+                if (!string.IsNullOrEmpty(campaignEntity.TargetChannels))
+                {
+                    try
+                    {
+                        model.TargetChannels = System.Text.Json.JsonSerializer.Deserialize<List<string>>(campaignEntity.TargetChannels);
+                        _logger.LogInformation("TargetChannels preservados desde BD: {Channels}", string.Join(", ", model.TargetChannels ?? new List<string>()));
+                    }
+                    catch
+                    {
+                        // Si falla la deserialización, dejar null o lista vacía
+                        model.TargetChannels = new List<string>();
+                    }
+                }
+                else
+                {
+                    model.TargetChannels = new List<string>();
+                }
+            }
 
             var command = new UpdateCampaignCommand
             {

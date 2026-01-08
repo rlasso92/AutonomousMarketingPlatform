@@ -17,7 +17,7 @@ namespace AutonomousMarketingPlatform.Web.Controllers.Api;
 /// para facilitar la integración con n8n en desarrollo.
 /// </remarks>
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/Consents")]
 [AllowAnonymous]
 public class ConsentsApiController : ControllerBase
 {

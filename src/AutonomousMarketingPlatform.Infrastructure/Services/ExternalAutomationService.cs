@@ -139,22 +139,19 @@ public class ExternalAutomationService : IExternalAutomationService
                     
                     // Usar objeto anónimo para garantizar serialización correcta de tipos
                     // Esto asegura que List<string> se serialice como array JSON correctamente
-                    // IMPORTANTE: El workflow n8n espera los datos dentro de un objeto "body"
+                    // IMPORTANTE: n8n ya envuelve el body automáticamente, así que enviamos los datos directamente
                     payload = new
                     {
-                        body = new
-                        {
-                            tenantId = tenantId.ToString(),
-                            userId = userId.Value.ToString(),
-                            instruction = eventDataDict.GetValueOrDefault("instruction")?.ToString() ?? 
-                                         eventDataDict.GetValueOrDefault("Instruction")?.ToString() ?? "",
-                            channels = channelsList, // ✅ List<string> se serializa como array JSON ["item1", "item2"]
-                            requiresApproval = eventDataDict.GetValueOrDefault("requiresApproval") ?? 
-                                             eventDataDict.GetValueOrDefault("RequiresApproval") ?? false,
-                            campaignId = relatedEntityId?.ToString(), // Puede ser null, se omitirá si es null
-                            assets = eventDataDict.GetValueOrDefault("assets") ?? 
-                                    eventDataDict.GetValueOrDefault("Assets") ?? new List<string>()
-                        }
+                        tenantId = tenantId.ToString(),
+                        userId = userId.Value.ToString(),
+                        instruction = eventDataDict.GetValueOrDefault("instruction")?.ToString() ?? 
+                                     eventDataDict.GetValueOrDefault("Instruction")?.ToString() ?? "",
+                        channels = channelsList, // ✅ List<string> se serializa como array JSON ["item1", "item2"]
+                        requiresApproval = eventDataDict.GetValueOrDefault("requiresApproval") ?? 
+                                         eventDataDict.GetValueOrDefault("RequiresApproval") ?? false,
+                        campaignId = relatedEntityId?.ToString(), // Puede ser null, se omitirá si es null
+                        assets = eventDataDict.GetValueOrDefault("assets") ?? 
+                                eventDataDict.GetValueOrDefault("Assets") ?? new List<string>()
                     };
                 }
                 else
@@ -201,22 +198,19 @@ public class ExternalAutomationService : IExternalAutomationService
                     }
                     
                     // Usar objeto anónimo para garantizar serialización correcta de tipos
-                    // IMPORTANTE: El workflow n8n espera los datos dentro de un objeto "body"
+                    // IMPORTANTE: n8n ya envuelve el body automáticamente, así que enviamos los datos directamente
                     payload = new
                     {
-                        body = new
-                        {
-                            tenantId = tenantId.ToString(),
-                            userId = userId.Value.ToString(),
-                            instruction = eventDataObj?.GetValueOrDefault("instruction")?.ToString() ?? 
-                                         eventDataObj?.GetValueOrDefault("Instruction")?.ToString() ?? "",
-                            channels = channelsListObj, // ✅ List<string> se serializa como array JSON
-                            requiresApproval = eventDataObj?.GetValueOrDefault("requiresApproval") ?? 
-                                             eventDataObj?.GetValueOrDefault("RequiresApproval") ?? false,
-                            campaignId = relatedEntityId?.ToString(), // Puede ser null
-                            assets = eventDataObj?.GetValueOrDefault("assets") ?? 
-                                    eventDataObj?.GetValueOrDefault("Assets") ?? new List<string>()
-                        }
+                        tenantId = tenantId.ToString(),
+                        userId = userId.Value.ToString(),
+                        instruction = eventDataObj?.GetValueOrDefault("instruction")?.ToString() ?? 
+                                     eventDataObj?.GetValueOrDefault("Instruction")?.ToString() ?? "",
+                        channels = channelsListObj, // ✅ List<string> se serializa como array JSON
+                        requiresApproval = eventDataObj?.GetValueOrDefault("requiresApproval") ?? 
+                                         eventDataObj?.GetValueOrDefault("RequiresApproval") ?? false,
+                        campaignId = relatedEntityId?.ToString(), // Puede ser null
+                        assets = eventDataObj?.GetValueOrDefault("assets") ?? 
+                                eventDataObj?.GetValueOrDefault("Assets") ?? new List<string>()
                     };
                 }
             }

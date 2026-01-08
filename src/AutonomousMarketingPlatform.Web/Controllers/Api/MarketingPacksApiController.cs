@@ -456,6 +456,66 @@ public class MarketingPacksApiController : ControllerBase
                 });
         }
     }
+
+    /// <summary>
+    /// Elimina un MarketingPack (soft delete).
+    /// </summary>
+    /// <param name="id">ID del MarketingPack a eliminar</param>
+    /// <param name="cancellationToken">Token de cancelación</param>
+    /// <returns>Resultado de la eliminación</returns>
+    /// <response code="200">MarketingPack eliminado exitosamente</response>
+    /// <response code="400">Si los datos son inválidos</response>
+    /// <response code="404">Si el pack no existe</response>
+    /// <response code="500">Error interno del servidor</response>
+    [HttpDelete("{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> DeleteMarketingPack(
+        Guid id,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            // Obtener tenantId desde query string o header (para uso desde web)
+            var tenantIdStr = Request.Query["tenantId"].FirstOrDefault() 
+                ?? Request.Headers["X-Tenant-Id"].FirstOrDefault();
+            
+            if (string.IsNullOrEmpty(tenantIdStr) || !Guid.TryParse(tenantIdStr, out var tenantId))
+            {
+                return BadRequest(new { error = "tenantId is required and must be a valid GUID" });
+            }
+
+            var marketingPack = await _marketingPackRepository.GetByIdAsync(id, tenantId, cancellationToken);
+            if (marketingPack == null || !marketingPack.IsActive)
+            {
+                return NotFound(new { error = "MarketingPack not found" });
+            }
+
+            // Soft delete
+            marketingPack.IsActive = false;
+            marketingPack.UpdatedAt = DateTime.UtcNow;
+            await _marketingPackRepository.UpdateAsync(marketingPack, cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            _logger.LogInformation("MarketingPack eliminado (soft delete): {MarketingPackId} para tenant {TenantId}",
+                id, tenantId);
+
+            return Ok(new { 
+                success = true, 
+                message = "MarketingPack eliminado exitosamente",
+                id = id 
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error al eliminar MarketingPack {MarketingPackId}", id);
+            return StatusCode(
+                StatusCodes.Status500InternalServerError,
+                new { error = "Internal server error", message = ex.Message });
+        }
+    }
 }
 
 /// <summary>

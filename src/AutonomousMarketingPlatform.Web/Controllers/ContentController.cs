@@ -7,6 +7,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
+using NotFoundException = AutonomousMarketingPlatform.Application.UseCases.Campaigns.NotFoundException;
 
 namespace AutonomousMarketingPlatform.Web.Controllers;
 
@@ -138,6 +139,47 @@ public class ContentController : Controller
         {
             _logger.LogError(ex, "Error al listar contenido");
             return View(new List<ContentListItemDto>());
+        }
+    }
+
+    /// <summary>
+    /// Elimina un contenido (soft delete).
+    /// </summary>
+    [HttpPost]
+    [AuthorizeRole("Owner", "Admin", "Marketer")]
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        try
+        {
+            var userId = UserHelper.GetUserId(User);
+            var tenantId = UserHelper.GetTenantId(User);
+
+            if (!userId.HasValue || !tenantId.HasValue)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var command = new DeleteContentCommand
+            {
+                TenantId = tenantId.Value,
+                UserId = userId.Value,
+                ContentId = id
+            };
+
+            await _mediator.Send(command);
+
+            TempData["SuccessMessage"] = "Contenido eliminado exitosamente.";
+            return RedirectToAction(nameof(Index));
+        }
+        catch (NotFoundException)
+        {
+            return NotFound();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error al eliminar contenido {ContentId}", id);
+            TempData["ErrorMessage"] = "Error al eliminar el contenido. Por favor, intente nuevamente.";
+            return RedirectToAction(nameof(Index));
         }
     }
 }

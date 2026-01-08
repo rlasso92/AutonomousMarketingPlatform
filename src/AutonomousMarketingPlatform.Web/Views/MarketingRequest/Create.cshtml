@@ -92,7 +92,7 @@
                                         <div class="col-md-3">
                                             <div class="form-check">
                                                 <input class="form-check-input channel-checkbox" type="checkbox" value="instagram" 
-                                                       @(model?.Channels?.Contains("instagram") == true ? "checked" : "") />
+                                                       @(model?.Channels?.Contains("instagram", StringComparer.OrdinalIgnoreCase) == true ? "checked" : "") />
                                                 <label class="form-check-label">
                                                     <i class="fab fa-instagram mr-1"></i>Instagram
                                                 </label>
@@ -101,7 +101,7 @@
                                         <div class="col-md-3">
                                             <div class="form-check">
                                                 <input class="form-check-input channel-checkbox" type="checkbox" value="facebook" 
-                                                       @(model?.Channels?.Contains("facebook") == true ? "checked" : "") />
+                                                       @(model?.Channels?.Contains("facebook", StringComparer.OrdinalIgnoreCase) == true ? "checked" : "") />
                                                 <label class="form-check-label">
                                                     <i class="fab fa-facebook mr-1"></i>Facebook
                                                 </label>
@@ -110,7 +110,7 @@
                                         <div class="col-md-3">
                                             <div class="form-check">
                                                 <input class="form-check-input channel-checkbox" type="checkbox" value="tiktok" 
-                                                       @(model?.Channels?.Contains("tiktok") == true ? "checked" : "") />
+                                                       @(model?.Channels?.Contains("tiktok", StringComparer.OrdinalIgnoreCase) == true ? "checked" : "") />
                                                 <label class="form-check-label">
                                                     <i class="fab fa-tiktok mr-1"></i>TikTok
                                                 </label>
@@ -119,7 +119,7 @@
                                         <div class="col-md-3">
                                             <div class="form-check">
                                                 <input class="form-check-input channel-checkbox" type="checkbox" value="twitter" 
-                                                       @(model?.Channels?.Contains("twitter") == true ? "checked" : "") />
+                                                       @(model?.Channels?.Contains("twitter", StringComparer.OrdinalIgnoreCase) == true ? "checked" : "") />
                                                 <label class="form-check-label">
                                                     <i class="fab fa-twitter mr-1"></i>Twitter
                                                 </label>

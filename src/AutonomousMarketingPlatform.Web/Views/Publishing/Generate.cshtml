@@ -4,6 +4,25 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
     var campaignId = ViewBag.CampaignId as Guid?;
     var marketingPackId = ViewBag.MarketingPackId as Guid?;
+    var campaignChannels = ViewBag.CampaignChannels as List<string> ?? new List<string>();
+    
+    // Mapeo de nombres de canales para normalización
+    var channelDisplayNames = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+    {
+        { "instagram", "Instagram" },
+        { "facebook", "Facebook" },
+        { "tiktok", "TikTok" },
+        { "twitter", "Twitter" },
+        { "linkedin", "LinkedIn" }
+    };
+    
+    // Normalizar y capitalizar nombres de canales
+    var normalizedChannels = campaignChannels
+        .Select(c => channelDisplayNames.ContainsKey(c.ToLowerInvariant()) 
+            ? channelDisplayNames[c.ToLowerInvariant()] 
+            : char.ToUpperInvariant(c[0]) + c.Substring(1).ToLowerInvariant())
+        .Distinct()
+        .ToList();
 }
 
 <div class="content-wrapper">
@@ -59,11 +78,35 @@
                                             <label asp-for="Channel">Canal <span class="text-danger">*</span></label>
                                             <select asp-for="Channel" class="form-control">
                                                 <option value="">Seleccione un canal</option>
-                                                <option value="Instagram">Instagram</option>
-                                                <option value="Facebook">Facebook</option>
-                                                <option value="TikTok">TikTok</option>
+                                                @if (normalizedChannels.Any())
+                                                {
+                                                    @foreach (var channel in normalizedChannels)
+                                                    {
+                                                        <option value="@channel">@channel</option>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <option value="Instagram">Instagram</option>
+                                                    <option value="Facebook">Facebook</option>
+                                                    <option value="TikTok">TikTok</option>
+                                                    <option value="Twitter">Twitter</option>
+                                                    <option value="LinkedIn">LinkedIn</option>
+                                                }
                                             </select>
                                             <span asp-validation-for="Channel" class="text-danger"></span>
+                                            @if (normalizedChannels.Any())
+                                            {
+                                                <small class="form-text text-muted">
+                                                    Canales disponibles según la campaña: @string.Join(", ", normalizedChannels)
+                                                </small>
+                                            }
+                                            else if (campaignId.HasValue)
+                                            {
+                                                <small class="form-text text-warning">
+                                                    La campaña no tiene canales definidos. Puedes seleccionar cualquier canal.
+                                                </small>
+                                            }
                                         </div>
                                     </div>
                                     <div class="col-md-6">

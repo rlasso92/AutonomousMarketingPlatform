@@ -88,14 +88,26 @@
 
                                 <div class="form-group">
                                     <label asp-for="TargetChannels">Canales Objetivo</label>
-                                    <select asp-for="TargetChannels" multiple class="form-control">
+                                    <select id="TargetChannels" name="TargetChannels" multiple class="form-control">
                                         @{
-                                            var channels = new[] { "Instagram", "Facebook", "TikTok", "Twitter", "LinkedIn" };
+                                            // Usar valores en minúsculas para consistencia con Create
+                                            var channels = new[] { 
+                                                new { Value = "instagram", Label = "Instagram" },
+                                                new { Value = "facebook", Label = "Facebook" },
+                                                new { Value = "tiktok", Label = "TikTok" },
+                                                new { Value = "twitter", Label = "Twitter" },
+                                                new { Value = "linkedin", Label = "LinkedIn" }
+                                            };
                                             var selectedChannels = Model?.TargetChannels ?? new List<string>();
                                         }
                                         @foreach (var channel in channels)
                                         {
-                                            <option value="@channel" selected="@(selectedChannels.Contains(channel))">@channel</option>
+                                            // Comparar sin importar mayúsculas/minúsculas para compatibilidad
+                                            var isSelected = selectedChannels.Any(c => 
+                                                string.Equals(c, channel.Value, StringComparison.OrdinalIgnoreCase) ||
+                                                string.Equals(c, channel.Label, StringComparison.OrdinalIgnoreCase)
+                                            );
+                                            <option value="@channel.Value" selected="@isSelected">@channel.Label</option>
                                         }
                                     </select>
                                     <small class="form-text text-muted">Mantén presionado Ctrl (o Cmd en Mac) para seleccionar múltiples canales.</small>
