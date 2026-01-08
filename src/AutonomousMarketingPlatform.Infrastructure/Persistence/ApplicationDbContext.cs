@@ -44,4 +44,14 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
 
     public DbSet<Tenant> Tenants { get; set; }
     public DbSet<UserTenant> UserTenants { get; set; }
+    public DbSet<Campaign> Campaigns { get; set; }
+    public DbSet<Contact> Contacts { get; set; }
+    public DbSet<EmailTemplate> EmailTemplates { get; set; }
+    public DbSet<Content> Content { get; set; }
+    public DbSet<Consent> Consents { get; set; }
+    public DbSet<MarketingPack> MarketingPacks { get; set; }
+    public DbSet<PublishJob> PublishJobs { get; set; }
+    public DbSet<MarketingMemory> MarketingMemories { get; set; }
+    public DbSet<CampaignMetrics> CampaignMetrics { get; set; }
+    public DbSet<PublishJobMetrics> PublishJobMetrics { get; set; }
 }

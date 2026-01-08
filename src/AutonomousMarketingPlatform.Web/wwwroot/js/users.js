@@ -1,12 +1,12 @@
 $(document).ready(function () {
     loadRoles();
     loadUsers();
+    loadTenantsForSelect();
 
     $('#userSearch').on('input', function() {
         loadUsers(1);
     });
 });
-
 let currentPage = 1;
 const pageSize = 10;
 
@@ -19,16 +19,19 @@ function loadUsers(page = 1) {
         tbody.empty();
 
         response.data.forEach(user => {
-            const roleBadge = user.roles && user.roles.length > 0 
-                ? `<span class="badge badge-role ${getRoleBadgeClass(user.roles[0])}">${user.roles[0]}</span>` 
+            const roleBadge = user.roles && user.roles.length > 0
+                ? `<span class="badge badge-role ${getRoleBadgeClass(user.roles[0])}">${user.roles[0]}</span>`
                 : '<span class="text-muted small">No Role</span>';
 
-            const initials = (user.firstName[0] + user.lastName[0]).toUpperCase();
+            const initials = (user.firstName ? user.firstName[0] : '') + (user.lastName ? user.lastName[0] : '');
+            const avatarHtml = user.avatarBase64 
+                ? `<img src="data:image/png;base64,${user.avatarBase64}" class="avatar" alt="Avatar">`
+                : `<div class="avatar">${initials.toUpperCase()}</div>`;
             
             const tr = `
                 <tr>
                     <td class="ps-4">
-                        <div class="avatar">${initials}</div>
+                        ${avatarHtml}
                     </td>
                     <td class="fw-bold">${user.firstName}</td>
                     <td class="fw-bold">${user.lastName}</td>
@@ -58,6 +61,16 @@ function loadRoles() {
         select.find('option:not(:first)').remove();
         response.data.forEach(role => {
             select.append(`<option value="${role.name}">${role.name}</option>`);
+        });
+    });
+}
+
+function loadTenantsForSelect() {
+    $.get('/api/tenants', function (response) {
+        const select = $('#tenantSelect');
+        select.find('option:not(:first)').remove();
+        response.data.forEach(tenant => {
+            select.append(`<option value="${tenant.id}">${tenant.name}</option>`);
         });
     });
 }
@@ -101,6 +114,7 @@ function editUser(id) {
         if (user.roles && user.roles.length > 0) {
             $('#roleSelect').val(user.roles[0]);
         }
+        $('#tenantSelect').val(user.tenantId);
         
         $('#passwordGroup').hide(); // Don't allow password edit here for simplicity
         $('#userModalTitle').text('Edit User');
@@ -120,7 +134,8 @@ function saveUser() {
         email: $('#email').val(),
         phoneNumber: "1234567890", // Default for now
         role: $('#roleSelect').val(),
-        isDisabled: $('#isDisabled').prop('checked')
+        isDisabled: $('#isDisabled').prop('checked'),
+        tenantId: $('#tenantSelect').val() || null
     };
 
     if (isEdit) {

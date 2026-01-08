@@ -1,0 +1,110 @@
+@{
+    ViewData["Title"] = "Content";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="text-dark fw-bold mb-1"><i class="fas fa-file-alt me-2 text-primary"></i>Content</h2>
+        <p class="text-muted">Manage your marketing content.</p>
+    </div>
+</div>
+
+<!-- Actions Bar -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="position-relative" style="width: 300px;">
+        <i class="fas fa-search position-absolute text-muted" style="left: 10px; top: 10px;"></i>
+        <input type="text" id="contentSearch" class="form-control ps-5" placeholder="Search content...">
+    </div>
+    <div class="d-flex gap-2">
+        <button class="btn btn-warning fw-bold text-white shadow-sm" data-bs-toggle="modal" data-bs-target="#contentModal" onclick="resetContentModal()"><i class="fas fa-plus me-1"></i> Add Content</button>
+    </div>
+</div>
+
+<!-- Content Table -->
+<div class="card overflow-hidden border-0 shadow-sm">
+    <table class="table table-custom mb-0" id="contentTable">
+        <thead>
+            <tr>
+                <th class="ps-4">Title</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Created At</th>
+                <th class="text-end pe-4">Actions</th>
+            </tr>
+        </thead>
+        <tbody id="contentTableBody">
+            <!-- Data will be loaded via jQuery -->
+        </tbody>
+    </table>
+     <!-- Pagination -->
+    <div class="d-flex justify-content-between align-items-center p-3 border-top bg-light">
+         <div class="text-muted small">Showing <span id="startRange">0</span> to <span id="endRange">0</span> of <span id="totalRecords">0</span> results</div>
+         <nav>
+             <ul class="pagination pagination-sm mb-0" id="pagination">
+                 <!-- Pagination links -->
+             </ul>
+         </nav>
+    </div>
+</div>
+
+
+<!-- Add/Edit Content Modal -->
+<div class="modal fade" id="contentModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-light border-bottom">
+                 <div class="d-flex align-items-center">
+                    <div class="bg-primary bg-opacity-10 p-2 rounded me-3 text-primary">
+                        <i class="fas fa-file-alt fa-lg"></i>
+                    </div>
+                    <div>
+                        <h5 class="modal-title fw-bold text-dark" id="contentModalTitle">Add Content</h5>
+                        <small class="text-muted">Create a new piece of content.</small>
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="contentForm">
+                    <input type="hidden" id="contentId">
+                    <div class="mb-3">
+                        <label class="form-label text-dark small fw-bold border-start border-3 border-warning ps-2">Title *</label>
+                        <input type="text" class="form-control" id="contentTitle" placeholder="Enter title" required>
+                    </div>
+                     <div class="mb-3">
+                        <label class="form-label text-dark small fw-bold border-start border-3 border-success ps-2">Body *</label>
+                        <textarea class="form-control" id="contentBody" rows="10" placeholder="Enter content body" required></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label text-dark small fw-bold border-start border-3 border-primary ps-2">Content Type</label>
+                            <select class="form-select" id="contentType">
+                                <option value="0">Blog Post</option>
+                                <option value="1">Social Media Update</option>
+                                <option value="2">Advertisement</option>
+                                <option value="3">Email Body</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label text-dark small fw-bold border-start border-3 border-secondary ps-2">Status</label>
+                            <select class="form-select" id="contentStatus">
+                                <option value="0">Draft</option>
+                                <option value="1">In Review</option>
+                                <option value="2">Published</option>
+                                <option value="3">Archived</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer border-top bg-light">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Clear</button>
+                <button type="button" class="btn btn-primary shadow-sm" onclick="saveContent()"><i class="fas fa-plus me-1"></i> <span id="saveBtnText">Add Content</span></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/content.js"></script>
+}

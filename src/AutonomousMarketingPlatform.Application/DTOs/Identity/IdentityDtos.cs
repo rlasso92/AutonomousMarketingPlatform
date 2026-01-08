@@ -8,6 +8,7 @@ public class UserDto
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
     public string PhoneNumber { get; set; } = string.Empty;
+    public string? AvatarBase64 { get; set; }
     public IList<string> Roles { get; set; } = new List<string>();
 }
 
@@ -19,6 +20,7 @@ public class CreateUserDto
     public string Password { get; set; } = string.Empty;
     public string PhoneNumber { get; set; } = string.Empty;
     public string Role { get; set; } = string.Empty;
+    public Guid? TenantId { get; set; }
 }
 
 public class UpdateUserDto
@@ -29,6 +31,7 @@ public class UpdateUserDto
     public string Email { get; set; } = string.Empty;
     public string PhoneNumber { get; set; } = string.Empty;
     public string Role { get; set; } = string.Empty;
+    public Guid? TenantId { get; set; }
 }
 
 public class RoleDto

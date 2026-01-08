@@ -1,0 +1,163 @@
+@{
+    ViewData["Title"] = "User Profile";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="text-dark fw-bold mb-1"><i class="fas fa-user-circle me-2 text-primary"></i>User Profile</h2>
+        <p class="text-muted">Manage your profile and security settings.</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body text-center">
+                <div class="profile-avatar-container mb-3" id="avatarContainer">
+                    <img src="" id="profileAvatar" class="profile-avatar-img" alt="Avatar" style="display: none;">
+                    <div id="letterAvatar" class="profile-avatar-letter" style="display: none;"></div>
+                    <div class="profile-avatar-overlay">
+                        <i class="fas fa-camera"></i>
+                    </div>
+                </div>
+                <input type="file" id="avatarUpload" accept="image/*" style="display: none;">
+                <h5 class="my-3" id="profileFullName"></h5>
+                <p class="text-muted mb-1" id="profileDepartment"></p>
+                <p class="text-muted mb-4" id="profileLocation"></p>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <ul class="nav nav-tabs-custom mb-4">
+                    <li class="nav-item">
+                        <a class="nav-link active" data-bs-toggle="tab" href="#profileTab">Profile Information</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="tab" href="#securityTab">Security</a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane fade show active" id="profileTab">
+                        <form id="profileForm">
+                            <div class="row mb-3">
+                                <div class="col-sm-3">
+                                    <h6 class="mb-0">Full Name</h6>
+                                </div>
+                                <div class="col-sm-9 text-secondary" id="profileFullNameDisplay"></div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-sm-3">
+                                    <h6 class="mb-0">Email</h6>
+                                </div>
+                                <div class="col-sm-9 text-secondary" id="profileEmailDisplay"></div>
+                            </div>
+                             <div class="row mb-3">
+                                <div class="col-sm-3">
+                                    <h6 class="mb-0">Organization</h6>
+                                </div>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" id="profileOrganization">
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-sm-3">
+                                    <h6 class="mb-0">Department</h6>
+                                </div>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" id="profileDepartmentInput">
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-sm-3">
+                                    <h6 class="mb-0">Location</h6>
+                                </div>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" id="profileLocationInput">
+                                </div>
+                            </div>
+                             <div class="row mb-3">
+                                <div class="col-sm-3">
+                                    <h6 class="mb-0">Bio</h6>
+                                </div>
+                                <div class="col-sm-9">
+                                    <textarea class="form-control" id="profileBio" rows="3"></textarea>
+                                </div>
+                            </div>
+                            <hr>
+                            <h6 class="mb-3">Social Media</h6>
+                            <div class="row mb-3">
+                                <div class="col-sm-3">
+                                    <h6 class="mb-0"><i class="fab fa-facebook-f me-2"></i>Facebook</h6>
+                                </div>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" id="socialFacebook" placeholder="Enter Facebook URL">
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-sm-3">
+                                    <h6 class="mb-0"><i class="fab fa-instagram me-2"></i>Instagram</h6>
+                                </div>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" id="socialInstagram" placeholder="Enter Instagram URL">
+                                </div>
+                            </div>
+                             <div class="row mb-3">
+                                <div class="col-sm-3">
+                                    <h6 class="mb-0"><i class="fab fa-tiktok me-2"></i>TikTok</h6>
+                                </div>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" id="socialTikTok" placeholder="Enter TikTok URL">
+                                </div>
+                            </div>
+                             <div class="row">
+                                <div class="col-sm-12">
+                                    <button type="button" class="btn btn-primary" onclick="saveProfile()">Save Changes</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="tab-pane fade" id="securityTab">
+                        <h5>Change Password</h5>
+                        <form id="changePasswordForm">
+                            <div class="mb-3">
+                                <label class="form-label">Current Password</label>
+                                <input type="password" class="form-control" id="currentPassword" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">New Password</label>
+                                <input type="password" class="form-control" id="newPassword" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Confirm New Password</label>
+                                <input type="password" class="form-control" id="confirmNewPassword" required>
+                            </div>
+                            <button type="button" class="btn btn-primary" onclick="changePassword()">Change Password</button>
+                        </form>
+                        <hr>
+                        <h5>Two-Factor Authentication</h5>
+                        <div id="2faSetup">
+                            <p>Set up two-factor authentication with an authenticator app.</p>
+                            <button class="btn btn-info" onclick="setup2FA()">Setup 2FA</button>
+                            <div id="2faQrCode" class="mt-3" style="display: none;">
+                                <p>Scan the QR code with your authenticator app:</p>
+                                <img id="qrCodeImage" src="" alt="QR Code">
+                                <p class="mt-2">Or enter this key manually: <code id="manualEntryKey"></code></p>
+                                <div class="mt-3">
+                                    <label class="form-label">Verification Code</label>
+                                    <input type="text" class="form-control" id="2faCode" placeholder="Enter code from app">
+                                    <button class="btn btn-success mt-2" onclick="enable2FA()">Enable 2FA</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/profile.js"></script>
+}

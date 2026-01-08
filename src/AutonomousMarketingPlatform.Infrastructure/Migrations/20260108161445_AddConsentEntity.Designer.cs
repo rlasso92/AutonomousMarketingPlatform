@@ -3,6 +3,7 @@ using System;
 using AutonomousMarketingPlatform.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AutonomousMarketingPlatform.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260108161445_AddConsentEntity")]
+    partial class AddConsentEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -59,17 +62,8 @@ namespace AutonomousMarketingPlatform.Infrastructure.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("integer");
 
-                    b.Property<string>("AvatarBase64")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Bio")
-                        .HasColumnType("text");
-
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Department")
                         .HasColumnType("text");
 
                     b.Property<string>("Email")
@@ -88,9 +82,6 @@ namespace AutonomousMarketingPlatform.Infrastructure.Migrations
                     b.Property<string>("LastName")
                         .HasColumnType("text");
 
-                    b.Property<string>("Location")
-                        .HasColumnType("text");
-
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("boolean");
 
@@ -105,9 +96,6 @@ namespace AutonomousMarketingPlatform.Infrastructure.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
-                    b.Property<string>("Organization")
-                        .HasColumnType("text");
-
                     b.Property<string>("PasswordHash")
                         .HasColumnType("text");
 
@@ -120,14 +108,8 @@ namespace AutonomousMarketingPlatform.Infrastructure.Migrations
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("text");
 
-                    b.Property<string>("SocialMediaLinks")
-                        .HasColumnType("text");
-
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("boolean");
-
-                    b.Property<string>("TwoFactorSecretKey")
-                        .HasColumnType("text");
 
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
@@ -172,64 +154,6 @@ namespace AutonomousMarketingPlatform.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Campaigns");
-                });
-
-            modelBuilder.Entity("AutonomousMarketingPlatform.Domain.Entities.CampaignMetrics", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("Bounces")
-                        .HasColumnType("integer");
-
-                    b.Property<Guid>("CampaignId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("Clicks")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("Comments")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("EmailsOpened")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("EmailsSent")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("Impressions")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("LastUpdated")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("Likes")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("MessagesDelivered")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("MessagesRead")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("MessagesSent")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("Replies")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("Shares")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("Unsubscribes")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CampaignId");
-
-                    b.ToTable("CampaignMetrics");
                 });
 
             modelBuilder.Entity("AutonomousMarketingPlatform.Domain.Entities.Consent", b =>
@@ -308,9 +232,6 @@ namespace AutonomousMarketingPlatform.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid?>("MarketingPackId")
-                        .HasColumnType("uuid");
-
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
@@ -321,8 +242,6 @@ namespace AutonomousMarketingPlatform.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CampaignId");
-
-                    b.HasIndex("MarketingPackId");
 
                     b.ToTable("Content");
                 });
@@ -354,115 +273,6 @@ namespace AutonomousMarketingPlatform.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("EmailTemplates");
-                });
-
-            modelBuilder.Entity("AutonomousMarketingPlatform.Domain.Entities.MarketingMemory", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Key")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("LastAccessed")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Notes")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Value")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("MarketingMemories");
-                });
-
-            modelBuilder.Entity("AutonomousMarketingPlatform.Domain.Entities.MarketingPack", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("MarketingPacks");
-                });
-
-            modelBuilder.Entity("AutonomousMarketingPlatform.Domain.Entities.PublishJob", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("CampaignId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Channel")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("ContentId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("ScheduledTime")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CampaignId");
-
-                    b.HasIndex("ContentId");
-
-                    b.ToTable("PublishJobs");
-                });
-
-            modelBuilder.Entity("AutonomousMarketingPlatform.Domain.Entities.PublishJobMetrics", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("Errors")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("Interactions")
-                        .HasColumnType("integer");
-
-                    b.Property<Guid>("PublishJobId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("RecordedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PublishJobId");
-
-                    b.ToTable("PublishJobMetrics");
                 });
 
             modelBuilder.Entity("AutonomousMarketingPlatform.Domain.Entities.Tenant", b =>
@@ -608,17 +418,6 @@ namespace AutonomousMarketingPlatform.Infrastructure.Migrations
                     b.ToTable("UserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("AutonomousMarketingPlatform.Domain.Entities.CampaignMetrics", b =>
-                {
-                    b.HasOne("AutonomousMarketingPlatform.Domain.Entities.Campaign", "Campaign")
-                        .WithMany()
-                        .HasForeignKey("CampaignId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Campaign");
-                });
-
             modelBuilder.Entity("AutonomousMarketingPlatform.Domain.Entities.Consent", b =>
                 {
                     b.HasOne("AutonomousMarketingPlatform.Domain.Entities.Contact", "Contact")
@@ -636,39 +435,7 @@ namespace AutonomousMarketingPlatform.Infrastructure.Migrations
                         .WithMany()
                         .HasForeignKey("CampaignId");
 
-                    b.HasOne("AutonomousMarketingPlatform.Domain.Entities.MarketingPack", null)
-                        .WithMany("Contents")
-                        .HasForeignKey("MarketingPackId");
-
                     b.Navigation("Campaign");
-                });
-
-            modelBuilder.Entity("AutonomousMarketingPlatform.Domain.Entities.PublishJob", b =>
-                {
-                    b.HasOne("AutonomousMarketingPlatform.Domain.Entities.Campaign", "Campaign")
-                        .WithMany()
-                        .HasForeignKey("CampaignId");
-
-                    b.HasOne("AutonomousMarketingPlatform.Domain.Entities.Content", "Content")
-                        .WithMany()
-                        .HasForeignKey("ContentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Campaign");
-
-                    b.Navigation("Content");
-                });
-
-            modelBuilder.Entity("AutonomousMarketingPlatform.Domain.Entities.PublishJobMetrics", b =>
-                {
-                    b.HasOne("AutonomousMarketingPlatform.Domain.Entities.PublishJob", "PublishJob")
-                        .WithMany()
-                        .HasForeignKey("PublishJobId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("PublishJob");
                 });
 
             modelBuilder.Entity("AutonomousMarketingPlatform.Domain.Entities.UserTenant", b =>
@@ -739,11 +506,6 @@ namespace AutonomousMarketingPlatform.Infrastructure.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("AutonomousMarketingPlatform.Domain.Entities.MarketingPack", b =>
-                {
-                    b.Navigation("Contents");
                 });
 #pragma warning restore 612, 618
         }

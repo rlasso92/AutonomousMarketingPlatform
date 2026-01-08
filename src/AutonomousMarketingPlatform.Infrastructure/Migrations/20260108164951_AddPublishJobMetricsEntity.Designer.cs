@@ -3,6 +3,7 @@ using System;
 using AutonomousMarketingPlatform.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AutonomousMarketingPlatform.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260108164951_AddPublishJobMetricsEntity")]
+    partial class AddPublishJobMetricsEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -59,17 +62,8 @@ namespace AutonomousMarketingPlatform.Infrastructure.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("integer");
 
-                    b.Property<string>("AvatarBase64")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Bio")
-                        .HasColumnType("text");
-
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Department")
                         .HasColumnType("text");
 
                     b.Property<string>("Email")
@@ -88,9 +82,6 @@ namespace AutonomousMarketingPlatform.Infrastructure.Migrations
                     b.Property<string>("LastName")
                         .HasColumnType("text");
 
-                    b.Property<string>("Location")
-                        .HasColumnType("text");
-
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("boolean");
 
@@ -105,9 +96,6 @@ namespace AutonomousMarketingPlatform.Infrastructure.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
-                    b.Property<string>("Organization")
-                        .HasColumnType("text");
-
                     b.Property<string>("PasswordHash")
                         .HasColumnType("text");
 
@@ -120,14 +108,8 @@ namespace AutonomousMarketingPlatform.Infrastructure.Migrations
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("text");
 
-                    b.Property<string>("SocialMediaLinks")
-                        .HasColumnType("text");
-
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("boolean");
-
-                    b.Property<string>("TwoFactorSecretKey")
-                        .HasColumnType("text");
 
                     b.Property<string>("UserName")
                         .HasMaxLength(256)

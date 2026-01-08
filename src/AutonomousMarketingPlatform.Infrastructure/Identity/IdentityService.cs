@@ -1,6 +1,7 @@
 using AutonomousMarketingPlatform.Application.DTOs.Identity;
 using AutonomousMarketingPlatform.Application.Interfaces;
 using AutonomousMarketingPlatform.Domain.Entities;
+using AutonomousMarketingPlatform.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,15 +12,18 @@ public class IdentityService : IIdentityService
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly RoleManager<ApplicationRole> _roleManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
+    private readonly ApplicationDbContext _context;
 
     public IdentityService(
         UserManager<ApplicationUser> userManager,
         RoleManager<ApplicationRole> roleManager,
-        SignInManager<ApplicationUser> signInManager)
+        SignInManager<ApplicationUser> signInManager,
+        ApplicationDbContext context)
     {
         _userManager = userManager;
         _roleManager = roleManager;
         _signInManager = signInManager;
+        _context = context;
     }
 
     // Auth Implementation
@@ -69,6 +73,7 @@ public class IdentityService : IIdentityService
                 FirstName = user.FirstName ?? string.Empty,
                 LastName = user.LastName ?? string.Empty,
                 PhoneNumber = user.PhoneNumber ?? string.Empty,
+                AvatarBase64 = user.AvatarBase64,
                 Roles = roles
             });
         }
@@ -116,6 +121,12 @@ public class IdentityService : IIdentityService
                     await _userManager.AddToRoleAsync(user, userDto.Role);
                 }
             }
+
+            if (userDto.TenantId.HasValue)
+            {
+                _context.UserTenants.Add(new UserTenant { ApplicationUserId = user.Id, TenantId = userDto.TenantId.Value });
+                await _context.SaveChangesAsync();
+            }
             return true;
         }
         return false;
@@ -143,6 +154,19 @@ public class IdentityService : IIdentityService
             await _userManager.AddToRoleAsync(user, userDto.Role);
         }
 
+        // Handle Tenant relationship
+        var existingUserTenant = await _context.UserTenants.FirstOrDefaultAsync(ut => ut.ApplicationUserId == user.Id);
+        if (existingUserTenant != null)
+        {
+            _context.UserTenants.Remove(existingUserTenant);
+        }
+        if (userDto.TenantId.HasValue)
+        {
+            _context.UserTenants.Add(new UserTenant { ApplicationUserId = user.Id, TenantId = userDto.TenantId.Value });
+        }
+        await _context.SaveChangesAsync();
+
+
         return true;
     }
 
@@ -158,7 +182,7 @@ public class IdentityService : IIdentityService
     public async Task<IEnumerable<RoleDto>> GetRolesAsync()
     {
         return await _roleManager.Roles
-            .Select(r => new RoleDto { Id = r.Id, Name = r.Name })
+            .Select(r => new RoleDto { Id = r.Id, Name = r.Name ?? string.Empty })
             .ToListAsync();
     }
 

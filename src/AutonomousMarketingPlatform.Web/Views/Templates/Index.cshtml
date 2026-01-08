@@ -1,0 +1,104 @@
+@{
+    ViewData["Title"] = "Templates";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="text-dark fw-bold mb-1"><i class="fas fa-palette me-2 text-primary"></i>Templates</h2>
+        <p class="text-muted">Manage your reusable templates.</p>
+    </div>
+</div>
+
+<!-- Tabs -->
+<ul class="nav nav-tabs-custom mb-4">
+    <li class="nav-item">
+        <a class="nav-link active" data-bs-toggle="tab" href="#emailTemplatesTab">Email Templates</a>
+    </li>
+    <!-- Add other template types (e.g., SMS, Push) here in the future -->
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade show active" id="emailTemplatesTab">
+        <!-- Actions Bar -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="position-relative" style="width: 300px;">
+                <i class="fas fa-search position-absolute text-muted" style="left: 10px; top: 10px;"></i>
+                <input type="text" id="emailTemplateSearch" class="form-control ps-5" placeholder="Search email templates...">
+            </div>
+            <div class="d-flex gap-2">
+                <button class="btn btn-warning fw-bold text-white shadow-sm" data-bs-toggle="modal" data-bs-target="#emailTemplateModal" onclick="resetEmailTemplateModal()"><i class="fas fa-plus me-1"></i> Add Email Template</button>
+            </div>
+        </div>
+
+        <!-- Email Templates Table -->
+        <div class="card overflow-hidden border-0 shadow-sm">
+            <table class="table table-custom mb-0" id="emailTemplatesTable">
+                <thead>
+                    <tr>
+                        <th class="ps-4">Name</th>
+                        <th>Subject</th>
+                        <th>Last Updated</th>
+                        <th class="text-end pe-4">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="emailTemplatesTableBody">
+                    <!-- Data will be loaded via jQuery -->
+                </tbody>
+            </table>
+            <!-- Pagination -->
+            <div class="d-flex justify-content-between align-items-center p-3 border-top bg-light">
+                <div class="text-muted small">Showing <span id="startRange">0</span> to <span id="endRange">0</span> of <span id="totalRecords">0</span> results</div>
+                <nav>
+                    <ul class="pagination pagination-sm mb-0" id="pagination">
+                        <!-- Pagination links -->
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add/Edit Email Template Modal -->
+<div class="modal fade" id="emailTemplateModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-light border-bottom">
+                 <div class="d-flex align-items-center">
+                    <div class="bg-primary bg-opacity-10 p-2 rounded me-3 text-primary">
+                        <i class="fas fa-envelope fa-lg"></i>
+                    </div>
+                    <div>
+                        <h5 class="modal-title fw-bold text-dark" id="emailTemplateModalTitle">Add Email Template</h5>
+                        <small class="text-muted">Design a reusable email template.</small>
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="emailTemplateForm">
+                    <input type="hidden" id="emailTemplateId">
+                    <div class="mb-3">
+                        <label class="form-label text-dark small fw-bold border-start border-3 border-warning ps-2">Template Name *</label>
+                        <input type="text" class="form-control" id="emailTemplateName" placeholder="e.g., 'Welcome Email'" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-dark small fw-bold border-start border-3 border-info ps-2">Email Subject *</label>
+                        <input type="text" class="form-control" id="emailTemplateSubject" placeholder="e.g., 'Welcome to Our Newsletter!'" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-dark small fw-bold border-start border-3 border-success ps-2">HTML Body *</label>
+                        <textarea class="form-control" id="emailTemplateHtmlBody" rows="10" placeholder="<html>...</html>" required></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer border-top bg-light">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Clear</button>
+                <button type="button" class="btn btn-primary shadow-sm" onclick="saveEmailTemplate()"><i class="fas fa-plus me-1"></i> <span id="saveBtnText">Add Template</span></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/email-templates.js"></script>
+}

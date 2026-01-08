@@ -8,4 +8,15 @@ public class ApplicationUser : IdentityUser
     public string? FirstName { get; set; }
     public string? LastName { get; set; }
     public bool IsDisabled { get; set; }
+
+    // Profile Information
+    public string? Bio { get; set; }
+    public string? Organization { get; set; }
+    public string? Department { get; set; }
+    public string? Location { get; set; }
+    public string? SocialMediaLinks { get; set; } // Can be a JSON string
+    public string? AvatarBase64 { get; set; }
+
+    // MFA
+    public string? TwoFactorSecretKey { get; set; }
 }

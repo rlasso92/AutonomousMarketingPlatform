@@ -1,0 +1,71 @@
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="text-dark fw-bold mb-1"><i class="fas fa-tachometer-alt me-2 text-primary"></i>Dashboard</h2>
+        <p class="text-muted">Overview of your marketing campaign performance.</p>
+    </div>
+</div>
+
+<div class="row">
+    <!-- KPI Cards -->
+    <div class="col-md-3 mb-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <h6 class="card-title text-muted text-uppercase small">Emails Sent</h6>
+                <h3 class="fw-bold text-dark" id="kpiEmailsSent">0</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <h6 class="card-title text-muted text-uppercase small">Emails Opened</h6>
+                <h3 class="fw-bold text-dark" id="kpiEmailsOpened">0</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <h6 class="card-title text-muted text-uppercase small">Clicks</h6>
+                <h3 class="fw-bold text-dark" id="kpiClicks">0</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <h6 class="card-title text-muted text-uppercase small">Social Impressions</h6>
+                <h3 class="fw-bold text-dark" id="kpiSocialImpressions">0</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Charts -->
+    <div class="col-lg-6 mb-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white fw-bold">Email Performance Over Time</div>
+            <div class="card-body">
+                <canvas id="emailPerformanceChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 mb-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white fw-bold">Social Media Engagement</div>
+            <div class="card-body">
+                <canvas id="socialEngagementChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/lib/chart.js/chart.js"></script>
+    <script src="~/js/dashboard.js"></script>
+}

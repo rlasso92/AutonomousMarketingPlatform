@@ -1,0 +1,98 @@
+@{
+    ViewData["Title"] = "Marketing Packs";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="text-dark fw-bold mb-1"><i class="fas fa-box-open me-2 text-primary"></i>Marketing Packs</h2>
+        <p class="text-muted">Manage collections of marketing assets.</p>
+    </div>
+</div>
+
+<!-- Actions Bar -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="position-relative" style="width: 300px;">
+        <i class="fas fa-search position-absolute text-muted" style="left: 10px; top: 10px;"></i>
+        <input type="text" id="packSearch" class="form-control ps-5" placeholder="Search packs...">
+    </div>
+    <div class="d-flex gap-2">
+        <button class="btn btn-warning fw-bold text-white shadow-sm" data-bs-toggle="modal" data-bs-target="#packModal" onclick="resetPackModal()"><i class="fas fa-plus me-1"></i> Add Pack</button>
+    </div>
+</div>
+
+<!-- Marketing Packs Table -->
+<div class="card overflow-hidden border-0 shadow-sm">
+    <table class="table table-custom mb-0" id="packsTable">
+        <thead>
+            <tr>
+                <th class="ps-4">Name</th>
+                <th>Description</th>
+                <th>Status</th>
+                <th>Created At</th>
+                <th class="text-end pe-4">Actions</th>
+            </tr>
+        </thead>
+        <tbody id="packsTableBody">
+            <!-- Data will be loaded via jQuery -->
+        </tbody>
+    </table>
+     <!-- Pagination -->
+    <div class="d-flex justify-content-between align-items-center p-3 border-top bg-light">
+         <div class="text-muted small">Showing <span id="startRange">0</span> to <span id="endRange">0</span> of <span id="totalRecords">0</span> results</div>
+         <nav>
+             <ul class="pagination pagination-sm mb-0" id="pagination">
+                 <!-- Pagination links -->
+             </ul>
+         </nav>
+    </div>
+</div>
+
+
+<!-- Add/Edit Pack Modal -->
+<div class="modal fade" id="packModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-light border-bottom">
+                 <div class="d-flex align-items-center">
+                    <div class="bg-primary bg-opacity-10 p-2 rounded me-3 text-primary">
+                        <i class="fas fa-box-open fa-lg"></i>
+                    </div>
+                    <div>
+                        <h5 class="modal-title fw-bold text-dark" id="packModalTitle">Add Marketing Pack</h5>
+                        <small class="text-muted">Create a new collection of assets.</small>
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="packForm">
+                    <input type="hidden" id="packId">
+                    <div class="mb-3">
+                        <label class="form-label text-dark small fw-bold border-start border-3 border-warning ps-2">Pack Name *</label>
+                        <input type="text" class="form-control" id="packName" placeholder="Enter pack name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-dark small fw-bold border-start border-3 border-info ps-2">Description</label>
+                        <textarea class="form-control" id="packDescription" rows="3" placeholder="Describe the contents of this pack"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-dark small fw-bold border-start border-3 border-secondary ps-2">Status</label>
+                        <select class="form-select" id="packStatus">
+                            <option value="0">Draft</option>
+                            <option value="1">Ready</option>
+                            <option value="2">Archived</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer border-top bg-light">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Clear</button>
+                <button type="button" class="btn btn-primary shadow-sm" onclick="savePack()"><i class="fas fa-plus me-1"></i> <span id="saveBtnText">Add Pack</span></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/marketing-packs.js"></script>
+}
