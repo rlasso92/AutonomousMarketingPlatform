@@ -7,14 +7,14 @@ public interface IIdentityService
 {
     // User Methods
     Task<(IEnumerable<UserDto> Users, int TotalCount)> GetUsersAsync(int page, int pageSize, string search);
-    Task<UserDto> GetUserByIdAsync(string id);
+    Task<UserDto?> GetUserByIdAsync(string id);
     Task<bool> CreateUserAsync(CreateUserDto userDto);
     Task<bool> UpdateUserAsync(UpdateUserDto userDto);
     Task<bool> DeleteUserAsync(string id);
 
     // Role Methods
     Task<IEnumerable<RoleDto>> GetRolesAsync();
-    Task<RoleDto> GetRoleByIdAsync(string id);
+    Task<RoleDto?> GetRoleByIdAsync(string id);
     Task<bool> CreateRoleAsync(CreateRoleDto roleDto);
     Task<bool> UpdateRoleAsync(UpdateRoleDto roleDto);
     Task<bool> DeleteRoleAsync(string id);

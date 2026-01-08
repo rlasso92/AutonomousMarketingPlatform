@@ -13,7 +13,7 @@ public class IdentityService : IIdentityService
     private readonly SignInManager<ApplicationUser> _signInManager;
 
     public IdentityService(
-        UserManager<ApplicationUser> userManager, 
+        UserManager<ApplicationUser> userManager,
         RoleManager<ApplicationRole> roleManager,
         SignInManager<ApplicationUser> signInManager)
     {
@@ -44,7 +44,11 @@ public class IdentityService : IIdentityService
 
         if (!string.IsNullOrEmpty(search))
         {
-            query = query.Where(u => u.UserName.Contains(search) || u.Email.Contains(search) || u.FirstName.Contains(search) || u.LastName.Contains(search));
+            query = query.Where(u =>
+                (u.UserName != null && u.UserName.Contains(search)) ||
+                (u.Email != null && u.Email.Contains(search)) ||
+                (u.FirstName != null && u.FirstName.Contains(search)) ||
+                (u.LastName != null && u.LastName.Contains(search)));
         }
 
         var totalCount = await query.CountAsync();
@@ -60,11 +64,11 @@ public class IdentityService : IIdentityService
             userDtos.Add(new UserDto
             {
                 Id = user.Id,
-                UserName = user.UserName,
-                Email = user.Email,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                PhoneNumber = user.PhoneNumber,
+                UserName = user.UserName ?? string.Empty,
+                Email = user.Email ?? string.Empty,
+                FirstName = user.FirstName ?? string.Empty,
+                LastName = user.LastName ?? string.Empty,
+                PhoneNumber = user.PhoneNumber ?? string.Empty,
                 Roles = roles
             });
         }
@@ -72,7 +76,7 @@ public class IdentityService : IIdentityService
         return (userDtos, totalCount);
     }
 
-    public async Task<UserDto> GetUserByIdAsync(string id)
+    public async Task<UserDto?> GetUserByIdAsync(string id)
     {
         var user = await _userManager.FindByIdAsync(id);
         if (user == null) return null;
@@ -81,11 +85,11 @@ public class IdentityService : IIdentityService
         return new UserDto
         {
             Id = user.Id,
-            UserName = user.UserName,
-            Email = user.Email,
-            FirstName = user.FirstName,
-            LastName = user.LastName,
-            PhoneNumber = user.PhoneNumber,
+            UserName = user.UserName ?? string.Empty,
+            Email = user.Email ?? string.Empty,
+            FirstName = user.FirstName ?? string.Empty,
+            LastName = user.LastName ?? string.Empty,
+            PhoneNumber = user.PhoneNumber ?? string.Empty,
             Roles = roles
         };
     }
@@ -99,7 +103,7 @@ public class IdentityService : IIdentityService
             FirstName = userDto.FirstName,
             LastName = userDto.LastName,
             PhoneNumber = userDto.PhoneNumber,
-            EmailConfirmed = true 
+            EmailConfirmed = true
         };
 
         var result = await _userManager.CreateAsync(user, userDto.Password);
@@ -109,7 +113,7 @@ public class IdentityService : IIdentityService
             {
                 if (await _roleManager.RoleExistsAsync(userDto.Role))
                 {
-                     await _userManager.AddToRoleAsync(user, userDto.Role);
+                    await _userManager.AddToRoleAsync(user, userDto.Role);
                 }
             }
             return true;
@@ -126,17 +130,17 @@ public class IdentityService : IIdentityService
         user.LastName = userDto.LastName;
         user.Email = userDto.Email;
         user.UserName = userDto.Email; // Keep username synced with email
-        user.PhoneNumber = userDto.PhoneNumber;
+        user.PhoneNumber = userDto.PhoneNumber ?? user.PhoneNumber;
 
         var result = await _userManager.UpdateAsync(user);
         if (!result.Succeeded) return false;
 
         var currentRoles = await _userManager.GetRolesAsync(user);
         await _userManager.RemoveFromRolesAsync(user, currentRoles);
-        
+
         if (!string.IsNullOrEmpty(userDto.Role) && await _roleManager.RoleExistsAsync(userDto.Role))
         {
-             await _userManager.AddToRoleAsync(user, userDto.Role);
+            await _userManager.AddToRoleAsync(user, userDto.Role);
         }
 
         return true;
@@ -158,11 +162,11 @@ public class IdentityService : IIdentityService
             .ToListAsync();
     }
 
-    public async Task<RoleDto> GetRoleByIdAsync(string id)
+    public async Task<RoleDto?> GetRoleByIdAsync(string id)
     {
         var role = await _roleManager.FindByIdAsync(id);
         if (role == null) return null;
-        return new RoleDto { Id = role.Id, Name = role.Name };
+        return new RoleDto { Id = role.Id, Name = role.Name ?? string.Empty };
     }
 
     public async Task<bool> CreateRoleAsync(CreateRoleDto roleDto)
@@ -176,7 +180,8 @@ public class IdentityService : IIdentityService
     {
         var role = await _roleManager.FindByIdAsync(roleDto.Id);
         if (role == null) return false;
-        role.Name = roleDto.Name;
+        if (string.IsNullOrEmpty(roleDto.Name)) return false;
+        role.Name = roleDto.Name!;
         var result = await _roleManager.UpdateAsync(role);
         return result.Succeeded;
     }

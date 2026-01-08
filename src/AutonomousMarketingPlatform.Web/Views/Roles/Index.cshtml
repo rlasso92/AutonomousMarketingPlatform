@@ -17,6 +17,9 @@
     <li class="nav-item">
         <a class="nav-link active" asp-controller="Roles" asp-action="Index">Roles</a>
     </li>
+    <li class="nav-item">
+        <a class="nav-link" asp-controller="Tenants" asp-action="Index">Tenants</a>
+    </li>
 </ul>
 
 <!-- Actions Bar -->
@@ -39,6 +42,7 @@
                     <tr>
                         <th class="ps-4">Role Name</th>
                         <th>Description</th>
+                        <th>Is Disabled</th>
                         <th class="text-end pe-4">Actions</th>
                     </tr>
                 </thead>
@@ -77,6 +81,10 @@
                     <div class="mb-3">
                         <label class="form-label text-dark small fw-bold border-start border-3 border-info ps-2">Description</label>
                         <textarea class="form-control" id="roleDescription" rows="3" placeholder="Enter role description"></textarea>
+                    </div>
+                     <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="isDisabledRole">
+                        <label class="form-check-label text-dark small fw-bold" for="isDisabledRole">Is Disabled</label>
                     </div>
                 </form>
             </div>

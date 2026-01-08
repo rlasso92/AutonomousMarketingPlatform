@@ -34,6 +34,7 @@ function loadUsers(page = 1) {
                     <td class="fw-bold">${user.lastName}</td>
                     <td>${user.email}</td>
                     <td>${roleBadge}</td>
+                    <td>${user.isDisabled ? 'Yes' : 'No'}</td>
                     <td class="text-end pe-4">
                         <button class="btn btn-sm btn-light text-primary border me-1 shadow-sm" onclick="editUser('${user.id}')"><i class="fas fa-pen"></i></button>
                         <button class="btn btn-sm btn-light text-danger border shadow-sm" onclick="deleteUser('${user.id}')"><i class="fas fa-trash"></i></button>
@@ -87,6 +88,7 @@ function resetUserModal() {
     $('#userModalTitle').text('Add User');
     $('#saveBtnText').text('Add User');
     $('#passwordGroup').show();
+    $('#isDisabled').prop('checked', false);
 }
 
 function editUser(id) {
@@ -95,6 +97,7 @@ function editUser(id) {
         $('#firstName').val(user.firstName);
         $('#lastName').val(user.lastName);
         $('#email').val(user.email);
+        $('#isDisabled').prop('checked', user.isDisabled);
         if (user.roles && user.roles.length > 0) {
             $('#roleSelect').val(user.roles[0]);
         }
@@ -116,7 +119,8 @@ function saveUser() {
         lastName: $('#lastName').val(),
         email: $('#email').val(),
         phoneNumber: "1234567890", // Default for now
-        role: $('#roleSelect').val()
+        role: $('#roleSelect').val(),
+        isDisabled: $('#isDisabled').prop('checked')
     };
 
     if (isEdit) {

@@ -17,6 +17,9 @@
     <li class="nav-item">
         <a class="nav-link" asp-controller="Roles" asp-action="Index">Roles</a>
     </li>
+    <li class="nav-item">
+        <a class="nav-link" asp-controller="Tenants" asp-action="Index">Tenants</a>
+    </li>
 </ul>
 
 <!-- Actions Bar -->
@@ -41,6 +44,7 @@
                 <th>Last Name</th>
                 <th>Email</th>
                 <th>Role</th>
+                <th>Is Disabled</th>
                 <th class="text-end pe-4">Actions</th>
             </tr>
         </thead>
@@ -102,6 +106,10 @@
                             <option value="">Select a role</option>
                             <!-- Roles loaded via AJAX -->
                         </select>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="isDisabled">
+                        <label class="form-check-label text-dark small fw-bold" for="isDisabled">Is Disabled</label>
                     </div>
                 </form>
             </div>

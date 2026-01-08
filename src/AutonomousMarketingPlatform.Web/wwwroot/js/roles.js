@@ -12,6 +12,7 @@ function loadRolesList() {
                 <tr>
                     <td class="ps-4 fw-bold">${role.name}</td>
                     <td class="text-muted">Role description placeholder</td>
+                    <td>${role.isDisabled ? 'Yes' : 'No'}</td>
                     <td class="text-end pe-4">
                         <button class="btn btn-sm btn-light text-primary border me-1 shadow-sm" onclick="editRole('${role.id}')"><i class="fas fa-pen"></i></button>
                         <button class="btn btn-sm btn-light text-danger border shadow-sm" onclick="deleteRole('${role.id}')"><i class="fas fa-trash"></i></button>
@@ -28,12 +29,14 @@ function resetRoleModal() {
     $('#roleForm')[0].reset();
     $('#roleModalTitle').text('Add Role');
     $('#saveRoleBtnText').text('Add Role');
+    $('#isDisabledRole').prop('checked', false);
 }
 
 function editRole(id) {
     $.get(`/api/roles/${id}`, function (role) {
         $('#roleId').val(role.id);
         $('#roleName').val(role.name);
+        $('#isDisabledRole').prop('checked', role.isDisabled);
         $('#roleModalTitle').text('Edit Role');
         $('#saveRoleBtnText').text('Save Changes');
         
@@ -46,7 +49,8 @@ function saveRole() {
     const isEdit = !!id;
     
     const roleDto = {
-        name: $('#roleName').val()
+        name: $('#roleName').val(),
+        isDisabled: $('#isDisabledRole').prop('checked')
     };
 
     if (isEdit) {
