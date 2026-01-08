@@ -2,9 +2,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AutonomousMarketingPlatform.Web.Controllers
 {
-    public class RolesController : Controller
+    public class IntegrationsController : Controller
     {
-        // This action serves the main page for the Roles module as a partial view.
+        // This action serves the main page for the Integrations module as a partial view.
         // The page itself will then use JavaScript to call the API for data.
         public IActionResult Index()
         {

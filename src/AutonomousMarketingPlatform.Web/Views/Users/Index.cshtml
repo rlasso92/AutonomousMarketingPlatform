@@ -1,130 +1,153 @@
 @{
-    ViewData["Title"] = "Admin - Users";
+    ViewData["Title"] = "Admin";
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
         <h2 class="text-dark fw-bold mb-1"><i class="fas fa-user-shield me-2 text-primary"></i>Admin</h2>
-        <p class="text-muted">Manage users, roles, offices, countries, and administrative expenses.</p>
+        <p class="text-muted">Manage users, roles, tenants, and integrations.</p>
     </div>
 </div>
 
 <!-- Tabs -->
 <ul class="nav nav-tabs-custom mb-4">
     <li class="nav-item">
-        <a class="nav-link active" asp-controller="Users" asp-action="Index">Users</a>
+        <a class="nav-link active" id="users-tab" data-bs-toggle="tab" href="#usersTab" role="tab" aria-controls="usersTab" aria-selected="true">Users</a>
     </li>
     <li class="nav-item">
-        <a class="nav-link" asp-controller="Roles" asp-action="Index">Roles</a>
+        <a class="nav-link" id="roles-tab" data-bs-toggle="tab" href="#rolesTab" role="tab" aria-controls="rolesTab" aria-selected="false">Roles</a>
     </li>
     <li class="nav-item">
-        <a class="nav-link" asp-controller="Tenants" asp-action="Index">Tenants</a>
+        <a class="nav-link" id="tenants-tab" data-bs-toggle="tab" href="#tenantsTab" role="tab" aria-controls="tenantsTab" aria-selected="false">Tenants</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" id="integrations-tab" data-bs-toggle="tab" href="#integrationsTab" role="tab" aria-controls="integrationsTab" aria-selected="false">Integrations</a>
     </li>
 </ul>
 
-<!-- Actions Bar -->
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <div class="position-relative" style="width: 300px;">
-        <i class="fas fa-search position-absolute text-muted" style="left: 10px; top: 10px;"></i>
-        <input type="text" id="userSearch" class="form-control ps-5" placeholder="Search users...">
-    </div>
-    <div class="d-flex gap-2">
-         <button class="btn btn-white border text-muted shadow-sm"><i class="fas fa-sync-alt"></i></button>
-        <button class="btn btn-warning fw-bold text-white shadow-sm" data-bs-toggle="modal" data-bs-target="#userModal" onclick="resetUserModal()"><i class="fas fa-plus me-1"></i> Add User</button>
-    </div>
-</div>
-
-<!-- Users Table -->
-<div class="card overflow-hidden border-0 shadow-sm">
-    <table class="table table-custom mb-0" id="usersTable">
-        <thead>
-            <tr>
-                <th class="ps-4">Avatar</th>
-                <th>Name</th>
-                <th>Last Name</th>
-                <th>Email</th>
-                <th>Role</th>
-                <th>Is Disabled</th>
-                <th class="text-end pe-4">Actions</th>
-            </tr>
-        </thead>
-        <tbody id="usersTableBody">
-            <!-- Data will be loaded via jQuery -->
-        </tbody>
-    </table>
-    <!-- Pagination -->
-    <div class="d-flex justify-content-between align-items-center p-3 border-top bg-light">
-         <div class="text-muted small">Showing <span id="startRange">0</span> to <span id="endRange">0</span> of <span id="totalRecords">0</span> results</div>
-         <nav>
-             <ul class="pagination pagination-sm mb-0" id="pagination">
-                 <!-- Pagination links -->
-             </ul>
-         </nav>
-    </div>
-</div>
-
-
-<!-- Add/Edit User Modal -->
-<div class="modal fade" id="userModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header bg-light border-bottom">
-                <div class="d-flex align-items-center">
-                    <div class="bg-primary bg-opacity-10 p-2 rounded me-3 text-primary">
-                        <i class="fas fa-user-plus fa-lg"></i>
-                    </div>
-                    <div>
-                        <h5 class="modal-title fw-bold text-dark" id="userModalTitle">Add User</h5>
-                        <small class="text-muted">Create a new user and assign a role.</small>
-                    </div>
-                </div>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+<div class="tab-content">
+    <!-- Users Tab Pane -->
+    <div class="tab-pane fade show active" id="usersTab" role="tabpanel" aria-labelledby="users-tab">
+        <!-- Actions Bar -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="position-relative" style="width: 300px;">
+                <i class="fas fa-search position-absolute text-muted" style="left: 10px; top: 10px;"></i>
+                <input type="text" id="userSearch" class="form-control ps-5" placeholder="Search users...">
             </div>
-            <div class="modal-body">
-                <form id="userForm">
-                    <input type="hidden" id="userId">
-                    <div class="mb-3">
-                        <label class="form-label text-dark small fw-bold border-start border-3 border-warning ps-2">Name *</label>
-                        <input type="text" class="form-control" id="firstName" placeholder="Enter name" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label text-dark small fw-bold border-start border-3 border-info ps-2">Last Name *</label>
-                        <input type="text" class="form-control" id="lastName" placeholder="Enter last name" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label text-dark small fw-bold border-start border-3 border-danger ps-2">Email *</label>
-                        <input type="email" class="form-control" id="email" placeholder="Enter email" required>
-                    </div>
-                     <div class="mb-3" id="passwordGroup">
-                        <label class="form-label text-dark small fw-bold border-start border-3 border-success ps-2">Password *</label>
-                        <input type="password" class="form-control" id="password" placeholder="Enter password">
-                    </div>
-                    
-                    <div class="mb-3">
-                         <label class="form-label text-dark small fw-bold border-start border-3 border-primary ps-2">Role</label>
-                        <select class="form-select" id="roleSelect">
-                            <option value="">Select a role</option>
-                            <!-- Roles loaded via AJAX -->
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label text-dark small fw-bold border-start border-3 border-secondary ps-2">Tenant</label>
-                        <select class="form-select" id="tenantSelect">
-                            <option value="">Select a tenant (optional)</option>
-                            <!-- Tenants loaded via AJAX -->
-                        </select>
-                    </div>
-                    <div class="mb-3 form-check">
-                        <input type="checkbox" class="form-check-input" id="isDisabled">
-                        <label class="form-check-label text-dark small fw-bold" for="isDisabled">Is Disabled</label>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer border-top bg-light">
-                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Clear</button>
-                <button type="button" class="btn btn-primary shadow-sm" onclick="saveUser()"><i class="fas fa-plus me-1"></i> <span id="saveBtnText">Add User</span></button>
+            <div class="d-flex gap-2">
+                 <button class="btn btn-white border text-muted shadow-sm"><i class="fas fa-sync-alt"></i></button>
+                <button class="btn btn-warning fw-bold text-white shadow-sm" data-bs-toggle="modal" data-bs-target="#userModal" onclick="resetUserModal()"><i class="fas fa-plus me-1"></i> Add User</button>
             </div>
         </div>
+
+        <!-- Users Table -->
+        <div class="card overflow-hidden border-0 shadow-sm">
+            <table class="table table-custom mb-0" id="usersTable">
+                <thead>
+                    <tr>
+                        <th class="ps-4">Avatar</th>
+                        <th>Name</th>
+                        <th>Last Name</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Is Disabled</th>
+                        <th class="text-end pe-4">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="usersTableBody">
+                    <!-- Data will be loaded via jQuery -->
+                </tbody>
+            </table>
+            <!-- Pagination -->
+            <div class="d-flex justify-content-between align-items-center p-3 border-top bg-light">
+                 <div class="text-muted small">Showing <span id="startRange">0</span> to <span id="endRange">0</span> of <span id="totalRecords">0</span> results</div>
+                 <nav>
+                     <ul class="pagination pagination-sm mb-0" id="pagination">
+                         <!-- Pagination links -->
+                     </ul>
+                 </nav>
+            </div>
+        </div>
+
+
+        <!-- Add/Edit User Modal -->
+        <div class="modal fade" id="userModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header bg-light border-bottom">
+                        <div class="d-flex align-items-center">
+                            <div class="bg-primary bg-opacity-10 p-2 rounded me-3 text-primary">
+                                <i class="fas fa-user-plus fa-lg"></i>
+                            </div>
+                            <div>
+                                <h5 class="modal-title fw-bold text-dark" id="userModalTitle">Add User</h5>
+                                <small class="text-muted">Create a new user and assign a role.</small>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="userForm">
+                            <input type="hidden" id="userId">
+                            <div class="mb-3">
+                                <label class="form-label text-dark small fw-bold border-start border-3 border-warning ps-2">Name *</label>
+                                <input type="text" class="form-control" id="firstName" placeholder="Enter name" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label text-dark small fw-bold border-start border-3 border-info ps-2">Last Name *</label>
+                                <input type="text" class="form-control" id="lastName" placeholder="Enter last name" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label text-dark small fw-bold border-start border-3 border-danger ps-2">Email *</label>
+                                <input type="email" class="form-control" id="email" placeholder="Enter email" required>
+                            </div>
+                             <div class="mb-3" id="passwordGroup">
+                                <label class="form-label text-dark small fw-bold border-start border-3 border-success ps-2">Password *</label>
+                                <input type="password" class="form-control" id="password" placeholder="Enter password">
+                            </div>
+                            
+                            <div class="mb-3">
+                                 <label class="form-label text-dark small fw-bold border-start border-3 border-primary ps-2">Role</label>
+                                <select class="form-select" id="roleSelect">
+                                    <option value="">Select a role</option>
+                                    <!-- Roles loaded via AJAX -->
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label text-dark small fw-bold border-start border-3 border-secondary ps-2">Tenant</label>
+                                <select class="form-select" id="tenantSelect">
+                                    <option value="">Select a tenant (optional)</option>
+                                    <!-- Tenants loaded via AJAX -->
+                                </select>
+                            </div>
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" id="isDisabled">
+                                <label class="form-check-label text-dark small fw-bold" for="isDisabled">Is Disabled</label>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer border-top bg-light">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Clear</button>
+                        <button type="button" class="btn btn-primary shadow-sm" onclick="saveUser()"><i class="fas fa-plus me-1"></i> <span id="saveBtnText">Add User</span></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Roles Tab Pane -->
+    <div class="tab-pane fade" id="rolesTab" role="tabpanel" aria-labelledby="roles-tab">
+        <!-- Roles content will be loaded here -->
+    </div>
+
+    <!-- Tenants Tab Pane -->
+    <div class="tab-pane fade" id="tenantsTab" role="tabpanel" aria-labelledby="tenants-tab">
+        <!-- Tenants content will be loaded here -->
+    </div>
+
+    <!-- Integrations Tab Pane -->
+    <div class="tab-pane fade" id="integrationsTab" role="tabpanel" aria-labelledby="integrations-tab">
+        <!-- Integrations content will be loaded here -->
     </div>
 </div>
 

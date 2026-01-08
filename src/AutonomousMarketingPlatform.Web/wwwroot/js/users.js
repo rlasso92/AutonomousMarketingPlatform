@@ -6,6 +6,58 @@ $(document).ready(function () {
     $('#userSearch').on('input', function() {
         loadUsers(1);
     });
+
+    // Handle tab clicks to dynamically load content
+    $('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+        const targetTabId = $(e.target).attr('href'); // e.g., "#integrationsTab"
+        const targetTabPane = $(targetTabId);
+        const controllerName = targetTabId.replace('#', '').replace('Tab', ''); // e.g., "integrations"
+
+        // Only load if the tab pane is empty (first time it's opened)
+        if (targetTabPane.children().length === 0) {
+            if (controllerName === 'roles') {
+                $.get(`/Roles/Index`, function (data) {
+                    targetTabPane.html(data);
+                    // Manually initialize roles.js after content is loaded
+                    if (typeof loadRolesList === 'function') {
+                        loadRolesList();
+                    } else {
+                        $.getScript('/js/roles.js', function() {
+                            loadRolesList();
+                        });
+                    }
+                });
+            } else if (controllerName === 'tenants') {
+                $.get(`/Tenants/Index`, function (data) {
+                    targetTabPane.html(data);
+                    // Manually initialize tenants.js after content is loaded
+                    if (typeof loadTenants === 'function') {
+                        loadTenants();
+                    } else {
+                         $.getScript('/js/tenants.js', function() {
+                            loadTenants();
+                        });
+                    }
+                });
+            } else if (controllerName === 'integrations') {
+                $.get(`/Integrations/Index`, function (data) {
+                    targetTabPane.html(data);
+                    // Manually initialize integrations.js after content is loaded
+                    if (typeof loadIntegrations === 'function') {
+                        loadIntegrations();
+                    } else {
+                        $.getScript('/js/integrations.js', function() {
+                            loadIntegrations();
+                        });
+                    }
+                });
+            }
+        }
+    });
+
+    // Trigger initial load for the active tab (Users tab is active by default)
+    // This ensures the users.js functions are called if the page is reloaded and usersTab is initially active
+    loadUsers();
 });
 let currentPage = 1;
 const pageSize = 10;

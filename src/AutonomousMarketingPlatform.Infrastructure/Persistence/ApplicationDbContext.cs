@@ -54,4 +54,5 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
     public DbSet<MarketingMemory> MarketingMemories { get; set; }
     public DbSet<CampaignMetrics> CampaignMetrics { get; set; }
     public DbSet<PublishJobMetrics> PublishJobMetrics { get; set; }
+    public DbSet<IntegrationSetting> IntegrationSettings { get; set; }
 }

@@ -24,6 +24,7 @@ builder.Services.ConfigureApplicationCookie(options =>
 });
 
 builder.Services.AddScoped<AutonomousMarketingPlatform.Application.Interfaces.IIdentityService, AutonomousMarketingPlatform.Infrastructure.Identity.IdentityService>();
+builder.Services.AddScoped<AutonomousMarketingPlatform.Infrastructure.Services.IEncryptionService, AutonomousMarketingPlatform.Infrastructure.Services.EncryptionService>();
 
 builder.Services.AddControllersWithViews();
 
